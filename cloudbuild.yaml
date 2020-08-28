@@ -1,0 +1,67 @@
+steps:
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone','https://github.com/SamFangshan/Virtual-Hospital-Test.git']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build','-t','gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}','.']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push','gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}']
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'set'
+  - 'env'
+  - '${_DEPLOYMENTNAME}'
+  - 'STRIPE_API_KEY=${_STRIPE_API_KEY}'
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'set'
+  - 'env'
+  - '${_DEPLOYMENTNAME}'
+  - 'PG_USER=${_PG_USER}'
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'set'
+  - 'env'
+  - '${_DEPLOYMENTNAME}'
+  - 'PG_PASSWORD=${_PG_PASSWORD}'
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'set'
+  - 'env'
+  - '${_DEPLOYMENTNAME}'
+  - 'PG_HOST=${_PG_HOST}'
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'set'
+  - 'env'
+  - '${_DEPLOYMENTNAME}'
+  - 'PG_PORT=${_PG_PORT}'
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'set'
+  - 'env'
+  - '${_DEPLOYMENTNAME}'
+  - 'PG_DATABASE=${_PG_DATABASE}'
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'set'
+  - 'image'
+  - 'deployment/${_DEPLOYMENTNAME}'
+  - '${_CONTAINERNAME}=gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
+
+substitutions:
+    _VERSION: v1.0
+
+options:
+    substitution_option: 'ALLOW_LOOSE'
