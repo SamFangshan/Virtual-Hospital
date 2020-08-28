@@ -1,6 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/git'
-  args: ['clone','https://github.com/SamFangshan/Virtual-Hospital-Test.git']
+  args: ['clone','https://github.com/SamFangshan/Virtual-Hospital.git']
 
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build','-t','gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}','.']
