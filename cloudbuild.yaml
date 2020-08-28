@@ -14,6 +14,9 @@ steps:
   - 'env'
   - '${_DEPLOYMENTNAME}'
   - 'STRIPE_API_KEY=${_STRIPE_API_KEY}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
@@ -21,6 +24,9 @@ steps:
   - 'env'
   - '${_DEPLOYMENTNAME}'
   - 'PG_USER=${_PG_USER}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
@@ -28,6 +34,9 @@ steps:
   - 'env'
   - '${_DEPLOYMENTNAME}'
   - 'PG_PASSWORD=${_PG_PASSWORD}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
@@ -35,6 +44,9 @@ steps:
   - 'env'
   - '${_DEPLOYMENTNAME}'
   - 'PG_HOST=${_PG_HOST}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
@@ -42,6 +54,9 @@ steps:
   - 'env'
   - '${_DEPLOYMENTNAME}'
   - 'PG_PORT=${_PG_PORT}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
@@ -49,6 +64,9 @@ steps:
   - 'env'
   - '${_DEPLOYMENTNAME}'
   - 'PG_DATABASE=${_PG_DATABASE}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
