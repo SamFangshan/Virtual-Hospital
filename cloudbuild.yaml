@@ -84,6 +84,9 @@ steps:
   - 'restart'
   - 'deployment'
   - '${_DEPLOYMENTNAME}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
 substitutions:
     _VERSION: v1.0
