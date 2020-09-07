@@ -43,7 +43,7 @@ class Department(db.Model):
 
 
 class Doctor(User):
-    credentials = db.Column(db.String(100))
+    credentials = db.Column(db.String(200))
     specialties = db.Column(db.ARRAY(db.String(100)))
     office_hour_start_time = db.Column(db.String(10))
     office_hour_end_time = db.Column(db.String(10))
