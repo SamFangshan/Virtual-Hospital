@@ -8,7 +8,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(128))
+    email = db.Column(db.String(128), unique=True)
     phone_number = db.Column(db.String(20))
     nric = db.Column(db.String(10))
     gender = db.Column(db.String(6))
@@ -47,7 +47,7 @@ class Doctor(User):
     specialties = db.Column(db.ARRAY(db.String(100)))
     office_hour_start_time = db.Column(db.String(10))
     office_hour_end_time = db.Column(db.String(10))
-    deparment_id = db.Column(db.Integer, db.ForeignKey(Department.id), nullable=False)
+    department_id = db.Column(db.Integer, db.ForeignKey(Department.id), nullable=True)
     appointment_time_slots = db.relationship('AppointmentTimeSlot', lazy='select',
                                              backref=db.backref('doctor', lazy='joined'))
 
