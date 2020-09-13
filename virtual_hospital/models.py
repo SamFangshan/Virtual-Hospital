@@ -88,7 +88,7 @@ class Prescription(db.Model):
     prescription_instructions = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    drugs = db.relationship('Drug', secondary='prescription_drugs')
+    drugs = db.relationship('Drug', secondary='prescription_drug')
 
 
 class Drug(db.Model):
