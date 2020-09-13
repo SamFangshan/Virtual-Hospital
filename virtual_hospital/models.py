@@ -98,7 +98,7 @@ class Drug(db.Model):
     category = db.Column(db.String(100), nullable=False)
 
 
-class Prescription_Drug(db.Model):
+class PrescriptionDrug(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     prescription_id = db.Column(db.Integer, db.ForeignKey(Prescription.id), nullable=False)
     drug_id = db.Column(db.Integer, db.ForeignKey(Drug.id), nullable=False)
