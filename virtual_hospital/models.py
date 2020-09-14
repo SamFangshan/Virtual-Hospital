@@ -1,6 +1,8 @@
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from flask_login import UserMixin
 from virtual_hospital import db
 
 
@@ -79,7 +81,27 @@ class Prescription(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey(Patient.id), nullable=False)
     doctor_id = db.Column(db.Integer, db.ForeignKey(Doctor.id), nullable=False)
+
     pick_up_start_date = db.Column(db.Date, nullable=False)
     pick_up_status = db.Column(db.String(10), nullable=False)
     medicines = db.Column(db.ARRAY(db.String(100)))
     prescription_instructions = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    drugs = db.relationship('Drug', secondary='prescription_drug')
+
+
+class Drug(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    category = db.Column(db.String(100), nullable=False)
+
+
+class PrescriptionDrug(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    prescription_id = db.Column(db.Integer, db.ForeignKey(Prescription.id), nullable=False)
+    drug_id = db.Column(db.Integer, db.ForeignKey(Drug.id), nullable=False)
+
+    prescription = db.relationship(Prescription, backref=db.backref('prescription_drugs'))
+    drug = db.relationship(Drug, backref=db.backref('prescription_drugs'))
