@@ -2,6 +2,8 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_crontab import Crontab
+
 
 app = Flask(__name__)
 
@@ -25,4 +27,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-from virtual_hospital import views, errors, commands
+crontab = Crontab(app)
+
+from virtual_hospital import views, errors, commands, cronjobs
