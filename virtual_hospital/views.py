@@ -11,6 +11,10 @@ def index():
 def about():
     return render_template('about.html', currPage="About")
 
+@app.route('/login')
+def login():
+    return render_template('login.html', currPage="Login")
+
 @app.route("/test", methods=['GET', 'POST'])
 def test():
     test_form = TestForm()
