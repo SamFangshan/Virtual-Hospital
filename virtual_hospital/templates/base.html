@@ -29,9 +29,10 @@
 					<li><a href="/about">About Us</a></li>
 				{% endif %}
 
-				{% if currPage == "Login" %}
-					<li class="current"><a href="/login">Login</a></li>
-				{% else %}
+				{% if current_user.is_authenticated %}
+					<li><a href="/settings"> {{ current_user.name }} </a></li>
+					<li><a href="/logout" class="button primary">Logout</a></li>
+            	{% else %}
 					<li><a href="/login" class="button primary">Login</a></li>
 				{% endif %}
 

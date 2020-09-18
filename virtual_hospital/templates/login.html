@@ -62,12 +62,12 @@ span.psw {
   <div class="content">
 
     <!-- Content -->
-    <form action="{{ url_for('test') }}"  method="POST">
+    <form method="POST">
       <div class="container">
 
-        <input type="text" placeholder="Enter Username" required>
-        <input type="password" placeholder="Enter Password" required>
-        <button style = "color : #505F98" type="submit">Login</button>
+        <input type="text" name = "username" placeholder="Enter Username" required>
+        <input type="password" name="password" placeholder="Enter Password" required>
+        <button style = "color : #505F98" type="submit" name = "submit" value = "Submit">Login</button>
 
         <label>
           <input type="checkbox" checked="checked" name="remember"> Remember me
