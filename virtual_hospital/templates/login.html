@@ -4,12 +4,19 @@
 {% block content %}
 <style>
 
+.error {
+  color:red;
+  text_indent:15px;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-size:15px;
+}
+
 .content {
   width: 100%;
   height: 100%;
   left: 0;
   top: 0;
-  background-color: rgba(255, 255, 255, 0);
 }
 
 input[type=text], input[type=password] {
@@ -21,10 +28,15 @@ input[type=text], input[type=password] {
   box-sizing: border-box;
 }
 
+input[type = checkbox]
+{
+  -webkit-appearance:checkbox;
+}
+
 button {
   background-color: #FFD166;
   color: white;
-  padding: 14px 20px;
+  padding: 0px 20px;
   margin: 8px 0;
   border: none;
   cursor: pointer;
@@ -38,7 +50,6 @@ button:hover {
 
 .container {
   padding: 16px;
-  background-color: rgba(255, 255, 255, 0);
 }
 
 .pswForgot{
@@ -52,29 +63,38 @@ span.psw {
   display: inline-block;
 }
 
+span.new {
+  padding-top: 16px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
 }
 </style>
 <article id="Login">
 <header class="special container">
-	<h2 style = "color: #505F98"> Login Form </h2>
+	<h2 style = "color: #505F98"> <strong>Login </strong> </h2>
 </header>
-
   <div class="content">
 
     <!-- Content -->
     <form method="POST">
       <div class="container">
 
-        <input type="text" name = "username" placeholder="Enter Username" required>
-        <input type="password" name="password" placeholder="Enter Password" required>
+        <input type="email" name = "email" placeholder="Email Address" pattern="^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$" required>
+        <input type="password" name="password" placeholder="Password" required>
+        {% if error %}
+        <p class=error><strong>Error:</strong> {{ error }}
+        {% endif %}
         <button style = "color : #505F98" type="submit" name = "submit" value = "Submit">Login</button>
 
         <label>
-          <input type="checkbox" checked="checked" name="remember"> Remember me
+          <input type="checkbox" checked="checked" name="remember"> <p>Remember me</p>
         </label>
 
 
         <div class = 'pswForgot'>
+          <span class="new"> Do not have an account? <a href="./sign_up">Join Now!</a></span><br>
           <span class="psw"> <a href="#">Forgot password?</a></span>
         </div>
 

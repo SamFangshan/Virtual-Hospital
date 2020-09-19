@@ -17,24 +17,71 @@ def about():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
+    error = None
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['email']
         password = request.form['password']
 
-        if not username or not password:
-            flash('Invalid input.')
-            return redirect(url_for('login'))
-
         user = User.query.filter_by(email=email).first()
-        if username == user.email and user.validate_password(password):
+        if not user:
+            # add error message showing that user not exists
+            error = "User does not exist"
+        elif not user.validate_password(password):
+            error = "Wrong password"
+        else:
+            flash('You were successfully logged in.')
             login_user(user)
-            flash('Login success.')
-            return render_template('index.html', currPage="Home")
+            return redirect(url_for('index'))
 
-        flash('Invalid username or password.')
-        return redirect(url_for('login'))
-    return render_template('login.html', currPage="Login")
+    return render_template('login.html', currPage="Login", error=error)
+
+def password_error(passwd):
+    SpecialSym = ['$', '@', '#', '_']
+    error = ''
+    if len(passwd) < 8:
+        error += 'Length should be at least 8. ' + '\n'
+    elif len(passwd) > 20:
+        error += 'Length should be not be greater than 20. ' + '\n'
+
+    if not any(char.isdigit() for char in passwd):
+        error += 'Password should have at least one numeral. ' + '\n'
+
+    if not any(char.isupper() for char in passwd):
+        error += 'Password should have at least one uppercase letter. ' + '\n'
+
+    if not any(char.islower() for char in passwd):
+        error += 'Password should have at least one lowercase letter. ' + '\n'
+
+    if not any(char in SpecialSym for char in passwd):
+        error += 'Password should have at least one of the symbols $@#_' + '\n'
+
+    return error.strip('\n')
+
+@app.route('/sign_up', methods=['GET', 'POST'])
+def signup():
+    error = None
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        password_confirmed =request.form['password_confirmed']
+
+        # check uniqueness of email
+        if User.query.filter_by(email=email).first():
+            error = "Already Registered"
+        elif len(password_error(password))!=0:
+            error = password_error(password)
+        elif password != password_confirmed:
+            error = "Please ensure that two password are the same."
+        else:
+            newUser = User(email=email)
+            newUser.set_password(password)
+            db.session.add(newUser)
+            db.session.commit()
+            flash('New User Created.')
+            login_user(newUser)
+            return redirect(url_for('index'))
+
+    return render_template('sign_up.html', currPage="SignUp", error=error)
 
 
 @app.route('/logout')
@@ -55,7 +102,7 @@ def settings():
             flash('Invalid input.')
             return redirect(url_for('settings'))
 
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=current_user.email).first()
         user.name = name
         db.session.commit()
         flash('Settings updated.')
