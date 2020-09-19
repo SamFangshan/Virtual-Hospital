@@ -1,13 +1,25 @@
 steps:
+# Clone source code from GitHub
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone','https://github.com/SamFangshan/Virtual-Hospital.git']
 
+# Python test
+- name: 'docker.io/library/python:3.7'
+  args: ['pip', 'install', '-t', '/workspace/lib', '-r', 'requirements.txt']
+
+- name: 'docker.io/library/python:3.7'
+  args: ['python', '-m', 'unittest', 'discover']
+  env: ["PYTHONPATH=/workspace/lib"]
+
+# Build Docker image
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build','-t','gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}','.']
 
+# Push Docker image to GCS
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push','gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}']
 
+# Environment set-up
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - 'set'
@@ -68,6 +80,7 @@ steps:
   - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
   - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
+# Update image on GKE Deployment
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - 'set'
@@ -78,6 +91,7 @@ steps:
   - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
   - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
+# Restart GKE Deployment
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - 'rollout'
