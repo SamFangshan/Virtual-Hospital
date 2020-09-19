@@ -3,6 +3,7 @@ from virtual_hospital import app
 from virtual_hospital.models import *
 from virtual_hospital.forms import *
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
+import re
 
 # User Tracking Control
 login_manager = LoginManager(app)
@@ -25,18 +26,23 @@ def about():
 def login():
 
     if request.method == 'POST':
-        username = request.form['email']
+        email = request.form['email']
         password = request.form['password']
 
-        if not username or not password:
+        if not email or not password:
             flash('Invalid input.')
             return redirect(url_for('login'))
 
-        user = User.query.first()
-        if username == user.email and user.validate_password(password):
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            # add error message showing that user not exists
+            flash('User not exist.')
+            return redirect(url_for('login'))
+
+        if user and user.validate_password(password):
             login_user(user)
             flash('Login success.')
-            return render_template('index.html', currPage="Home")
+            return redirect(url_for('index'))
 
         flash('Invalid username or password.')
         return redirect(url_for('login'))
@@ -44,7 +50,34 @@ def login():
 
 @app.route('/sign_up', methods=['GET', 'POST'])
 def signup():
-    return render_template('sign_up.html', currPage="SignUp")
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        password_confirmed = request.form['password_confirmed']
+
+        if not re.fullmatch(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$',email):
+            # add showing error message
+            flash('Invalid email.')
+            return render_template('sign_up.html', currPage="SignUp")
+
+        #if not re.fullmatch(r'[A-Za-z0-9@#$%^&+=]{8,}', password):
+            # add showing error message
+        #    flash('Invalid password.')
+        #    return render_template('sign_up.html', currPage="SignUp")
+        if password != password_confirmed:
+            # add showing error message
+            flash('Invalid confirmed password.')
+            return render_template('sign_up.html', currPage="SignUp")
+
+        newUser = User(email = email)
+        newUser.set_password(password)
+        db.session.add(newUser)
+        db.session.commit()
+        flash('New User Created.')
+        print('this step')
+        return redirect(url_for('login'))
+    else:
+        return render_template('sign_up.html', currPage="SignUp")
 
 @app.route('/logout')
 @login_required

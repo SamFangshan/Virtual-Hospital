@@ -8,9 +8,9 @@ from virtual_hospital import db
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=True)
     password_hash = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(128), unique=True)
+    email = db.Column(db.String(128), unique=True,nullable=False)
     phone_number = db.Column(db.String(20))
     nric = db.Column(db.String(10))
     gender = db.Column(db.String(6))
