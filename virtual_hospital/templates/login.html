@@ -69,11 +69,10 @@ span.new {
   display: inline-block;
 }
 
-}
 </style>
-<article id="Login">
+<article id="main">
 <header class="special container">
-	<h2 style = "color: #505F98"> <strong>Login </strong> </h2>
+	<h2 style = "color: #505F98"> <strong> Login </strong> </h2>
 </header>
   <div class="content">
 
@@ -81,7 +80,7 @@ span.new {
     <form method="POST">
       <div class="container">
 
-        <input type="email" name = "email" placeholder="Email Address" pattern="^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$" required>
+        <input type="email" name = "email" placeholder="Email Address" required>
         <input type="password" name="password" placeholder="Password" required>
         {% if error %}
         <p class=error><strong>Error:</strong> {{ error }}
@@ -89,7 +88,7 @@ span.new {
         <button style = "color : #505F98" type="submit" name = "submit" value = "Submit">Login</button>
 
         <label>
-          <input type="checkbox" checked="checked" name="remember"> <p>Remember me</p>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
         </label>
 
 

@@ -29,14 +29,14 @@ def login():
         elif not user.validate_password(password):
             error = "Wrong password"
         else:
-            flash('You were successfully logged in.')
+            flash('You were successfully logged in.', 'info')
             login_user(user)
             return redirect(url_for('index'))
 
     return render_template('login.html', currPage="Login", error=error)
 
 def password_error(passwd):
-    SpecialSym = ['$', '@', '#', '_']
+    SpecialSym = ['$', '@', '#', '_', '!']
     error = ''
     if len(passwd) < 8:
         error += 'Length should be at least 8. ' + '\n'
@@ -53,7 +53,7 @@ def password_error(passwd):
         error += 'Password should have at least one lowercase letter. ' + '\n'
 
     if not any(char in SpecialSym for char in passwd):
-        error += 'Password should have at least one of the symbols $@#_' + '\n'
+        error += 'Password should have at least one of the symbols $@#_!' + '\n'
 
     return error.strip('\n')
 
@@ -62,8 +62,10 @@ def signup():
     error = None
     if request.method == 'POST':
         email = request.form['email']
+        name = request.form['name']
         password = request.form['password']
         password_confirmed =request.form['password_confirmed']
+        user_type = request.form['user_type']
 
         # check uniqueness of email
         if User.query.filter_by(email=email).first():
@@ -73,11 +75,15 @@ def signup():
         elif password != password_confirmed:
             error = "Please ensure that two password are the same."
         else:
-            newUser = User(email=email)
+            if user_type == 'patient':
+                newUser = Patient(email=email, name=name)
+            elif user_type == 'doctor':
+                newUser = Doctor(email=email, name=name)
+
             newUser.set_password(password)
             db.session.add(newUser)
             db.session.commit()
-            flash('New User Created.')
+            flash('New User Created.', 'info')
             login_user(newUser)
             return redirect(url_for('index'))
 
@@ -88,28 +94,81 @@ def signup():
 @login_required
 def logout():
     logout_user()
-    flash('Goodbye.')
+    flash('Goodbye.', 'info')
     return redirect(url_for('index'))
 
 
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
+    error = None
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        password_confirmed =request.form['password_confirmed']
+
+        if current_user.email != email and User.query.filter_by(email=email).first():
+            error = "Already Registered"
+        elif len(password) != 0:
+            if len(password_error(password))!=0:
+                error = password_error(password)
+            elif password != password_confirmed:
+                error = "Please ensure that two password are the same."
+            else:
+                user = User.query.filter_by(email=current_user.email).first()
+                user.email = email
+                user.set_password(password)
+                db.session.commit()
+                flash('Settings updated.', 'info')
+                return redirect(url_for('index'))
+        else:
+            user = User.query.filter_by(email=current_user.email).first()
+            user.email = email
+            db.session.commit()
+            flash('Settings updated.', 'info')
+            return redirect(url_for('index'))
+
+    return render_template('settings.html', error=error)
+
+@app.route('/setprofile', methods=['GET', 'POST'])
+@login_required
+def setprofile():
     if request.method == 'POST':
         name = request.form['name']
+        phone_number = request.form['phone_number']
+        nric = request.form['nric']
+        gender = request.form['gender']
 
-        if not name or len(name) > 20:
-            flash('Invalid input.')
-            return redirect(url_for('settings'))
+        if not name or len(name) > 20 or len(nric) > 10 or len(phone_number) > 20 or len(gender) > 6:
+                flash('Invalid input.', 'error')
+                return redirect(url_for('setprofile'))
 
         user = User.query.filter_by(email=current_user.email).first()
         user.name = name
+        user.phone_number = phone_number
+        user.nric = nric
+        user.gender = gender
+
+        if current_user.type == 'patient':
+            date_of_birth = request.form['date_of_birth']
+            user.date_of_birth = date_of_birth
+        elif current_user.type == 'doctor':
+            credentials = request.form['credentials']
+            specialties = request.form['specialties']
+            office_hour_start_time = request.form['office_hour_start_time']
+            office_hour_end_time = request.form['office_hour_end_time']
+            department_id = request.form['department_id']
+            user.credentials = credentials
+            user.specialties = specialties
+            user.office_hour_start_time = office_hour_start_time
+            user.office_hour_end_time = office_hour_end_time
+            user.department_id = department_id
+
         db.session.commit()
-        flash('Settings updated.')
+        flash('Profile updated.', 'info')
         return redirect(url_for('index'))
 
-    return render_template('settings.html')
-
+    return render_template('setprofile.html')
 
 @app.route("/test", methods=['GET', 'POST'])
 def test():
