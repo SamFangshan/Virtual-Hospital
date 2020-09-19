@@ -2,7 +2,7 @@ from flask import render_template, request, url_for, redirect, flash
 from virtual_hospital import app
 from virtual_hospital.models import *
 from virtual_hospital.forms import *
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 
 
 @app.route('/')
