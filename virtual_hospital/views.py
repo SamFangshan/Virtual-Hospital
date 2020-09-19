@@ -25,7 +25,7 @@ def about():
 def login():
 
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['email']
         password = request.form['password']
 
         if not username or not password:
@@ -41,6 +41,10 @@ def login():
         flash('Invalid username or password.')
         return redirect(url_for('login'))
     return render_template('login.html', currPage="Login")
+
+@app.route('/sign_up', methods=['GET', 'POST'])
+def signup():
+    return render_template('sign_up.html', currPage="SignUp")
 
 @app.route('/logout')
 @login_required

@@ -11,7 +11,7 @@
   top: 0;
 }
 
-input[type=text], input[type=password] {
+input[type=text], input[type=password]{
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -23,13 +23,22 @@ input[type=text], input[type=password] {
 input[type = checkbox]
 {
   -webkit-appearance:checkbox;
+  font-size:15px;
+}
+span.policy
+{
+  font-size:15px;
+}
+
+label {
+    padding: 12px 20px;
 }
 
 button {
   background-color: #FFD166;
   color: white;
-  padding: 0px 20px;
-  margin: 8px 0;
+  padding: 0px 24px;
+  margin: 20px 0;
   border: none;
   cursor: pointer;
   width: 100%;
@@ -44,18 +53,12 @@ button:hover {
   padding: 16px;
 }
 
-.pswForgot{
+.login{
   overflow: hidden;
   text-align: center;
 }
 
-span.psw {
-  padding-top: 16px;
-  vertical-align: middle;
-  display: inline-block;
-}
-
-span.new {
+span.login {
   padding-top: 16px;
   vertical-align: middle;
   display: inline-block;
@@ -63,9 +66,9 @@ span.new {
 
 }
 </style>
-<article id="Login">
+<article id="Signup">
 <header class="special container">
-	<h2 style = "color: #505F98"> <strong>Login </strong> </h2>
+	<h2 style = "color: #505F98"> <strong>Create Account</strong> </h2>
 </header>
 
   <div class="content">
@@ -76,16 +79,19 @@ span.new {
 
         <input type="text" name = "email" placeholder="Email Address" required>
         <input type="password" name="password" placeholder="Password" required>
-        <button style = "color : #505F98" type="submit" name = "submit" value = "Submit">Login</button>
+        <input type="password" name="password" placeholder="Confirmed Password" required>
 
-        <label>
-          <input type="checkbox" checked="checked" name="remember"> Remember me
+        <input type="checkbox" checked="checked" name="policy" id = "policy">
+        <label for = "policy">
+            <span class="policy"> By checking the box, I agree with the <a href="#">Privacy Policy, Term of Use</a></span>
         </label>
 
+        <button style = "color : #505F98" type="submit" name = "submit" value = "Submit">Register</button>
 
-        <div class = 'pswForgot'>
-          <span class="new"> Do not have an account? <a href="./sign_up">Join Now!</a></span><br>
-          <span class="psw"> <a href="#">Forgot password?</a></span>
+
+
+        <div class = 'login'>
+          <span class="login">Already a member? <a href="./login">Login in!</a></span>
         </div>
 
       </div>
