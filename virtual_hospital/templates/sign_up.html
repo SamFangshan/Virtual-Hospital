@@ -3,6 +3,13 @@
 
 {% block content %}
 <style>
+.error {
+  color:red;
+  text_indent:15px;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-size:15px;
+}
 
 .content {
   width: 100%;
@@ -11,7 +18,7 @@
   top: 0;
 }
 
-input[type=text], input[type=password]{
+input[type=email], input[type=password]{
   width: 100%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -66,6 +73,19 @@ span.login {
 
 }
 </style>
+<script>
+    function errorMessage() {
+        var error = document.getElementById("password_confirm_error")
+        if (document.getElementById("password").value != document.getElementById("password_confirmed").value)
+        {
+            // Changing content and color of content
+            error.textContent = "Please enter same password"
+            error.style.color = "red"
+        } else {
+            error.textContent = ""
+        }
+    }
+</script>
 <article id="Signup">
 <header class="special container">
 	<h2 style = "color: #505F98"> <strong>Create Account</strong> </h2>
@@ -74,25 +94,30 @@ span.login {
   <div class="content">
 
     <!-- Content -->
-    <form method="POST">
+    <form method="POST" action="/sign_up">
       <div class="container">
 
-        <input type="text" name = "email" placeholder="Email Address" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="password" name="password_confirmed" placeholder="Confirmed Password" required>
-
+        <input type="email" name = "email" placeholder="Email Address" pattern="^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$" required>
+        <input type="password" name="password" id="password" placeholder="Password" required>
+        <input type="password" name="password_confirmed" id="password_confirmed" placeholder="Confirmed Password" required>
         <input type="checkbox" checked="checked" name="policy" id = "policy">
         <label for = "policy">
             <span class="policy"> By checking the box, I agree with the <a href="#">Privacy Policy, Term of Use</a></span>
         </label>
 
-        <button style = "color : #505F98" type="submit" name = "submit" value = "Submit">Register</button>
+        {% if error %}
+        <p class=error><strong>Error:</strong> {{ error }}
+        {% endif %}
+
+        <button style = "color : #505F98" type="submit" name = "submit" value = "Submit" onclick="errorMessage()">Register</button>
 
 
 
         <div class = 'login'>
           <span class="login">Already a member? <a href="./login">Login in!</a></span>
         </div>
+
+        <!--span id="password_confirm_error"></span-->
 
       </div>
     </form>
@@ -103,4 +128,5 @@ span.login {
 
 </div>
 </article>
+
 {% endblock %}
