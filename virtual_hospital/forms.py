@@ -4,6 +4,7 @@ from wtforms.validators import InputRequired, ValidationError
 
 from virtual_hospital.models import User
 
+
 class TestForm(FlaskForm):
     """ Test form"""
     email = StringField('email_label', validators=[InputRequired(message="Email required")])

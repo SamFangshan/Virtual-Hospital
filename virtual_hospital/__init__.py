@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
 app = Flask(__name__)
 
@@ -25,4 +26,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-from virtual_hospital import views, errors, commands
+# User Tracking Control
+login_manager = LoginManager(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    from virtual_hospital.models import User
+    user = User.query.get(int(user_id))
+    return user
+
+
+login_manager.login_view = 'login'
+
+from virtual_hospital import views, errors, commands, forms
