@@ -1,8 +1,15 @@
-from flask import render_template, request, url_for, redirect, flash
+import json
+import os
+
+import stripe
+from flask import flash, jsonify, redirect, render_template, request, url_for
+
+from flask_login import current_user, login_required, login_user, logout_user
 from virtual_hospital import app
-from virtual_hospital.models import *
 from virtual_hospital.forms import *
-from flask_login import login_user, login_required, logout_user, current_user
+from virtual_hospital.models import *
+
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
 
 @app.route('/')
@@ -175,3 +182,44 @@ def test():
     test_form = TestForm()
     test_form.validate_on_submit()
     return render_template("test.html", form=test_form)
+
+
+@app.route('/checkout', methods=['POST', 'GET'])
+def checkout():
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        amount = round(data['amount'], 2) * 100
+        return render_template('checkout.html', amount=amount, publishable_key=os.environ['STRIPE_PUBLISHABLE_KEY'])
+    else:
+        # need to be replaced to handle errors
+        # this is for test only
+        amount = 10 * 100  # 10 dollar test payment
+        return render_template('checkout.html', amount=amount, publishable_key=os.environ['STRIPE_PUBLISHABLE_KEY'])
+
+
+@app.route('/create-payment-intent', methods=['POST'])
+def create_payment():
+    try:
+        data = json.loads(request.data)
+        intent = stripe.PaymentIntent.create(
+            amount=int(data['amount']),
+            currency='sgd'
+        )
+
+        return jsonify({
+          'clientSecret': intent['client_secret']
+        })
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+
+
+@app.route('/payment-success/<payment_intent_id>')
+def payment_success(payment_intent_id):
+    try:
+        intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+    except Exception:
+        return 'invalid_payment_intent_page'
+    if intent.status == 'succeeded':
+        return 'success_page'
+    else:
+        return 'failure_page'
