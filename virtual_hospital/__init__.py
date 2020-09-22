@@ -2,6 +2,7 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_crontab import Crontab
 from flask_login import LoginManager
 
 app = Flask(__name__)
@@ -39,4 +40,6 @@ def load_user(user_id):
 
 login_manager.login_view = 'login'
 
-from virtual_hospital import views, errors, commands, forms
+crontab = Crontab(app)
+
+from virtual_hospital import views, errors, commands, cronjobs, forms
