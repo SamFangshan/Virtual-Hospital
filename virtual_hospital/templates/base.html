@@ -3,18 +3,20 @@
 <head>
     {% block head %}
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>Virtual Hospital</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
+	   <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
 		<noscript><link rel="stylesheet" href="{{ url_for('static', filename='assets/css/noscript.css') }}" /></noscript>
     {% endblock %}
 </head>
 <body class="index is-preload">
+  {% for category, message in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-{{category}}" id="flash">{{ message }}</div>
+  {% endfor %}
 <div id="page-wrapper">
 	<header id="header" class="alt">
-		<!--<h1 id="logo"><a href="index.html">Virtual Hospital <span>The Online Healthcare Provider</span></a></h1>-->
-		<h1 id="logo"><img src="{{ url_for('static', filename='logo.png') }}" height=92px width=227px alt="" /></h1>
+		<img src="{{ url_for('static', filename='logo.png') }}" height=92px width=227px style="position:absolute;" alt="" />
 		<nav id="nav">
 			<ul>
 				{% if currPage == "Home" %}
@@ -22,33 +24,25 @@
 				{% else %}
 					<li><a href="/">Home</a></li>
 				{% endif %}
-				
+
 				{% if currPage == "About" %}
 					<li class="current"><a href="/about">About Us</a></li>
 				{% else %}
 					<li><a href="/about">About Us</a></li>
 				{% endif %}
-				
-				<!-- kept for submenu reference *<li class="submenu">
-					<a href="#">Layouts</a>
-					<ul>
-						<li><a href="left-sidebar.html">Left Sidebar</a></li>
-						<li><a href="right-sidebar.html">Right Sidebar</a></li>
-						<li><a href="no-sidebar.html">No Sidebar</a></li>
-						<li><a href="contact.html">Contact</a></li>
-						<li class="submenu">
-							<a href="#">Submenu</a>
-							<ul>
-								<li><a href="#">Dolore Sed</a></li>
-								<li><a href="#">Consequat</a></li>
-								<li><a href="#">Lorem Magna</a></li>
-								<li><a href="#">Sed Magna</a></li>
-								<li><a href="#">Ipsum Nisl</a></li>
-							</ul>
-						</li>
-					</ul>
-				</li>-->
-				<li><a href="#" class="button primary">Login</a></li>
+
+				{% if current_user.is_authenticated %}
+          <li class="submenu"> <!-- Note: Submenu can be nested twice -->
+            <a href="#"> {{ current_user.name }} </a>
+            <ul>
+              <li><a href="/setprofile">Set Profile</a></li>
+                <li><a href="/settings">Account Management</a></li>
+            </ul>
+          </li>
+  				<li><a href="/logout" class="button primary">Logout</a></li>
+        {% else %}
+					<li><a href="/login" class="button primary">Login</a></li>
+				{% endif %}
 			</ul>
 		</nav>
 	</header>
