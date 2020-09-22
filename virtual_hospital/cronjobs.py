@@ -13,9 +13,10 @@ def generate_time_slots():
     for doctor in doctors:
         for date in dates:
             if not time_slots_exist(doctor.id, date):
-                time_slots = generate_time_slots_for_a_day(date,
-                                                           doctor.office_hour_start_time,
-                                                           doctor.office_hour_end_time)
+                if doctor.office_hour_start_time and doctor.office_hour_end_time:
+                    time_slots = generate_time_slots_for_a_day(date,
+                                                               doctor.office_hour_start_time,
+                                                               doctor.office_hour_end_time)
                 for ts in time_slots:
                     time_slot = AppointmentTimeSlot(appointment_start_time=ts[0],
                                                     appointment_end_time=ts[1],

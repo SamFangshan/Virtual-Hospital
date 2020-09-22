@@ -1,0 +1,88 @@
+import os
+
+import sqlalchemy
+from flask import Flask
+
+import pytest
+from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from pytest_postgresql.janitor import DatabaseJanitor
+from virtual_hospital import app as _app
+from virtual_hospital import db
+from virtual_hospital.models import *
+import tests.factories as factories
+
+# load environmental variables
+dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+
+try:
+    pg_user = os.environ['PG_USER']
+    pg_password = os.environ['PG_PASSWORD']
+    pg_host = os.environ['PG_HOST']
+    pg_port = os.environ['PG_PORT']
+    pg_database = os.environ['TEST_PG_DATABASE']
+    DB_CONN = 'postgresql+psycopg2://{}:{}@{}:{}/{}'.format(
+                                                            pg_user,
+                                                            pg_password,
+                                                            pg_host,
+                                                            pg_port,
+                                                            pg_database
+                                                            )
+except KeyError:
+    raise KeyError('Test database connection config not found in the environment.')
+else:
+    DB_OPTS = sqlalchemy.engine.url.make_url(DB_CONN).translate_connect_args()
+
+pytest_plugins = ['pytest-flask-sqlalchemy']
+
+
+@pytest.fixture(scope='session')
+def database(request):
+    '''
+    Create a Postgres database for the tests, and drop it when the tests are done.
+    '''
+    pg_host = DB_OPTS.get("host")
+    pg_port = DB_OPTS.get("port")
+    pg_user = DB_OPTS.get("username")
+    pg_pass = DB_OPTS.get("password")
+    pg_db = DB_OPTS["database"]
+
+    db_janitor = DatabaseJanitor(pg_user, pg_host, pg_port, pg_db, 12, pg_pass)
+
+    db_janitor.init()
+
+    @request.addfinalizer
+    def drop_database():
+        db_janitor.drop()
+
+
+@pytest.fixture(scope='session')
+def app(database):
+    '''
+    Create a Flask app context for the tests.
+    '''
+    _app.config.update(
+            TESTING=True,
+            SQLALCHEMY_DATABASE_URI=DB_CONN
+    )
+
+    return _app
+
+
+@pytest.fixture(scope='session')
+def _db(app):
+    '''
+    Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
+    database connection.
+    '''
+    db.create_all()
+    init_db()
+
+    return db
+
+
+def init_db():
+    factories.DoctorFactory.create_batch(5)
+    factories.AppointmentTimeSlotFactory.create_batch(2)
