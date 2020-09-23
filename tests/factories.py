@@ -19,10 +19,15 @@ class DoctorFactory(SQLAlchemyModelFactory):
                                                                        x.name.split()[0],
                                                                        x.name.split()[1]).lower()
                                                                        )
+
     office_hour_start_time = factory.LazyAttribute(
-        lambda x: faker.random_element(elements=(None, '08:00', '08:30', '09:00')))
+        lambda x: ['08:30', None, '09:00'][(x.id - 1) % 3])
     office_hour_end_time = factory.LazyAttribute(
-        lambda x: faker.random_element(elements=(None, '17:30', '18:00', '19:00')))
+        lambda x: ['18:00', None, '19:00'][(x.id - 1) % 3])
+    # office_hour_start_time = factory.Sequence(
+    #     lambda x: ['08:30', None, '09:00'][x % 3])
+    # office_hour_end_time = factory.Sequence(
+    #     lambda x: ['18:00', None, '19:00'][x % 3])
 
     class Meta:
         model = Doctor

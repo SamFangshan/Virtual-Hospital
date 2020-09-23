@@ -84,5 +84,10 @@ def _db(app):
 
 
 def init_db():
-    factories.DoctorFactory.create_batch(5)
-    factories.AppointmentTimeSlotFactory.create_batch(2)
+    factories.DoctorFactory.create_batch(3)
+    # reset increment id sequence number
+    db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('user', 'id', 3 + 1))
+
+    factories.AppointmentTimeSlotFactory.create_batch(1)
+    # reset increment id sequence number
+    db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('appointment_time_slot', 'id', 1 + 1))
