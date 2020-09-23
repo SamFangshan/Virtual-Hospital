@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
+<link href="{{ url_for('static', filename='assets/css/payment.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="v57_575">
+  <form action="/checkout" method="post">
+    <input type="hidden" name="amount" value="{{ total_price }}"/>
+    <button class="v58_1" type="submit" name = "submit" value = "Submit"></button>
+  </form>
+  <div class="v57_574">
+    <div class="v57_573"><span class="v57_571">${{ '{0:.2f}'.format(total_price) }}</span><span class="v57_572">Total Price</span>
+      <div class="v57_529"></div>
+    </div>
+    {% for drug in drugs %}
+      <div class="v57_566"><span class="v57_567">{{ drug.name }}</span><span class="v57_568">${{ '{0:.2f}'.format(drug.price) }}</span></div>
+    {% endfor %}
+    <div class="v57_557"><span class="v57_528">Drug Name</span><span class="v57_555">Price</span><span class="v57_527">Prescriptions</span></div>
+  </div>
+  <div class="v57_570"></div><span class="v57_523">Prescriptions</span>
+
+<div class="v57_561">
+  <div class="v57_560"><span class="v57_509">Doctor</span><span class="v57_511">{{ doctor.name }}</span><span class="v57_512">{{ department.id }}</span></div>
+  <div class="v57_518"></div><span class="v57_507">Appointment Information</span>
+</div>
+<div class="v57_286">
+  <div class="v57_287"></div><span class="v57_288">Get Prescription</span>
+</div>
+{% endblock %}

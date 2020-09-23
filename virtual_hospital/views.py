@@ -184,16 +184,10 @@ def test():
     return render_template("test.html", form=test_form)
 
 
-@app.route('/checkout', methods=['POST', 'GET'])
+@app.route('/checkout', methods=['POST'])
 def checkout():
     if request.method == 'POST':
-        data = json.loads(request.data)
-        amount = round(data['amount'], 2) * 100
-        return render_template('checkout.html', amount=amount, publishable_key=os.environ['STRIPE_PUBLISHABLE_KEY'])
-    else:
-        # need to be replaced to handle errors
-        # this is for test only
-        amount = 10 * 100  # 10 dollar test payment
+        amount = int(round(float(request.form['amount']), 2) * 100)
         return render_template('checkout.html', amount=amount, publishable_key=os.environ['STRIPE_PUBLISHABLE_KEY'])
 
 
@@ -218,8 +212,29 @@ def payment_success(payment_intent_id):
     try:
         intent = stripe.PaymentIntent.retrieve(payment_intent_id)
     except Exception:
-        return 'invalid_payment_intent_page'
+        return render_template('errors/404.html'), 404
     if intent.status == 'succeeded':
-        return 'success_page'
+        return 'success_page'  # redirects to rate doctor page?
     else:
-        return 'failure_page'
+        return render_template('errors/403.html'), 403
+
+
+@app.route('/payment/<prescription_id>')
+@login_required
+def payment(prescription_id):
+    prescription = Prescription.query.get(int(prescription_id))
+    if not prescription:
+        return render_template('errors/404.html'), 404
+    if current_user.type == 'doctor' or prescription.patient_id != current_user.id:
+        return render_template('errors/403.html'), 403
+    if prescription.pick_up_status != 'no payment':  # this payment has already been completed
+        pass  # redirect to view prescription page
+
+    total_price = 0
+    drugs = prescription.drugs
+    for drug in drugs:
+        total_price += drug.price
+    doctor = Doctor.query.get(prescription.doctor_id)
+    department = Department.query.get(doctor.department_id)
+    return render_template('payment.html', doctor=doctor, department=department,
+                           drugs=drugs, total_price=total_price)

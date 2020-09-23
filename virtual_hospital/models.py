@@ -84,7 +84,6 @@ class Prescription(db.Model):
 
     pick_up_start_date = db.Column(db.Date, nullable=False)
     pick_up_status = db.Column(db.String(10), nullable=False)
-    medicines = db.Column(db.ARRAY(db.String(100)))
     prescription_instructions = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
