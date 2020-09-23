@@ -6,7 +6,8 @@ from virtual_hospital.models import AppointmentTimeSlot
 
 def generate_time_slots_for_a_day(date, start_time, end_time):
     """This function generates appointments time slots in 30-minute intervals given a specific date,
-       start time, and end time.
+       start time, and end time. Assuming start_time and end_time are in multiples of 30 minutes, and
+       start_time is earlier than end_time.
 
     Parameters
     ----------

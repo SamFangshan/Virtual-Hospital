@@ -17,10 +17,10 @@ def generate_time_slots():
                     time_slots = generate_time_slots_for_a_day(date,
                                                                doctor.office_hour_start_time,
                                                                doctor.office_hour_end_time)
-                for ts in time_slots:
-                    time_slot = AppointmentTimeSlot(appointment_start_time=ts[0],
-                                                    appointment_end_time=ts[1],
-                                                    number_of_vacancies=2,
-                                                    doctor_id=doctor.id)
-                    db.session.add(time_slot)
-                db.session.commit()
+                    for ts in time_slots:
+                        time_slot = AppointmentTimeSlot(appointment_start_time=ts[0],
+                                                        appointment_end_time=ts[1],
+                                                        number_of_vacancies=2,
+                                                        doctor_id=doctor.id)
+                        db.session.add(time_slot)
+                        db.session.commit()
