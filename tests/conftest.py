@@ -59,27 +59,21 @@ def database(request):
 
 
 @pytest.fixture(scope='session')
-def app(request, database):
+def app(database):
     '''
     Create a Flask app context for the tests.
     '''
 
-    _app.config["SQLALCHEMY_DATABASE_URI"] = DB_CONN
-    _app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    _app.testing = True
+    _app.config.update(
+            TESTING=True,
+            SQLALCHEMY_DATABASE_URI=DB_CONN
+    )
 
     return _app
 
-@pytest.fixture()
-def test_client(request, app):
-
-    client = app.test_client()
-    client.__enter__()
-
-    request.addfinalizer(
-        lambda: client.__exit__(None, None, None))
-    return client
-
+@pytest.fixture(scope='session')
+def test_client(app):
+    return app.test_client()
 
 @pytest.fixture(scope='session')
 def _db(app):
@@ -94,6 +88,8 @@ def _db(app):
 
 
 def init_db():
+    factories.TestUserFactory()
+
     factories.DoctorFactory.create_batch(3)
     # reset increment id sequence number
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('user', 'id', 3 + 1))

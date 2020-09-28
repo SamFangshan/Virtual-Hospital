@@ -5,7 +5,7 @@ from virtual_hospital.cronjobs import generate_time_slots
 from virtual_hospital.models import *
 
 
-@pytest.mark.last
+@pytest.mark.run(order=4)
 def test_generate_time_slots(_db):
     today = datetime.today().date()
     generate_time_slots()

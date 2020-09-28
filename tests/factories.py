@@ -46,7 +46,7 @@ class AppointmentTimeSlotFactory(SQLAlchemyModelFactory):
         model = AppointmentTimeSlot
         sqlalchemy_session = db.session
 
-class UserFactory(SQLAlchemyModelFactory):
+class TestUserFactory(SQLAlchemyModelFactory):
     id = 10001
     name = "test_user"
     password_hash = generate_password_hash('password')

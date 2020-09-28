@@ -74,8 +74,10 @@ def signup():
             error = "Already Registered"
         elif len(password_error(password))!=0:
             error = password_error(password)
+            return (render_template('sign_up.html', currPage="SignUp", error=error), 500)
         elif password != password_confirmed:
             error = "Please ensure that two password are the same."
+            return (render_template('sign_up.html', currPage="SignUp", error=error), 500)
         else:
             if user_type == 'patient':
                 newUser = Patient(email=email, name=name)
@@ -87,9 +89,9 @@ def signup():
             db.session.commit()
             flash('New User Created.', 'info')
             login_user(newUser)
-            return redirect(url_for('index'))
+            return redirect((url_for('index')), 200)
 
-    return render_template('sign_up.html', currPage="SignUp", error=error)
+    return (render_template('sign_up.html', currPage="SignUp", error=error), 500)
 
 
 @app.route('/logout')
@@ -172,8 +174,8 @@ def setprofile():
 
     return render_template('setprofile.html')
 
-# @app.route("/test", methods=['GET', 'POST'])
-# def test():
-#     test_form = TestForm()
-#     test_form.validate_on_submit()
-#     return render_template("test.html", form=test_form)
+@app.route("/test", methods=['GET', 'POST'])
+def test():
+    test_form = TestForm()
+    test_form.validate_on_submit()
+    return render_template("test.html", form=test_form)
