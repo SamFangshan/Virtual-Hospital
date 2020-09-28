@@ -63,7 +63,6 @@ def app(database):
     '''
     Create a Flask app context for the tests.
     '''
-
     _app.config.update(
             TESTING=True,
             SQLALCHEMY_DATABASE_URI=DB_CONN
