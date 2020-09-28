@@ -1,9 +1,10 @@
 import datetime
+import pytest
 
 from virtual_hospital.models import *
 from virtual_hospital.utils.time_slot_utils import *
 
-
+@pytest.mark.run(order=3)
 def test_time_slots_exist(_db):
     date = datetime.datetime.today().date()
     # doctor with time slots already generated on a date

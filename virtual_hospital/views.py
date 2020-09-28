@@ -26,8 +26,10 @@ def login():
         if not user:
             # add error message showing that user not exists
             error = "User does not exist"
+            return (render_template('login.html', currPage="Login", error=error), 404)
         elif not user.validate_password(password):
             error = "Wrong password"
+            return (render_template('login.html', currPage="Login", error=error), 401)
         else:
             flash('You were successfully logged in.', 'info')
             login_user(user)
@@ -72,8 +74,10 @@ def signup():
             error = "Already Registered"
         elif len(password_error(password))!=0:
             error = password_error(password)
+            return (render_template('sign_up.html', currPage="SignUp", error=error), 500)
         elif password != password_confirmed:
             error = "Please ensure that two password are the same."
+            return (render_template('sign_up.html', currPage="SignUp", error=error), 500)
         else:
             if user_type == 'patient':
                 newUser = Patient(email=email, name=name)
@@ -85,9 +89,9 @@ def signup():
             db.session.commit()
             flash('New User Created.', 'info')
             login_user(newUser)
-            return redirect(url_for('index'))
+            return redirect((url_for('index')), 200)
 
-    return render_template('sign_up.html', currPage="SignUp", error=error)
+    return (render_template('sign_up.html', currPage="SignUp", error=error), 500)
 
 
 @app.route('/logout')

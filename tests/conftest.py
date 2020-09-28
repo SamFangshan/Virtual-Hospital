@@ -70,6 +70,9 @@ def app(database):
 
     return _app
 
+@pytest.fixture(scope='session')
+def test_client(app):
+    return app.test_client()
 
 @pytest.fixture(scope='session')
 def _db(app):
@@ -84,6 +87,8 @@ def _db(app):
 
 
 def init_db():
+    factories.TestUserFactory()
+
     factories.DoctorFactory.create_batch(3)
     # reset increment id sequence number
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('user', 'id', 3 + 1))
