@@ -59,16 +59,26 @@ def database(request):
 
 
 @pytest.fixture(scope='session')
-def app(database):
+def app(request, database):
     '''
     Create a Flask app context for the tests.
     '''
-    _app.config.update(
-            TESTING=True,
-            SQLALCHEMY_DATABASE_URI=DB_CONN
-    )
+
+    _app.config["SQLALCHEMY_DATABASE_URI"] = DB_CONN
+    _app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    _app.testing = True
 
     return _app
+
+@pytest.fixture()
+def test_client(request, app):
+
+    client = app.test_client()
+    client.__enter__()
+
+    request.addfinalizer(
+        lambda: client.__exit__(None, None, None))
+    return client
 
 
 @pytest.fixture(scope='session')

@@ -26,8 +26,10 @@ def login():
         if not user:
             # add error message showing that user not exists
             error = "User does not exist"
+            return (render_template('login.html', currPage="Login", error=error), 404)
         elif not user.validate_password(password):
             error = "Wrong password"
+            return (render_template('login.html', currPage="Login", error=error), 401)
         else:
             flash('You were successfully logged in.', 'info')
             login_user(user)
@@ -170,8 +172,8 @@ def setprofile():
 
     return render_template('setprofile.html')
 
-@app.route("/test", methods=['GET', 'POST'])
-def test():
-    test_form = TestForm()
-    test_form.validate_on_submit()
-    return render_template("test.html", form=test_form)
+# @app.route("/test", methods=['GET', 'POST'])
+# def test():
+#     test_form = TestForm()
+#     test_form.validate_on_submit()
+#     return render_template("test.html", form=test_form)

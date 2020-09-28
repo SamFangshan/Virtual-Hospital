@@ -45,3 +45,13 @@ class AppointmentTimeSlotFactory(SQLAlchemyModelFactory):
     class Meta:
         model = AppointmentTimeSlot
         sqlalchemy_session = db.session
+
+class UserFactory(SQLAlchemyModelFactory):
+    id = 10001
+    name = "test_user"
+    password_hash = generate_password_hash('password')
+    email = "test_user@gmail.com"
+
+    class Meta:
+        model = User
+        sqlalchemy_session = db.session
