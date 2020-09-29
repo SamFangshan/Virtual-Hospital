@@ -4,7 +4,6 @@ WORKDIR /usr/src/app
 
 COPY requirements.txt ./
 COPY virtual_hospital ./virtual_hospital
-COPY test_virtual_hospital.py ./
 COPY .flaskenv ./
 COPY wsgi.py ./
 COPY entrypoint.sh ./
