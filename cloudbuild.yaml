@@ -4,13 +4,15 @@ steps:
   args: ['clone','https://github.com/SamFangshan/Virtual-Hospital.git']
 
 # Python test
-- name: 'gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+  entrypoint: gcloud
   args: ['init']
 
-- name: 'gcr.io/cloud-builders/gcloud'
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+  entrypoint: gcloud
   args: ['config', 'set', 'account', '${_SERVICE_ACCOUNT}']
 
-- name: alpine:3
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
   entrypoint: sh
   args:
     - '-c'
