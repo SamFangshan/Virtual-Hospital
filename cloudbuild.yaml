@@ -8,7 +8,7 @@ steps:
   args: ['init']
 
 - name: 'gcr.io/cloud-builders/gcloud'
-  args: ['auth', 'login']
+  args: ['config', 'set', 'account', '${_SERVICE_ACCOUNT}']
 
 - name: alpine:3
   entrypoint: sh
