@@ -4,6 +4,12 @@ steps:
   args: ['clone','https://github.com/SamFangshan/Virtual-Hospital.git']
 
 # Python test
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['init']
+
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['auth', 'login']
+
 - name: alpine:3
   entrypoint: sh
   args:
