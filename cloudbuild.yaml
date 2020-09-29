@@ -5,8 +5,7 @@ steps:
 
 # Python test
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
-  entrypoint: sh
-  args: ['-c', 'printf', "'1\n1\n1\nn'", '|', 'gcloud', 'init']
+  args: ['printf', "'1\n1\n1\nn'", '|', 'gcloud', 'init']
 
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
   entrypoint: gcloud
