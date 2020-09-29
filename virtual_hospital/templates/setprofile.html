@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<style>
+input[type=text] {
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+</style>
+<script>
+    function errorMessage() {
+        var error = document.getElementById("password_confirm_error")
+        if (document.getElementById("password").value != document.getElementById("password_confirmed").value)
+        {
+            // Changing content and color of content
+            error.textContent = "Please enter same password"
+            error.style.color = "red"
+        } else {
+            error.textContent = ""
+        }
+    }
+</script>
+<article id="main">
+<header class="special container">
+    <h2>Set Profile</h2>
+</header>
+
+<div class="content">
+<form method="post">
+  <div class="container" style="text-align:center">
+
+    <h1 style="text-align:center">Name</h1>
+    <input type="text" name="name" autocomplete="off" required value="{{ current_user.name }}"><br><br>
+
+    <h1 style="text-align:center">Phone Number</h1>
+    <input type="text" name="phone_number" autocomplete="off" required value="{{ current_user.phone_number }}"><br><br>
+
+    <h1 style="text-align:center">NRIC</h1>
+    <input type="text" name="nric" autocomplete="off" required value="{{ current_user.nric }}"><br><br>
+
+    <h1 style="text-align:center">Gender</h1>
+    <input type="text" name="gender" autocomplete="off" required value="{{ current_user.gender }}"><br><br><br>
+
+    {% if current_user.type == 'doctor' %}
+      <h1 style="text-align:center">Account Type: Doctor</h1><br>
+
+      <h1 style="text-align:center">Credentials</h1>
+      <input type="text" name="credentials" autocomplete="off" required value="{{ current_user.credentials }}"><br><br>
+
+      <h1 style="text-align:center">Specialties</h1>
+      <input type="text" name="specialties" autocomplete="off" required value="{{ current_user.specialties }}"><br><br>
+
+      <h1 style="text-align:center">Office Hours</h1>
+      Start<br><input type="text" name="office_hour_start_time" autocomplete="off" required value="{{ current_user.office_hour_start_time }}">
+      <br>End<br><input type="text" name="office_hour_end_time" autocomplete="off" required value="{{ current_user.office_hour_end_time }}"><br><br>
+
+      <h1 style="text-align:center">Department ID</h1>
+      <input type="text" name="department_id" autocomplete="off" required value="{{ current_user.department_id }}">
+
+    {% elif current_user.type == 'patient' %}
+      <h1 style="text-align:center">Account Type: Patient</h1><br>
+
+      <h1 style="text-align:center">Date Of Birth</h1>
+      <input type="text" name="date_of_birth" autocomplete="off" required value="{{ current_user.date_of_birth }}">
+
+    {% endif %}
+
+    <br><br><button style="color:#505F98" type="submit" name="submit" value="Save">Save</button>
+    </div>
+</form>
+</div>
+<div class="content">
+
+</div>
+</article>
+{% endblock %}

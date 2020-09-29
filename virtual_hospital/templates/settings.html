@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<style>
+input[type=email], input[type=password] {
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+</style>
+<script>
+    function errorMessage() {
+        var error = document.getElementById("password_confirm_error")
+        if (document.getElementById("password").value != document.getElementById("password_confirmed").value)
+        {
+            // Changing content and color of content
+            error.textContent = "Please enter same password"
+            error.style.color = "red"
+        } else {
+            error.textContent = ""
+        }
+    }
+</script>
+<article id="main">
+<header class="special container">
+    <h2>Account Management</h2>
+</header>
+
+<div class="content">
+<form method="post">
+  <div class="container" style="text-align:center">
+
+    <h1 style="text-align:center">Change Email</h1>
+    <input type="email" name="email" autocomplete="off" value="{{ current_user.email }}" required pattern="^([\w\.\-]+)@([\w\-]+)((\.(\w){1,63}){1,5})$"><br><br>
+
+    <h1 style="text-align:center">Change Password</h1>
+    New Password<br>
+    <input type="password" name="password"">
+    <br>Confirm New Password<br>
+    <input type="password" name="password_confirmed""><br><br>
+
+    <button style = "color : #505F98" type="submit" name = "submit" value = "Submit" onclick="errorMessage()">Save</button>
+    {% if error %}
+    <p class=error><strong>Error:</strong> {{ error }}
+    {% endif %}
+
+    </div>
+</form>
+</div>
+<div class="content">
+
+</div>
+</article>
+{% endblock %}

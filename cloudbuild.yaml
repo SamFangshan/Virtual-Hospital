@@ -8,8 +8,15 @@ steps:
   args: ['pip', 'install', '-t', '/workspace/lib', '-r', 'requirements.txt']
 
 - name: 'docker.io/library/python:3.7'
-  args: ['python', '-m', 'unittest', 'discover']
-  env: ["PYTHONPATH=/workspace/lib"]
+  args: ['python', '-m', 'pytest']
+  env:
+  - 'PYTHONPATH=/workspace/lib:.'
+  - 'PG_USER=${_PG_USER}'
+  - 'PG_PASSWORD=${_PG_PASSWORD}'
+  - 'PG_HOST=${_PG_HOST}'
+  - 'PG_PORT=${_PG_PORT}'
+  - 'TEST_PG_DATABASE=${_TEST_PG_DATABASE}'
+
 
 # Build Docker image
 - name: 'gcr.io/cloud-builders/docker'
