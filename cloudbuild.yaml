@@ -4,6 +4,12 @@ steps:
   args: ['clone','https://github.com/SamFangshan/Virtual-Hospital.git']
 
 # Python test
+- name: alpine:3
+  entrypoint: sh
+  args:
+    - '-c'
+    - 'wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy && chmod +x cloud_sql_proxy && ./cloud_sql_proxy -instances=${_DB_INSTANCE_NAME}=tcp:3306'
+
 - name: 'docker.io/library/python:3.7'
   args: ['pip', 'install', '-t', '/workspace/lib', '-r', 'requirements.txt']
 
@@ -13,8 +19,8 @@ steps:
   - 'PYTHONPATH=/workspace/lib:.'
   - 'PG_USER=${_PG_USER}'
   - 'PG_PASSWORD=${_PG_PASSWORD}'
-  - 'PG_HOST=${_PG_HOST}'
-  - 'PG_PORT=${_PG_PORT}'
+  - 'PG_HOST=localhost'
+  - 'PG_PORT=3306'
   - 'TEST_PG_DATABASE=${_TEST_PG_DATABASE}'
 
 
