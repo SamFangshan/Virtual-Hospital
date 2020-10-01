@@ -185,6 +185,7 @@ def test():
 
 
 @app.route('/checkout', methods=['POST'])
+@login_required
 def checkout():
     if request.method == 'POST':
         amount = int(round(float(request.form['amount']), 2) * 100)
@@ -208,6 +209,7 @@ def create_payment():
 
 
 @app.route('/payment-success/<payment_intent_id>')
+@login_required
 def payment_success(payment_intent_id):
     try:
         intent = stripe.PaymentIntent.retrieve(payment_intent_id)
