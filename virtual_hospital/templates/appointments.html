@@ -1,0 +1,86 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .container {
+    padding: 16px;
+  }
+
+
+  button {
+    background-color: #FFD166;
+    color: #505F98;
+    border: none;
+    outline: none;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  h1.BGcolor {
+    background-color: #BAC3E5;
+    text-transform: none;
+    font-weight: 500;
+    margin: 0px;
+  }
+
+  h1.BGcolor:before {
+    content: "\00a0 \00a0 \00a0 \00a0 \00a0";
+  }
+
+  h3.header {
+    text-transform:none;
+    display: inline-block;
+  }
+
+  .appointment-card {
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    word-wrap: break-word;
+  }
+
+  .user-image {
+    display: block;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    margin: 30px 50px 30px 50px; /* top right bottom left*/
+  }
+
+  table {
+    padding: 0;
+    margin: 0;
+    table-layout: fixed;
+  }
+
+  td {
+    vertical-align: top;
+    text-align: left;
+  }
+</style>
+
+<article id="main">
+<header class="special container">
+  <h2 style="color: #505F98"><strong>Appointments</strong></h2>
+</header>
+
+<div class="container">
+  <h3 class="header"><strong>Today's Appointments</strong></h3>
+  <button onclick = '/new-appointment' style = "float: right;">Make a New Appointment</button>
+
+  <div class="appointment-card" style = "margin-top: 70px">
+    <h1 class='BGcolor'>07 September 2020, 14:30</h1>
+    <table>
+      <tr>
+        <td><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        <td><p>adadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfd</p></td>
+      </tr>
+    </table>
+  </div>
+
+
+</div>
+
+</article>
+{% endblock %}
