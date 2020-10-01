@@ -7,16 +7,29 @@
     padding: 16px;
   }
 
-
   button {
+    display: inline-block;
     background-color: #FFD166;
     color: #505F98;
     border: none;
     outline: none;
+    float:right;
   }
 
   button:hover {
     opacity: 0.8;
+  }
+
+  button.noBG {
+    background-color: #00000000;
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    color: #505F98;
+  }
+
+  .buttonSmallHeight {
+    height: wrap-content;
   }
 
   h1.BGcolor {
@@ -51,7 +64,9 @@
   table {
     padding: 0;
     margin: 0;
-    table-layout: fixed;
+    table-layout: auto;
+    cellspacing: 0;
+    cellpadding: 0;
   }
 
   td {
@@ -67,14 +82,22 @@
 
 <div class="container">
   <h3 class="header"><strong>Today's Appointments</strong></h3>
-  <button onclick = '/new-appointment' style = "float: right;">Make a New Appointment</button>
+  <button onclick='/new-appointment' style="float: right;">Make a New Appointment</button>
 
   <div class="appointment-card" style = "margin-top: 70px">
     <h1 class='BGcolor'>07 September 2020, 14:30</h1>
     <table>
       <tr>
-        <td><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
-        <td><p>adadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfdadadsfadfasfdasfd</p></td>
+        <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        <td>
+          <h4 style='text-transform: none; padding-top: 40px'><strong>Dr Beng Yeong Ng</strong></h4>
+          <h4 style='text-transform: none; margin: 0px'><strong>Psychiatrist</strong></h4>
+          <h4 style='text-transform: none'><strong>★ 5.0</strong></h4>
+        </td>
+        <td style="vertical-align: bottom">
+          <button class="noBG buttonSmallHeight" onclick='/new-appointment'>Cancel Appointment</button>
+          <button style="border-top-right-radius: 5px; border-bottom-right-radius: 5px;" onclick='/new-appointment'>Start Chatting</button>
+        </td>
       </tr>
     </table>
   </div>
