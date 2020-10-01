@@ -1,13 +1,35 @@
 steps:
+# Clone source code from GitHub
 - name: 'gcr.io/cloud-builders/git'
   args: ['clone','https://github.com/SamFangshan/Virtual-Hospital.git']
 
+# Python test
+# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+#   args: ['printf', "'1\n1\n1\nn'", '|', 'gcloud', 'init', '&&', 'gcloud', 'config', 'set', 'account', '${_SERVICE_ACCOUNT}', '&&', 'wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy && chmod +x cloud_sql_proxy && ./cloud_sql_proxy -instances=${_DB_INSTANCE_NAME}=tcp:3306']
+#
+# - name: 'docker.io/library/python:3.7'
+#   args: ['pip', 'install', '-t', '/workspace/lib', '-r', 'requirements.txt']
+#
+# - name: 'docker.io/library/python:3.7'
+#   args: ['python', '-m', 'pytest']
+#   env:
+#   - 'PYTHONPATH=/workspace/lib:.'
+#   - 'PG_USER=${_PG_USER}'
+#   - 'PG_PASSWORD=${_PG_PASSWORD}'
+#   - 'PG_HOST=localhost'
+#   - 'PG_PORT=3306'
+#   - 'TEST_PG_DATABASE=${_TEST_PG_DATABASE}'
+
+
+# Build Docker image
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build','-t','gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}','.']
 
+# Push Docker image to GCS
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push','gcr.io/${_PROJECT}/${_CONTAINERNAME}:${_VERSION}']
 
+# Environment set-up
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - 'set'
@@ -68,6 +90,7 @@ steps:
   - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
   - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
+# Update image on GKE Deployment
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - 'set'
@@ -78,6 +101,7 @@ steps:
   - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
   - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
 
+# Restart GKE Deployment
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - 'rollout'
