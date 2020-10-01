@@ -1,32 +1,320 @@
 {% extends 'base.html' %}
 
-{% block head %}
-<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
-<link href="{{ url_for('static', filename='assets/css/payment.css') }}" rel="stylesheet" />
-{% endblock %}
-
 {% block content %}
-<div class="v57_575">
+<style>
+.content {
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+.submit {
+  width: 321px;
+  height: 46px;
+  background: url("{{ url_for('static', filename='assets/css/images/v58_1.png') }}");
+  position: absolute;
+  top: 556px;
+  left: 716px;
+}
+.prescription {
+  width: 100%;
+  margin-top: 300px 0;
+  vertical-align: middle;
+}
+.total {
+  width: 266px;
+  height: 62px;
+  background: url("./images/v57_573.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 244px;
+  left: 735px;
+  overflow: hidden;
+}
+.total_price {
+  width: 69px;
+  color: rgba(55,68,126,1);
+  position: absolute;
+  top: 38px;
+  left: 173px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.total_text {
+  width: 105px;
+  color: rgba(111,124,178,1);
+  position: absolute;
+  top: 38px;
+  left: 0px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.v57_529 {
+  width: 116px;
+  background: url("./images/v57_529.png");
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 266px;
+  border: 0.6000000238418579px solid rgba(186,195,229,1);
+}
+.drug {
+  width: 688px;
+  height: 24px;
+  background: url("./images/v57_566.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 177px;
+  left: 277px;
+  overflow: hidden;
+}
+.drug_name {
+  width: 148px;
+  color: rgba(55,68,126,1);
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.drug_price {
+  width: 57px;
+  color: rgba(55,68,126,1);
+  position: absolute;
+  top: 0px;
+  left: 631px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.drug_columns {
+  width: 959px;
+  height: 28px;
+  background: url("./images/v57_557.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+.drug_name_column {
+  width: 111px;
+  color: rgba(111,124,178,1);
+  position: absolute;
+  top: 2px;
+  left: 277px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.drug_price_column {
+  width: 51px;
+  color: rgba(111,124,178,1);
+  position: absolute;
+  top: 2px;
+  left: 908px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.prescriptions_text {
+  width: 217px;
+  color: rgba(9,17,51,1);
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.prescriptions_title {
+  width: 100%;
+  background: url("./images/v57_570.png");
+  opacity: 1;
+  position: absolute;
+  top: 66px;
+  left: 1211px;
+  border: 0.6000000238418579px solid rgba(186,195,229,1);
+}
+.prescriptions_title_text {
+  width: 323px;
+  color: rgba(9,17,51,1);
+  position: absolute;
+  top: 0px;
+  left: 38px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 24px;
+  opacity: 1;
+  text-align: left;
+}
+.appointment {
+  width: 100%;
+  height: 231px;
+  background: url("./images/v57_561.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 313px;
+  left: 114px;
+  overflow: hidden;
+}
+.doctor {
+  width: 456px;
+  height: 60px;
+  background: url("./images/v57_560.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 101px;
+  left: 36px;
+  overflow: hidden;
+}
+.doctor_text {
+  width: 126px;
+  color: rgba(9,17,51,1);
+  position: relative;
+  top: 0px;
+  left: 0px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.doctor_name {
+  width: 179px;
+  color: rgba(55,68,126,1);
+  position: absolute;
+  top: 0px;
+  left: 277px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.department_name {
+  width: 117px;
+  color: rgba(111,124,178,1);
+  position: absolute;
+  top: 36px;
+  left: 277px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 22px;
+  opacity: 1;
+  text-align: left;
+}
+.appointment_info {
+  width: 100%;
+  background: url("./images/v57_518.png");
+  opacity: 1;
+  position: absolute;
+  top: 66px;
+  left: 1211px;
+  border: 0.6000000238418579px solid rgba(186,195,229,1);
+}
+.appointment_info_text {
+  width: 323px;
+  color: rgba(9,17,51,1);
+  position: absolute;
+  top: 0px;
+  left: 38px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 24px;
+  opacity: 1;
+  text-align: left;
+}
+.get_prescription {
+  width: 100%;
+  height: 100px;
+  background: url("./images/v57_286.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
+  position: absolute;
+  top: 164px;
+  left: 0px;
+  overflow: hidden;
+}
+.get_prescription_title {
+  width: 100%;
+  height: 100px;
+  background: rgba(231,236,255,0.30000001192092896);
+  opacity: 1;
+  position: relative;
+  top: 0px;
+  left: 0px;
+  overflow: hidden;
+}
+.get_prescription_title_text {
+  width: 100%;
+  color: rgba(9,17,51,1);
+  position: absolute;
+  top: 15px;
+  left: 188px;
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 36px;
+  opacity: 1;
+  text-align: center;
+}
+</style>
+
+<div class="content">
   <form action="/checkout" method="post">
     <input type="hidden" name="amount" value="{{ total_price }}"/>
-    <button class="v58_1" type="submit" name = "submit" value = "Submit"></button>
+    <button class="submit" type="submit" name = "submit" value = "Submit"></button>
   </form>
-  <div class="v57_574">
-    <div class="v57_573"><span class="v57_571">${{ '{0:.2f}'.format(total_price) }}</span><span class="v57_572">Total Price</span>
+  <div class="prescription">
+    <div class="total"><span class="total_price">${{ '{0:.2f}'.format(total_price) }}</span><span class="total_text">Total Price</span>
       <div class="v57_529"></div>
     </div>
     {% for drug in drugs %}
-      <div class="v57_566"><span class="v57_567">{{ drug.name }}</span><span class="v57_568">${{ '{0:.2f}'.format(drug.price) }}</span></div>
+      <div class="drug"><span class="drug_name">{{ drug.name }}</span><span class="drug_price">${{ '{0:.2f}'.format(drug.price) }}</span></div>
     {% endfor %}
-    <div class="v57_557"><span class="v57_528">Drug Name</span><span class="v57_555">Price</span><span class="v57_527">Prescriptions</span></div>
+    <div class="drug_columns"><span class="drug_name_column">Drug Name</span><span class="drug_price_column">Price</span><span class="prescriptions_text">Prescriptions</span></div>
   </div>
-  <div class="v57_570"></div><span class="v57_523">Prescriptions</span>
+  <div class="prescriptions_title"></div><span class="prescriptions_title_text">Prescriptions</span>
 
-<div class="v57_561">
-  <div class="v57_560"><span class="v57_509">Doctor</span><span class="v57_511">{{ doctor.name }}</span><span class="v57_512">{{ department.id }}</span></div>
-  <div class="v57_518"></div><span class="v57_507">Appointment Information</span>
+<div class="appointment">
+  <div class="doctor"><span class="doctor_text">Doctor</span><span class="doctor_name">{{ doctor.name }}</span><span class="department_name">{{ department.name }}</span></div>
+  <div class="appointment_info"></div><span class="appointment_info_text">Appointment Information</span>
 </div>
-<div class="v57_286">
-  <div class="v57_287"></div><span class="v57_288">Get Prescription</span>
+<div class="get_prescription">
+  <div class="get_prescription_title"></div><span class="get_prescription_title_text">Get Prescription</span>
 </div>
 {% endblock %}
