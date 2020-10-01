@@ -234,7 +234,7 @@ def payment(prescription_id):
     if current_user.type == 'doctor' or prescription.patient_id != current_user.id:
         return render_template('errors/403.html'), 403
     if prescription.pick_up_status != 'no payment':  # this payment has already been completed
-        pass  # redirect to view prescription page
+        return render_template('errors/404.html'), 404
 
     total_price = 0
     drugs = prescription.drugs

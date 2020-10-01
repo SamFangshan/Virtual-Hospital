@@ -34,6 +34,69 @@ class DoctorFactory(SQLAlchemyModelFactory):
         sqlalchemy_session = db.session
 
 
+class PatientFactory(SQLAlchemyModelFactory):
+    id = factory.Sequence(lambda x: x + 1 + 100)
+    name = factory.Faker('name')
+    password_hash = generate_password_hash('password')
+    email = factory.LazyAttribute(lambda x: '{}.{}@example.com'.format(
+                                                                       x.name.split()[0],
+                                                                       x.name.split()[1]).lower()
+                                                                       )
+
+    class Meta:
+        model = Patient
+        sqlalchemy_session = db.session
+
+
+class PrescriptionFactoryForPayment(SQLAlchemyModelFactory):
+    id = 1
+    patient_id = 101
+    doctor_id = 1
+    pick_up_start_date = datetime.today().date()
+    pick_up_status = 'no payment'
+    prescription_instructions = 'no'
+    created_at = datetime.now()
+
+    class Meta:
+        model = Prescription
+        sqlalchemy_session = db.session
+
+
+class PrescriptionFactoryPaid(SQLAlchemyModelFactory):
+    id = 2
+    patient_id = 101
+    doctor_id = 1
+    pick_up_start_date = datetime.today().date()
+    pick_up_status = 'pending'
+    prescription_instructions = 'no'
+    created_at = datetime.now()
+
+    class Meta:
+        model = Prescription
+        sqlalchemy_session = db.session
+
+
+class DrugFactory(SQLAlchemyModelFactory):
+    id = factory.Sequence(lambda x: x + 1)
+    name = factory.LazyAttribute(lambda x: ['Apomorphine', 'Cupric Sulfate', 'Ipecac'][(x.id - 1) % 3])
+    price = factory.LazyAttribute(lambda x: [26, 18.5, 30.5][(x.id - 1) % 3])
+    category = 'Emetics'
+
+    class Meta:
+        model = Drug
+        sqlalchemy_session = db.session
+
+
+class PrescriptionDrugFactory(SQLAlchemyModelFactory):
+    id = factory.Sequence(lambda x: x + 1)
+    prescription_id = 1
+    drug_id = factory.LazyAttribute(lambda x: [1, 2, 3][(x.id - 1) % 3])
+
+    class Meta:
+        model = PrescriptionDrug
+        sqlalchemy_session = db.session
+
+
 class AppointmentTimeSlotFactory(SQLAlchemyModelFactory):
     id = factory.Sequence(lambda x: x + 1)
     appointment_start_time = datetime.now()
