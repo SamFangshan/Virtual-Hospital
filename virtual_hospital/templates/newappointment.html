@@ -172,9 +172,10 @@
           <select>
             <option value="0">Select car:</option>
             {% for data in time_slot_data %}
-              <option value=i>{{data.appointment_start_time.time()}}</option>
-
-                {% endfor %}
+              {% if current_Datetime < data.appointment_start_time %}
+                <option value=i>{{data.appointment_start_time}}</option>
+              {% endif %}
+            {% endfor %}
 
             <!-- <option value="2">BMW</option>
             <option value="3">Citroen</option>
