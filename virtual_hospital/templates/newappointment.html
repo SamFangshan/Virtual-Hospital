@@ -1,9 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+  .alignLeftNoCaps {
+    text-transform: none;
+    text-align: left;
+  }
+
+  .noMargin {
+    margin: 0;
+  }
+
+  button {
+    display: inline-block;
+    background-color: #FFD166;
+    color: #505F98;
+    border: none;
+    outline: none;
+    float:right;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  .buttonSmallHeight {
+    height: wrap-content;
+    font-size: 14px;
+  }
+</style>
+
 <article id="main">
 <header class="special container">
   <h2 style="color: #505F98"><strong>Book an Appointment</strong></h2>
 </header>
+
+<section class="wrapper style4 special container medium" style="align-content: left">
+    <h3 class="alignLeftNoCaps"><strong>Selected Doctor</strong></h3>
+    <h4 class="alignLeftNoCaps">Dr Beng Yeong Ng</h4>
+  <hr/>
+  <h3 class="alignLeftNoCaps"><strong>Select Appointment Date</strong></h3>
+
+  <div style="float:left">
+    <form action="/appointment_selected.php">
+      <input type="date" id="appointmentDate" name="appointmentDate">
+      <!-- <input type="submit" style="border-radius: 5px" class=" button buttonSmallHeight"> -->
+    </form>
+  </div>
+
+</section>
+</article>
 
 {% endblock %}
