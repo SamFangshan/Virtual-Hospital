@@ -30,17 +30,22 @@
     font-size: 14px;
   }
 
-  .buttonAlignRight {
-    margin-left: auto;
-    margin-right: 0;
-  }
-
   .noBG {
     background-color: #00000000;
     border: 1px solid rgba(55, 68, 126, 0.2);
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
     color: #505F98;
+  }
+
+  .noBorderOutline {
+    outline: 0;
+    border: 0;
+  }
+
+  .buttonAlignLeft {
+    margin-left: 0;
+    margin-right: auto;
   }
 
   .rowAlignLeftRightEdges {
@@ -82,7 +87,7 @@
       </td>
     </table>
     <div class="rowAlignLeftRightEdges topPadding">
-      <button class="noBG buttonSmallHeight" style="outline: 0; border: 0;" onclick='/new-appointment'>< Search Other Doctors</button>
+      <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" onclick='/new-appointment'>< Search Other Doctors</button>
       <button class="buttonSmallHeight" onclick='/new-appointment'>Book an Appointment</button>
     </div>
   </section>
