@@ -3,12 +3,12 @@
 
 <style>
   button {
-    display: inline-block;
+    display: block;
     background-color: #FFD166;
     color: #505F98;
     border: none;
     outline: none;
-    float:right;
+    /* float:right; */
   }
 
   button:hover {
@@ -41,6 +41,29 @@
   .buttonSmallHeight {
     height: wrap-content;
     font-size: 14px;
+  }
+
+  .noBG {
+    background-color: #00000000;
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    color: #505F98;
+  }
+
+  .noBorderOutline {
+    outline: 0;
+    border: 0;
+  }
+
+  .buttonAlignRight {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .buttonAlignLeft {
+    margin-left: 0;
+    margin-right: auto;
   }
 
   table {
@@ -81,7 +104,7 @@
           <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
         </td>
         <td style="vertical-align: bottom; padding: 0">
-          <button class="buttonSmallHeight" style="border-radius: 5px;" onclick='/new-appointment'>Book an Appointment</button>
+          <button class="buttonSmallHeight buttonAlignRight" style="border-radius: 5px;" onclick='/new-appointment'>Book an Appointment</button>
         </td>
       </tr>
     </table>
@@ -92,14 +115,14 @@
         Our department draws upon the strength of a multidisciplinary team combined with evidence-based medicine to ensure that our patients get the best care available. Comprehensive health assessments and treatments are coordinated by psychiatrists, psychologists, our team of experienced nurses, social workers, occupational therapist and others. <br><br>
         We also work with our partners in the community like family doctors, polyclinics and social service organisations so that our patients can get help where it is most convenient and appropriate. We assess and treat our patients based on up-to-date and evidence-based medicine. Our services span both at the clinics at SKH Medical Centre and at the wards in our hospital.
       </p>
-      
+
       <h3 class="alignLeftNoCaps"><strong>Specialties</strong></h3>
       <p class="alignLeftNoCaps">Dr Beng Yeong Ng specializes in providing assistance on handling depression, anxiety attacks, panic attacks, and post-traumatic stress disorders.</p>
 
       <h3 class="alignLeftNoCaps"><strong>Working Hours</strong></h3>
       <p class="alignLeftNoCaps">Daily: 10:00 am - 8:00 pm</p>
 
-      <button class="buttonSmallHeight" style="border-radius: 5px;" onclick='/new-appointment'>Book an Appointment</button>
+      <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" onclick='/new-appointment'>< Search Other Doctors</button>
     </div>
   </section>
 </article>
