@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<style>
+button {
+  color : #505F98;
+  background-color: #FFD166;
+  height: 4vh;
+  border: none;
+  padding: 0px;
+  cursor: pointer;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  margin: 0px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+form, p, span {
+    margin:0;
+    padding:0; }
+
+input { font:12px arial; }
+
+a {
+    color:#0000FF;
+    text-decoration:none; }
+
+    a:hover { text-decoration:underline; }
+
+
+#container {
+    margin: auto;
+    width: 90%;
+    height: 60vh;
+}
+
+#card {
+    width:30%;
+    height:60vh;
+    float:left;
+    background:#ffffff;
+    border:1px solid #ababab;
+    text-align:center;
+
+}
+
+#chatbox{
+    width:65%;
+    float:right;
+    background:#ffffff;
+    border:1px solid #ababab; }
+
+#clear {
+    clear: both;
+}
+
+#chatdisplay {
+    text-align:left;
+    background:#E7ECFF;
+    height:40vh;
+    width:100%
+    overflow:auto;
+}
+
+#usermsg {
+    height:20vh;
+    }
+
+.error { color: #ff0000; }
+</style>
+
+
+<header class="special container" style="width:100%">
+	<h2 style = "color: #505F98;background-color:#E7ECFF"> <strong>Chat Room</strong> </h2>
+    <button style="float:right;margin:8px 5vw;" type="submit" name="submit" value = "Submit">Complete Appointment</button>
+</header>
+
+<div class="content">
+
+    <div id = "container">
+        <div id="card">
+            <image style="border-radius: 50%;margin:50px 0px" src="https://ui-avatars.com/api/?name=Jing&background=3744ce&color=fff" alt="Avatar"></image>
+            <h1 style="text-align:center">Name</h1>
+            <h1 style="text-align:center">Department</h1>
+            <h1 style="text-align:center">Address</h1>
+            <h1 style="text-align:center">Description</h1>
+        </div>
+        <div id="chatbox">
+
+            <div id="chatdisplay">
+            </div>
+
+            <div id="usermsg">
+                <form method="post" action="/chatroom">
+                    <input style="height:16vh; border:0" type="text" placeholder="|" required>
+                    <button style="margin:0;float:right;" type="submit" name = "send" value = "Submit">Send</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="clear"></div>
+    </div>
+
+
+
+</div>
+
+{% endblock %}

@@ -174,6 +174,10 @@ def setprofile():
 
     return render_template('setprofile.html')
 
+@app.route("/chatroom",methods=['Get','Post'])
+def chatroom():
+    return render_template("chatroom.html")
+
 @app.route("/test", methods=['GET', 'POST'])
 def test():
     test_form = TestForm()
