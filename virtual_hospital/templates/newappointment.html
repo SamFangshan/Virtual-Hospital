@@ -56,6 +56,25 @@
   .topPadding {
     padding-top: 50px;
   }
+
+  .user-image {
+    display: block;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    /* margin: 30px 50px 30px 50px; /* top right bottom left*/ */
+  }
+
+  td {
+    vertical-align: top;
+    text-align: left;
+  }
+
+  .columnWidthFitContent
+  {
+    width: 1%;
+    white-space: nowrap;
+  }
 </style>
 
 <script>
@@ -70,8 +89,17 @@
 
   <section class="wrapper style4 special container medium" style="align-content: left">
     <h3 class="alignLeftNoCaps"><strong>Selected Doctor</strong></h3>
-    <h4 class="alignLeftNoCaps noMargin">Dr Beng Yeong Ng</h4>
-    <h4 class="alignLeftNoCaps">Psychiatrist</h4>
+    <table>
+      <tr>
+        <td class="columnWidthFitContent" style="padding-right:50px"><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        <td>
+          <h4 class="alignLeftNoCaps noMargin">Dr Beng Yeong Ng</h4>
+          <h4 class="alignLeftNoCaps noMargin" style="margin-top:10px">Psychiatrist</h4>
+          <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
+        </td>
+      </tr>
+    </table>
+    
     <hr/>
 
     <table>
