@@ -3,7 +3,6 @@ from virtual_hospital import app
 from virtual_hospital.models import *
 from virtual_hospital.forms import *
 from flask_login import login_user, login_required, logout_user, current_user
-
 @app.route('/')
 def index():
     return render_template('index.html', currPage="Home")
@@ -185,5 +184,6 @@ def appointments():
 
 @app.route('/newappointment')
 def newappointment():
-    time_slot_data = AppointmentTimeSlot.query.filter_by().first()
-    return render_template('newappointment.html', currPage='Book an Appointment', time_slot_data = time_slot_data)
+    time_slot_data = AppointmentTimeSlot.query.all()
+    return render_template('newappointment.html', currPage='Book an Appointment',
+    time_slot_data = time_slot_data)
