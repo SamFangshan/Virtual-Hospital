@@ -30,25 +30,44 @@
   }
 </style>
 
+<script>
+  var today = new Date();
+  document.getElementById('dtText').innerHTML=today;
+</script>
+
 <article id="main">
-<header class="special container">
-  <h2 style="color: #505F98"><strong>Book an Appointment</strong></h2>
-</header>
+  <header class="special container">
+    <h2 style="color: #505F98"><strong>Book an Appointment</strong></h2>
+  </header>
 
-<section class="wrapper style4 special container medium" style="align-content: left">
-    <h3 class="alignLeftNoCaps"><strong>Selected Doctor</strong></h3>
-    <h4 class="alignLeftNoCaps">Dr Beng Yeong Ng</h4>
-  <hr/>
-  <h3 class="alignLeftNoCaps"><strong>Select Appointment Date</strong></h3>
+  <section class="wrapper style4 special container medium" style="align-content: left">
+      <h3 class="alignLeftNoCaps"><strong>Selected Doctor</strong></h3>
+      <h4 class="alignLeftNoCaps">Dr Beng Yeong Ng</h4>
+    <hr/>
+    <h3 class="alignLeftNoCaps"><strong>Select Appointment Date</strong></h3>
+    <p id="demo"></p>
+    <div style="float:left">
+      <form action="/appointment_selected.php">
+        <input id="appointmentDate" type="date">
+      </form>
 
-  <div style="float:left">
-    <form action="/appointment_selected.php">
-      <input type="date" id="appointmentDate" name="appointmentDate" min="2020-09-15">
-      <!-- <input type="submit" style="border-radius: 5px" class=" button buttonSmallHeight"> -->
-    </form>
-  </div>
-
-</section>
+    </div>
+  </section>
 </article>
 
+<script>
+  var d = new Date();
+
+  // Build ISO 8601 format date string
+  var s = d.getFullYear() + '-' +
+          ('0' + (d.getMonth()+1)).slice(-2) + '-' +
+          ('0' + d.getDate()).slice(-2);
+
+  // Set the value of the value and min attributes
+  var node = document.querySelector('input');
+  if (node) {
+    node.setAttribute('min', s);
+    node.setAttribute('value', s);
+  }
+</script>
 {% endblock %}
