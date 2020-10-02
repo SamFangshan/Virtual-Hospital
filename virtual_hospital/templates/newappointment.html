@@ -12,12 +12,13 @@
   }
 
   button {
-    display: inline-block;
+    display: block;
     background-color: #FFD166;
     color: #505F98;
     border: none;
     outline: none;
-    float:right;
+    /* float:right; */
+    border-radius: 5px;
   }
 
   button:hover {
@@ -27,6 +28,11 @@
   .buttonSmallHeight {
     height: wrap-content;
     font-size: 14px;
+  }
+
+  .buttonAlignRight {
+    margin-left: auto;
+    margin-right: 0;
   }
 </style>
 
@@ -41,18 +47,24 @@
   </header>
 
   <section class="wrapper style4 special container medium" style="align-content: left">
-      <h3 class="alignLeftNoCaps"><strong>Selected Doctor</strong></h3>
-      <h4 class="alignLeftNoCaps noMargin">Dr Beng Yeong Ng</h4>
-      <h4 class="alignLeftNoCaps">Psychiatrist</h4>
+    <h3 class="alignLeftNoCaps"><strong>Selected Doctor</strong></h3>
+    <h4 class="alignLeftNoCaps noMargin">Dr Beng Yeong Ng</h4>
+    <h4 class="alignLeftNoCaps">Psychiatrist</h4>
     <hr/>
-    <h3 class="alignLeftNoCaps"><strong>Select Appointment Date</strong></h3>
-    <p id="demo"></p>
-    <div style="float:left">
-      <form action="/appointment_selected.php">
-        <input id="appointmentDate" type="date">
-      </form>
 
-    </div>
+    <table>
+      <td>
+        <h3 class="alignLeftNoCaps"><strong>Select Appointment Date</strong></h3>
+        <form action="/appointment_selected.php" style="float:left">
+          <input id="appointmentDate" type="date">
+        </form>
+      </td>
+      <td>
+        <h3 class="alignLeftNoCaps"><strong>Select Appointment Time</strong></h3>
+
+      </td>
+    </table>
+    <button class="buttonSmallHeight buttonAlignRight" onclick='/new-appointment'>Book an Appointment</button>
   </section>
 </article>
 
