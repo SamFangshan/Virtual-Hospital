@@ -166,7 +166,7 @@
       <td>
         <h3 class="alignLeftNoCaps"><strong>Select Appointment Date</strong></h3>
         <form action="/appointment_selected.php" style="float:left">
-          <input id="appointmentDate" type="date" required>
+          <input id="appointmentDate" type="date" onclick="test()" required>
         </form>
       </td>
       <td>
@@ -193,7 +193,7 @@
   </section>
 </article>
 
-<script>
+<script language="JavaScript" type="text/javascript">
   var d = new Date();
 
   // Build ISO 8601 format date string
@@ -207,6 +207,16 @@
     node.setAttribute('min', s);
     node.setAttribute('value', s);
   }
+
+function test() {
+  $('#appointmentDate').change(function () {
+    var date = new Date($('#appointmentDate').val());
+    var s = date.getFullYear() + '-' +
+            ('0' + (date.getMonth()+1)).slice(-2) + '-' +
+            ('0' + date.getDate()).slice(-2);
+    alert([s].join('-'));
+  });
+}
 </script>
 
 <script>
