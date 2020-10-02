@@ -86,6 +86,9 @@
 
   .select-selected {
     background-color: DodgerBlue;
+    border: 3px solid rgba(55, 68, 126, 0.2);
+    border-radius: 5px;
+    color: #505F98;
   }
 
   /*style the arrow inside the select element:*/
@@ -163,17 +166,21 @@
       <td>
         <h3 class="alignLeftNoCaps"><strong>Select Appointment Date</strong></h3>
         <form action="/appointment_selected.php" style="float:left">
-          <input id="appointmentDate" type="date">
+          <input id="appointmentDate" type="date" required>
         </form>
       </td>
       <td>
         <h3 class="alignLeftNoCaps"><strong>Select Appointment Time</strong></h3>
         <div class="custom-select" style="width:200px;">
-          <select>
-            <option value="0">Select Time:</option>
-            {% for data in time_slot_data_today %}
-              <option value=i>{{data.appointment_start_time}}</option>
-            {% endfor %}
+          <select required>
+            <option value="0">Select Time</option>
+            {% if time_slot_data_today|length <= 0 %}
+              <option value=1>Pick another date</option>
+            {% else %}
+              {% for data in time_slot_data_today %}
+                <option value=i>{{data.appointment_start_time}}</option>
+              {% endfor %}
+            {% endif %}
           </select>
         </div>
 
