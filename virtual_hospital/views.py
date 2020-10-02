@@ -180,6 +180,16 @@ def test():
     test_form.validate_on_submit()
     return render_template("test.html", form=test_form)
 
-@app.route('/doctorprofile')
-def doctorprofile():
-    return render_template('doctorprofile.html', currPage="Doctor's Profile")
+@app.route('/profile', methods=['GET'])
+def profile():
+    if request.method == 'GET':
+        id = request.args.get('id')
+        user = User.query.filter_by(id=id).first()
+        if user is None:
+            return render_template("404.html")
+        else:
+            if user.type == 'patient':
+                return render_template('patientprofile.html', user=user, currPage="Patient's Profile")
+            elif user.type == 'doctor':
+                dept = Department.query.filter_by(id=user.department_id).first()
+                return render_template('doctorprofile.html', user=user, dept=dept, currPage="Doctor's Profile")

@@ -91,37 +91,30 @@
 
 <article id="main">
   <header class="special container">
-    <h2 style="color: #505F98"><strong>Doctor's Profile</strong></h2>
+    <h2 style="color: #505F98"><strong>Patient's Profile</strong></h2>
   </header>
 
   <section class="wrapper style4 special container medium" style="align-content: left">
     <table>
       <tr>
-        <td width = '250px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        <td width = '250px'><img class = user-image src="static\images\patient_img.jpg" alt="Doctor's Photo"></td>
         <td>
           <h3 class="alignLeftNoCaps" style='padding-top: 40px'><strong>{{ user.name }}</strong></h3>
-          <h4 class="alignLeftNoCaps noMargin"><strong>Distinguished Doctor</strong></h4>
+          <h4 class="alignLeftNoCaps noMargin"><strong>Patient</strong></h4>
           <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
         </td>
         <td style="vertical-align: bottom; padding: 0">
-          <!-- The button below needs to update with the current doctor's info -->
-          <button class="buttonSmallHeight buttonAlignRight" style="border-radius: 5px;" onclick="document.location.href='/newappointment'">Book an Appointment</button>
         </td>
       </tr>
     </table>
     <hr style="margin-top:50px"/>
     <div class="container">
-      <h3 class="alignLeftNoCaps"><strong>Department of {{ dept.name }}</strong></h3>
-      <p class="alignLeftNoCaps">{{ dept.description }}
-      </p>
-
-      <h3 class="alignLeftNoCaps"><strong>Specialties</strong></h3>
-      <p class="alignLeftNoCaps">{{ user.specialties }}</p>
-
-      <h3 class="alignLeftNoCaps"><strong>Working Hours</strong></h3>
-      <p class="alignLeftNoCaps">Daily: {{ user.office_hour_start_time }} - {{ user.office_hour_end_time }}</p>
-
-      <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" onclick="document.location.href='/searchdoctor'">< Search Other Doctors</button>
+      <h3 class="alignLeftNoCaps"><strong>Personal Information</strong></h3>
+      <p class="alignLeftNoCaps">Gender: {{ user.gender }}</p>
+      <p class="alignLeftNoCaps">Date of Birth: {{ user.date_of_birth }}</p>
+      <h3 class="alignLeftNoCaps"><strong>Contact Details</strong></h3>
+      <p class="alignLeftNoCaps">Email: {{ user.email }}</p>
+      <p class="alignLeftNoCaps">Phone: {{ user.phone_number }}</p>
     </div>
   </section>
 </article>
