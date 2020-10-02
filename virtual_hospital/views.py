@@ -183,3 +183,7 @@ def test():
 @app.route('/appointments')
 def appointments():
     return render_template('appointments.html', currPage='Appointments')
+
+@app.route('/newappointment')
+def newappointment():
+    return render_template('newappointment.html', currPage='Book an Appointment')
