@@ -3,6 +3,12 @@
 
 {% block content %}
 <style>
+br {
+   display: block;
+   margin: 10px 0;
+   line-height:10px;
+}
+
 button {
   color : #505F98;
   background-color: #FFD166;
@@ -94,11 +100,12 @@ a {
         <div id="chatbox">
 
             <div id="chatdisplay">
+                <div class="message_holder"></div>
             </div>
 
             <div id="usermsg">
                 <form method="post" action="/chatroom">
-                    <input style="height:16vh; border:0" type="text" placeholder="|" required>
+                    <input style="height:16vh; border:0" type="text" class="inputmsg" placeholder="|" required>
                     <button style="margin:0;float:right;" type="submit" name = "send" value = "Submit">Send</button>
                 </form>
             </div>
@@ -106,9 +113,31 @@ a {
 
         <div id="clear"></div>
     </div>
-
-
-
 </div>
 
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+    <script type="text/javascript">
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+      socket.on( 'connect', function() {
+        socket.emit( 'my event', {
+          data: 'User Connected'
+        } )
+        var form = $( 'form' ).on( 'submit', function( e ) {
+          e.preventDefault()
+          let user_input = $( 'input.inputmsg' ).val()
+          socket.emit( 'my event', {
+            message : user_input
+          } )
+          $( 'input.message' ).val( '' ).focus()
+        } )
+      } )
+      socket.on( 'my response', function( msg ) {
+        console.log( msg )
+        $( 'div.message_holder' ).append( '<div style="float:right"><span style="color:#33343A;background-color:#CED3E8">'+msg.message+
+        '</span><image style="border-radius:50%;" src="https://ui-avatars.com/api/?name=Jing&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image></div><br>' )
+      })
+    </script>
 {% endblock %}

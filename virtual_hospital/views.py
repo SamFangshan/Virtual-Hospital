@@ -3,7 +3,16 @@ from virtual_hospital import app
 from virtual_hospital.models import *
 from virtual_hospital.forms import *
 from flask_login import login_user, login_required, logout_user, current_user
+from flask_socketio import SocketIO
 
+socketio = SocketIO(app)
+
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)
 
 @app.route('/')
 def index():
