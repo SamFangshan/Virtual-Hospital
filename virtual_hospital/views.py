@@ -179,3 +179,7 @@ def test():
     test_form = TestForm()
     test_form.validate_on_submit()
     return render_template("test.html", form=test_form)
+
+@app.route('/doctorprofile')
+def doctorprofile():
+    return render_template('doctorprofile.html', currPage="Doctor's Profile")
