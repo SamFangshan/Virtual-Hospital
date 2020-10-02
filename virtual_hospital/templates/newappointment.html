@@ -167,28 +167,13 @@
         </form>
       </td>
       <td>
-        <h3 class="alignLeftNoCaps"><strong>Select Appointment Time {{time_slot_data|length}}</strong></h3>
+        <h3 class="alignLeftNoCaps"><strong>Select Appointment Time</strong></h3>
         <div class="custom-select" style="width:200px;">
           <select>
-            <option value="0">Select car:</option>
-            {% for data in time_slot_data %}
-              {% if ((current_Datetime < data.appointment_start_time) and (data.number_of_vacancies > 0)
-                    and (current_Datetime.date() == data.appointment_start_time.date())) %}
-                <option value=i>{{data.appointment_start_time}}</option>
-              {% endif %}
+            <option value="0">Select Time:</option>
+            {% for data in time_slot_data_today %}
+              <option value=i>{{data.appointment_start_time}}</option>
             {% endfor %}
-
-            <!-- <option value="2">BMW</option>
-            <option value="3">Citroen</option>
-            <option value="4">Ford</option>
-            <option value="5">Honda</option>
-            <option value="6">Jaguar</option>
-            <option value="7">Land Rover</option>s
-            <option value="8">Mercedes</option>
-            <option value="9">Mini</option>
-            <option value="10">Nissan</option>
-            <option value="11">Toyota</option>
-            <option value="12">Volvo</option> -->
           </select>
         </div>
 
