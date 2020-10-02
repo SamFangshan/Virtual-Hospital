@@ -2,92 +2,76 @@
 
 {% block content %}
 <style>
-.content {
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-}
+
 .submit {
   width: 321px;
   height: 46px;
   background: url("{{ url_for('static', filename='assets/css/images/v58_1.png') }}");
 }
-.prescription {
-  width: 100%;
-  margin-top: 10px 0;
-  vertical-align: middle;
-}
-.total {
-  width: 266px;
-  height: 62px;
-}
+
 .total_price {
-  width: 69px;
+  width: 50%
+  float: left;
   color: rgba(55,68,126,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
 }
 .total_text {
-  width: 105px;
+  width: 50%
+  float: left;
   color: rgba(111,124,178,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
 }
 .drug {
-  width: 688px;
   height: 24px;
 }
 .drug_name {
-  width: 148px;
+  width: 30%;
   color: rgba(55,68,126,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
+  float: left;
 }
 .drug_price {
-  width: 57px;
+  width: 30%;
   color: rgba(55,68,126,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
+  float: left;
 }
 .drug_columns {
-  width: 959px;
   height: 28px;
 }
 .drug_name_column {
-  width: 111px;
+  width: 30%;
   color: rgba(111,124,178,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
+  float: left;
 }
 .drug_price_column {
-  width: 51px;
+  width: 30%;
   color: rgba(111,124,178,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
+  float: left;
 }
 .prescriptions_text {
-  width: 217px;
+  width: 30%;
   color: rgba(9,17,51,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
+  float: left;
 }
 .prescriptions_title {
-  width: 100%;
   background: url("./images/v57_570.png");
   border: 0.6000000238418579px solid rgba(186,195,229,1);
 }
@@ -105,42 +89,38 @@
   padding-top: 50px;
 }
 .doctor {
-  width: 456px;
   height: 60px;
 }
 .doctor_text {
-  width: 126px;
+    width: 30%;
   color: rgba(9,17,51,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
+  float:left;
 }
 .doctor_name {
-  width: 179px;
+  width: 30%;
   color: rgba(55,68,126,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
-  padding-left: 20px;
+  float:left;
 }
 .department_name {
-  width: 117px;
+    width: 30%;
   color: rgba(111,124,178,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 22px;
-  text-align: left;
+  float:left;
   display: inline;
 }
 .appointment_info {
-  width: 100%;
   background: url("./images/v57_518.png");
   border: 0.6000000238418579px solid rgba(186,195,229,1);
 }
 .appointment_info_text {
-  width: 323px;
   color: rgba(9,17,51,1);
   font-family: Roboto;
   font-weight: Medium;
@@ -148,10 +128,8 @@
   text-align: left;
 }
 .get_prescription {
-  width: 100%;
-  height: 100px;
   position: relative;
-  left: 50%;
+  text-align: center;
 }
 .get_prescription_title {
   width: 100%;
@@ -159,38 +137,53 @@
   background: rgba(231,236,255,0.30000001192092896);
 }
 .get_prescription_title_text {
-  width: 100%;
   color: rgba(9,17,51,1);
   font-family: Roboto;
   font-weight: Medium;
   font-size: 36px;
-  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>
-
+<article id="main">
+<section class="wrapper style4 special container medium">
 <div class="content">
   <div class="get_prescription">
-    <div class="get_prescription_title"></div><span class="get_prescription_title_text">Get Prescription</span>
+    <div class="get_prescription_title"></div>
+    <div class="get_prescription_title_text">Get Prescription</div>
   </div>
 
   <div class="appointment">
-    <div class="appointment_info"></div><span class="appointment_info_text">Appointment Information</span>
-    <div class="doctor"><span class="doctor_text">Doctor</span><span class="doctor_name">{{ doctor.name }}</span><span class="department_name">{{ department.name }}</span></div>
+    <div class="appointment_info"></div><span class="appointment_info_text">Appointment Information</span><br><br>
+    <div class="doctor"><span class="doctor_text">Doctor</span>
+      <span class="doctor_name">{{ doctor.name }}</span>
+      <span class="department_name">{{ department.name }}</span></div>
   </div>
 
-  <div class="prescriptions_title"></div><span class="prescriptions_title_text">Prescriptions</span>
-  <div class="prescription">
-    <div class="drug_columns"><span class="drug_name_column">Drug Name</span><span class="drug_price_column">Price</span><span class="prescriptions_text">Prescriptions</span></div>
+  <div class="prescriptions_title"></div><span class="prescriptions_title_text">Prescriptions</span><br><br>
+  <div class="prescription" style="width:100%;float:left">
+  <span class="drug_name_column">Drug Name</span><span class="drug_price_column">Price</span></div>
+  <span class="drug_name"">
     {% for drug in drugs %}
-      <div class="drug"><span class="drug_name">{{ drug.name }}</span><span class="drug_price">${{ '{0:.2f}'.format(drug.price) }}</span></div>
-    {% endfor %}
-    <div class="total"><span class="total_price">${{ '{0:.2f}'.format(total_price) }}</span><span class="total_text">Total Price</span>
-    </div>
+      {{ drug.name }} <br>
+    {% endfor %}</span>
+  <span class="drug_price">
+    {% for drug in drugs %}
+      ${{ '{0:.2f}'.format(drug.price) }} <br>
+    {% endfor %}</span>
   </div>
+  {% for drug in drugs %}
+    <br><br>
+  {% endfor %}
 
+  <div style="width:100%;float:left;">
   <form action="/checkout" method="post">
     <input type="hidden" name="amount" value="{{ total_price }}"/>
     <button class="submit" type="submit" name = "submit" value = "Submit"></button>
   </form>
-</div>
+  </div>
+</section>
+</article>
 {% endblock %}
