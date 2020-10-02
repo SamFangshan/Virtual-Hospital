@@ -2,6 +2,18 @@
 {% block content %}
 
 <style>
+  button {
+    display: inline-block;
+    background-color: #FFD166;
+    color: #505F98;
+    border: none;
+    outline: none;
+    float:right;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
   h3.header {
     text-transform:none;
     display: inline-block;
@@ -16,6 +28,32 @@
   .noMargin {
     margin: 0;
   }
+
+  .user-image {
+    display: block;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    /* margin: 30px 50px 30px 50px; /* top right bottom left*/ */
+  }
+
+  .buttonSmallHeight {
+    height: wrap-content;
+    font-size: 14px;
+  }
+
+  table {
+    padding: 0;
+    margin: 0;
+    table-layout: auto;
+    cellspacing: 0;
+    cellpadding: 0;
+  }
+
+  td {
+    vertical-align: top;
+    text-align: left;
+  }
 </style>
 
 <article id="main">
@@ -24,9 +62,20 @@
   </header>
 
   <section class="wrapper style4 special container medium" style="align-content: left">
-    <h3 class="alignLeftNoCaps" style="font-weight:600;">Dr Beng Yeong Ng</h3>
-    <h4 class="alignLeftNoCaps noMargin">Psychiatrist</h4>
-    <h4 class="alignLeftNoCaps noMargin" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
+    <table>
+      <tr>
+        <td width = '250px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        <td>
+          <h3 class="alignLeftNoCaps" style='padding-top: 40px'><strong>Dr Beng Yeong Ng</strong></h3>
+          <h4 class="alignLeftNoCaps noMargin"><strong>Psychiatrist</strong></h4>
+          <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
+        </td>
+        <td style="vertical-align: bottom; padding: 0">
+          <button class="buttonSmallHeight" style="border-radius: 5px;" onclick='/new-appointment'>Book an Appointment</button>
+        </td>
+      </tr>
+    </table>
+    
 
   </section>
 </article>
