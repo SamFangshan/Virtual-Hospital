@@ -172,7 +172,8 @@
           <select>
             <option value="0">Select car:</option>
             {% for data in time_slot_data %}
-              {% if current_Datetime < data.appointment_start_time %}
+              {% if ((current_Datetime < data.appointment_start_time) and (data.number_of_vacancies > 0)
+                    and (current_Datetime.date() == data.appointment_start_time.date())) %}
                 <option value=i>{{data.appointment_start_time}}</option>
               {% endif %}
             {% endfor %}
