@@ -74,6 +74,10 @@ a {
     overflow:auto;
 }
 
+.message_holder{
+    overflow:auto;
+}
+
 #usermsg {
     height:20vh;
     }
@@ -100,14 +104,11 @@ a {
         </div>
         <div id="chatbox">
 
-            <div id="chatdisplay">
-                <div class="message_holder"></div>
-            </div>
+            <div id="chatdisplay" class="message_holder"></div>
 
             <div id="usermsg">
                 <form method="post" action="/chatroom">
                     <input style="height:16vh; border:0" type="text" class="inputmsg" id="inputmsg" placeholder="|" required>
-                    <input style="display:none" id="user_name" value="{{ current_user.name }}">
                     <button style="margin:0;float:right;" type="submit" name = "send" value = "Submit">Send</button>
                 </form>
             </div>
