@@ -185,11 +185,12 @@ def appointments():
     if request.method == 'GET':
         id = request.args.get('id')
         user = User.query.filter_by(id=id).first()
+        apptTimeSlot = AppointmentTimeSlot.query.filter_by(id=id).first()    
 
         if user is None:
             return render_template("errors/404.html")
         else:
-            return render_template('appointments.html', currPage='Appointments', user=user)
+            return render_template('appointments.html', currPage='Appointments', user=user, apptTimeSlot=apptTimeSlot)
 
 @app.route('/newappointment', methods=['GET'])
 def newappointment():
