@@ -109,25 +109,26 @@
 
 
   <h3 class="header" style="padding-top: 80px; margin: 0">Future Appointments</h3>
-
-  <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
-    <h1 class='BGcolor'>07 September 2020, 14:30</h1>
-    <table>
-      <tr>
-        <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
-        <td>
-          <h3 style='text-transform: none; padding-top: 40px'><strong>Dr Beng Yeong Ng</strong></h3>
-          <h4 style='text-transform: none; margin: 0px'><strong>Psychiatrist</strong></h4>
-          <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
-        </td>
-        <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-          <button class = "buttonSmallHeight" style="border-top-right-radius: 5px; border-bottom-right-radius: 5px;" onclick="document.location.href='/doctorprofile'">View Profile & Ratings</button>
-          <!-- prompt confirmation first? -->
-          <button class="noBG buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
-        </td>
-      </tr>
-    </table>
-  </div>
+  {% for appt in futureAppt %}
+    <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
+      <h1 class='BGcolor'>{{ appt.appointment_start_time }}</h1>
+      <table>
+        <tr>
+          <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+          <td>
+            <h3 style='text-transform: none; padding-top: 40px'><strong>{{ user.name }}</strong></h3>
+            <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+            <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
+          </td>
+          <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
+            <button class = "buttonSmallHeight" style="border-top-right-radius: 5px; border-bottom-right-radius: 5px;" onclick="document.location.href='/doctorprofile'">View Profile & Ratings</button>
+            <!-- prompt confirmation first? -->
+            <button class="noBG buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  {% endfor %}
 
   <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
     <h1 class='BGcolor'>07 September 2020, 14:30</h1>
