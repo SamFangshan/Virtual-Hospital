@@ -3,7 +3,7 @@ from virtual_hospital import app
 from virtual_hospital.models import *
 from virtual_hospital.forms import *
 from flask_login import login_user, login_required, logout_user, current_user
-import datetime
+from datetime import datetime, timedelta
 
 @app.route('/')
 def index():
@@ -185,12 +185,27 @@ def appointments():
     if request.method == 'GET':
         id = request.args.get('id')
         user = User.query.filter_by(id=id).first()
-        apptTimeSlot = AppointmentTimeSlot.query.filter_by(id=id).first()    
+        apptTimeSlot = AppointmentTimeSlot.query.filter_by(doctor_id=id).all()
+
+        canEnterChat = []
+        todayAppt = []
+        futureAppt = []
+
+        # today's appts
+        for appt in apptTimeSlot:
+            if (datetime.now().date() == appt.appointment_start_time.date()):
+                todayAppt.append(appt)
+
+            if (datetime.now() >= appt.appointment_start_time) and (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15))): # if within 15 minutes of appointment_start_time
+                canEnterChat.append(appt)
+
+            if(datetime.now().date() < appt.appointment_start_time.date()):
+                futureAppt.append(appt)
 
         if user is None:
             return render_template("errors/404.html")
         else:
-            return render_template('appointments.html', currPage='Appointments', user=user, apptTimeSlot=apptTimeSlot)
+            return render_template('appointments.html', currPage='Appointments', user=user, todayAppt=todayAppt, canEnterChat=canEnterChat, futureAppt=futureAppt)
 
 @app.route('/newappointment', methods=['GET'])
 def newappointment():

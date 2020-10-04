@@ -86,8 +86,9 @@
   <h3 class="header">Today's Appointments</h3>
   <button onclick="document.location.href='/searchdoctor'" style="float: right; border-radius: 5px">Make a New Appointment</button>
 
+  {% for appt in todayAppt %}
   <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
-    <h1 class='BGcolor'>{{ apptTimeSlot.appointment_start_time }}</h1>
+    <h1 class='BGcolor'>{{ appt.appointment_start_time }}</h1>
     <table>
       <tr>
         <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
@@ -104,6 +105,8 @@
       </tr>
     </table>
   </div>
+  {% endfor %}
+
 
   <h3 class="header" style="padding-top: 80px; margin: 0">Future Appointments</h3>
 
