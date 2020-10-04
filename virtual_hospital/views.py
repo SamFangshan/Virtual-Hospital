@@ -180,18 +180,18 @@ def test():
     test_form.validate_on_submit()
     return render_template("test.html", form=test_form)
 
-@app.route('/appointments')
+@app.route('/appointments', methods=['GET'])
 def appointments():
     if request.method == 'GET':
         id = request.args.get('id')
         user = User.query.filter_by(id=id).first()
-        print(user)
+
         if user is None:
             return render_template("errors/404.html")
         else:
             return render_template('appointments.html', currPage='Appointments')
 
-@app.route('/newappointment')
+@app.route('/newappointment', methods=['GET'])
 def newappointment():
     if request.method == 'GET':
         id = request.args.get('id')
