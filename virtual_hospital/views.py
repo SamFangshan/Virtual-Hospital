@@ -190,6 +190,6 @@ def profile():
         else:
             if user.type == 'patient':
                 return render_template('patientprofile.html', user=user, currPage="Patient's Profile")
-            elif user.type == 'doctor':
-                dept = Department.query.filter_by(id=user.department_id).first()
-                return render_template('doctorprofile.html', user=user, dept=dept, currPage="Doctor's Profile")
+            
+        dept = Department.query.filter_by(id=user.department_id).first()
+        return render_template('doctorprofile.html', user=user, dept=dept, currPage="Doctor's Profile")
