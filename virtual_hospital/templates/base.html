@@ -31,13 +31,13 @@
 					<li><a href="/about">About Us</a></li>
 				{% endif %}
 
-        {% if currPage == "Appointments" %}
-					<li class="current"><a href="/appointments">Appointments</a></li>
-				{% else %}
-					<li><a href="/appointments">Appointments</a></li>
-				{% endif %}
-
 				{% if current_user.is_authenticated %}
+          {% if currPage == "Appointments" %}
+            <li class="current"><a href="/appointments">Appointments</a></li>
+          {% else %}
+            <li><a href="/appointments">Appointments</a></li>
+          {% endif %}
+
           <li class="submenu"> <!-- Note: Submenu can be nested twice -->
             <a href="#"> {{ current_user.name }} </a>
             <ul>
