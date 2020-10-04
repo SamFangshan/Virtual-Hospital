@@ -178,7 +178,7 @@
               <option value=1>Pick another date</option>
             {% else %}
               {% for data in time_slot_data_today %}
-                <option value=i>{{data.appointment_start_time}}</option>
+                <option value=i>{{data.appointment_start_time.time()}}</option>
               {% endfor %}
             {% endif %}
           </select>
