@@ -183,7 +183,7 @@ def test():
 @app.route('/appointments', methods=['GET'])
 def appointments():
     if request.method == 'GET':
-        id = current_user.id
+        id = request.args.get('id')
         user = User.query.filter_by(id=id).first()
 
         if user is None:
@@ -194,7 +194,7 @@ def appointments():
 @app.route('/newappointment', methods=['GET'])
 def newappointment():
     if request.method == 'GET':
-        id = current_user.id
+        id = request.args.get('id')
         user = User.query.filter_by(id=id).first()
 
         if user is None:
