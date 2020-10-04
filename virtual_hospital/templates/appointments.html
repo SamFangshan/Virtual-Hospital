@@ -30,6 +30,12 @@
     border-bottom-left-radius: 5px;
   }
 
+  .rightBorderRadius5px {
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+
   .fullBorderRadius5px {
     border: 1px solid rgba(55, 68, 126, 0.2);
     border-radius: 5px;
@@ -132,9 +138,9 @@
             <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
           </td>
           <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-            <button class = "buttonSmallHeight" style="border-top-right-radius: 5px; border-bottom-right-radius: 5px;" onclick="document.location.href='/doctorprofile'">View Profile & Ratings</button>
+            <button class="rightBorderRadius5px buttonSmallHeight" onclick="document.location.href='/doctorprofile'">View Profile & Ratings</button>
             <!-- prompt confirmation first? -->
-            <button class="noBG buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
+            <button class="noBG leftBorderRadius5px buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
           </td>
         </tr>
       </table>
