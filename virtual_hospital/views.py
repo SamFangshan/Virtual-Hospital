@@ -189,7 +189,7 @@ def appointments():
         if user is None:
             return render_template("errors/404.html")
         else:
-            return render_template('appointments.html', currPage='Appointments')
+            return render_template('appointments.html', currPage='Appointments', user=user)
 
 @app.route('/newappointment', methods=['GET'])
 def newappointment():
