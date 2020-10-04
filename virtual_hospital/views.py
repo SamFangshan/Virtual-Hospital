@@ -191,7 +191,6 @@ def appointments():
         todayAppt = []
         futureAppt = []
 
-        # today's appts
         for appt in apptTimeSlot:
             if (datetime.now().date() == appt.appointment_start_time.date()):
                 todayAppt.append(appt)
@@ -219,10 +218,10 @@ def newappointment():
         else:
             time_slot_data_today = []
             time_slot_data = AppointmentTimeSlot.query.all()
-            current_Datetime = datetime.datetime.now()
+            current_Datetime = datetime.now()
 
             for data in time_slot_data:
                 if (current_Datetime < data.appointment_start_time) and (data.number_of_vacancies > 0) and (current_Datetime.date() == data.appointment_start_time.date()):
                     time_slot_data_today.append(data)
 
-            return render_template('newappointment.html', currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+            return render_template('newappointment.html', currPage='Book an Appointment', user=user, time_slot_data_today = time_slot_data_today)
