@@ -8,6 +8,8 @@ COPY .flaskenv ./
 COPY wsgi.py ./
 COPY entrypoint.sh ./
 
+RUN apt-get update
+RUN apt-get -y install cron
 RUN apt-get -y install libpq-dev
 RUN pip install -r requirements.txt --quiet
 
