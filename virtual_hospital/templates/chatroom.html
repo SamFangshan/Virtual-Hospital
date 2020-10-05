@@ -170,19 +170,21 @@ a {
 
 
       socket.on('send-image', function(data){
-        var messageContainer = document.getElementById('image-container');
+        console.log( str(data.image) )
         var img = new Image();
         var str = String.fromCharCode.apply(null, new Uint8Array(data.image.binary));
         img.src = 'data:image/jpg;base64,' + btoa(str);
+        var source = btoa(str);
         img.style.width = '100%';
-        messageContainer.appendChild(img)
         if (data.user_name !== '{{current_user.name}}')
         {
-            $( 'div.message_holder' ).append('<div style="float:left">image</div>')
+            $( 'div.message_holder' ).append('<div style="float:left"><image style="border-radius:50%;" src="https://ui-avatars.com/api/?name='+data.user_name+
+            '&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image><image src = "data:image/jpg;base64,'+source+'"></image></div><br><br>')
         }
         else
         {
-            $( 'div.message_holder' ).append('<div style="float:right">image</div>')
+            $( 'div.message_holder' ).append('<div style="float:right"><image src = "data:image/jpg;base64,'+source+'"></image><image style="border-radius:50%;" src="https://ui-avatars.com/api/?name='+data.user_name+
+            '&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image></div><br><br>')
         }
 
       })
