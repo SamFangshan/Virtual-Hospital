@@ -2,6 +2,14 @@
 {% block content %}
 
 <style>
+  .error {
+    color:red;
+    text_indent:15px;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-size:15px;
+  }
+  
   .alignLeftNoCaps {
     text-transform: none;
     text-align: left;
@@ -155,8 +163,8 @@
       <tr>
         <td class="columnWidthFitContent" style="padding-right:50px"><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
         <td>
-          <h4 class="alignLeftNoCaps noMargin">Dr Beng Yeong Ng</h4>
-          <h4 class="alignLeftNoCaps noMargin" style="margin-top:10px">Psychiatrist</h4>
+          <h4 class="alignLeftNoCaps noMargin">{{ doctor.name }}</h4>
+          <h4 class="alignLeftNoCaps noMargin" style="margin-top:10px">Distinguished Doctor</h4>
           <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
         </td>
       </tr>
@@ -170,26 +178,31 @@
         </form>
       </td>
       <td>
+        <form method="POST">
+        <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
         <h3 class="alignLeftNoCaps"><strong>Select Appointment Time</strong></h3>
         <div class="custom-select" style="width:200px;">
-          <select required>
+          <select name="appointment_time_slot_id" required>
             <option value="0">Select Time</option>
             {% if time_slot_data_today|length <= 0 %}
-              <option value=1>Pick another date</option>
+              <option value="0">Pick another date</option>
             {% else %}
               {% for data in time_slot_data_today %}
-                <option value=i>{{data.appointment_start_time.time()}}</option>
+                <option value="{{ data.id }}">{{data.appointment_start_time.time()}}</option>
               {% endfor %}
             {% endif %}
           </select>
         </div>
-
+        <div class="rowAlignLeftRightEdges topPadding">
+          <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" onclick="document.location.href='/about'">< Search Other Doctors</button>
+          <button class="buttonSmallHeight" type="submit" name="submit" value="Submit">Book an Appointment</button>
+        </div>
+        </form>
+        {% if error %}
+            <p class=error><strong>Error:</strong> {{ error }}
+        {% endif %}
       </td>
     </table>
-    <div class="rowAlignLeftRightEdges topPadding">
-      <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" onclick="document.location.href='/about'">< Search Other Doctors</button>
-      <button class="buttonSmallHeight" onclick="document.location.href='/newappointment'">Book an Appointment</button>
-    </div>
   </section>
 </article>
 

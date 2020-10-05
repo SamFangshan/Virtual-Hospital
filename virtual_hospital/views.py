@@ -181,6 +181,7 @@ def test():
     return render_template("test.html", form=test_form)
 
 @app.route('/appointments', methods=['GET'])
+@login_required
 def appointments():
     if request.method == 'GET':
         id = request.args.get('id')
@@ -206,17 +207,41 @@ def appointments():
         else:
             return render_template('appointments.html', currPage='Appointments', user=user, todayAppt=todayAppt, canEnterChat=canEnterChat, futureAppt=futureAppt)
 
-@app.route('/newappointment', methods=['GET'])
+@app.route('/newappointment', methods=['POST', 'GET'])
+@login_required
 def newappointment():
+    doctor_id = request.args.get('doctor_id')
+    doctor = User.query.filter_by(id=doctor_id).first()
+    if doctor is None:
+        return render_template("errors/404.html")
+
     time_slot_data_today = []
-    time_slot_data = AppointmentTimeSlot.query.all()
+    time_slot_data = AppointmentTimeSlot.query.filter_by(doctor_id=doctor_id).all()
     current_Datetime = datetime.now()
 
     for data in time_slot_data:
         if (current_Datetime < data.appointment_start_time) and (data.number_of_vacancies > 0) and (current_Datetime.date() == data.appointment_start_time.date()):
             time_slot_data_today.append(data)
 
-    return render_template('newappointment.html', currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+    if request.method == 'GET':
+        return render_template('newappointment.html', error=None, doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+
+    elif request.method == 'POST':
+        appointment_time_slot_id = request.form['appointment_time_slot_id']
+        doctor_id = request.form['doctor_id']
+        if appointment_time_slot_id == "0":
+            return render_template('newappointment.html', error="Invalid selections! Please try again.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+        else:
+            appointmentSlot = AppointmentTimeSlot.query.filter_by(id=appointment_time_slot_id).first()
+            appointmentCount = Appointment.query.filter_by(appointment_time_slot_id=appointment_time_slot_id).count()
+            if appointmentCount < appointmentSlot.number_of_vacancies:
+                apt = Appointment(patient_id=current_user.id, status="Scheduled", queue_number=(appointmentCount+1), appointment_time_slot_id=appointment_time_slot_id)
+                db.session.add(apt)
+                db.session.commit()
+                flash('Appointment booked.', 'info')
+                return redirect(url_for('appointments'))
+            else:
+                return render_template('newappointment.html', error="Sorry, this timeslot has been fully booked.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
 
 @app.route('/profile', methods=['GET'])
 @login_required
@@ -225,7 +250,7 @@ def profile():
         id = request.args.get('id')
         user = User.query.filter_by(id=id).first()
         if user is None:
-            return render_template("404.html")
+            return render_template("errors/404.html")
         else:
             if user.type == 'patient':
                 if current_user.type == 'doctor' or current_user.id == user.id:
