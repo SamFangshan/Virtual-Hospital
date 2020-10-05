@@ -3,7 +3,6 @@ from virtual_hospital import app
 from virtual_hospital.models import *
 from virtual_hospital.forms import *
 from flask_login import login_user, login_required, logout_user, current_user
-from wtforms import SelectField
 
 
 @app.route('/')
@@ -231,4 +230,3 @@ def profile():
 
         dept = Department.query.filter_by(id=user.department_id).first()
         return render_template('doctorprofile.html', user=user, dept=dept, currPage="Doctor's Profile")
-
