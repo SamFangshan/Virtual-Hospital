@@ -17,6 +17,7 @@ button {
   padding: 0px;
   cursor: pointer;
   text-align: center;
+  line-height: 1em;
 }
 
 input {
@@ -86,8 +87,8 @@ a {
 }
 
 #usermsg {
-    height:18vh;
-    }
+    height:16vh;
+}
 
 .error { color: #ff0000; }
 </style>
@@ -115,21 +116,20 @@ a {
 
             <div id="uploadimage">
                 <input type="file" id="files" accept="image/*" />
-                <script>
-                    document.getElementById('files').addEventListener('change', handleFileSelect, false);
-                </script>
             </div>
             <div id="usermsg">
                 <form method="post" action="/chatroom">
-                    <output id="filesInfo"></output>
+                    <!--output id="filesInfo"></output-->
                     <input style="height:16vh; border:0" type="text" class="inputmsg" id="inputmsg" placeholder="|" required>
-                    <button style="margin:0;float:right;" type="submit" name = "send" value = "Submit">Send</button>
+                    <button style="margin:0;float:right;height:2vh;" type="submit" name = "send" value = "Submit">Send</button>
                 </form>
             </div>
         </div>
 
         <div id="clear"></div>
     </div>
+
+    <div id="image-container"></div>
 </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -141,7 +141,7 @@ a {
         socket.emit( 'my event', {
           data: 'User Connected'
         } )
-      var form = $( 'form' ).on( 'submit', function( e ) {
+        var form = $( 'form' ).on( 'submit', function( e ) {
           e.preventDefault()
           let user_name  = '{{ current_user.name }}'
           let user_input = $( 'input.inputmsg' ).val()
@@ -150,8 +150,43 @@ a {
             message : user_input
           } )
           $( 'input.message' ).val( '' ).focus()
+
         } )
       } )
+
+      document.getElementById('files').addEventListener('change', function() {
+          let user_name  = '{{ current_user.name }}'
+          const reader = new FileReader();
+          reader.onload = function() {
+             const bytes = new Uint8Array(this.result);
+             socket.emit('image-upload',
+             {
+               user_name : user_name,
+               image : bytes
+             })
+          };
+          reader.readAsArrayBuffer(this.files[0]);
+      },false);
+
+
+      socket.on('send-image', function(data){
+        var messageContainer = document.getElementById('image-container');
+        var img = new Image();
+        var str = String.fromCharCode.apply(null, new Uint8Array(data.image.binary));
+        img.src = 'data:image/jpg;base64,' + btoa(str);
+        img.style.width = '100%';
+        messageContainer.appendChild(img)
+        if (data.user_name !== '{{current_user.name}}')
+        {
+            $( 'div.message_holder' ).append('<div style="float:left">image</div>')
+        }
+        else
+        {
+            $( 'div.message_holder' ).append('<div style="float:right">image</div>')
+        }
+
+      })
+
       socket.on( 'my response', function( msg ) {
         console.log( msg )
         if( typeof msg.message !== 'undefined' ) {
@@ -169,6 +204,8 @@ a {
             }
         }
       })
+
+
     </script>
 
     <!-- Image processing:preview of image -->
@@ -200,42 +237,6 @@ a {
         }
     }
     document.getElementById('files').addEventListener('change', fileSelect, false);
-    </script>
-
-
-    <!-- Image processing: transforms images to fixed-length binary buffer -->
-    <script>
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
-    function handleFileSelect(ele){
-        var file = ele.target.files[0];
-        var fileReader = new FileReader();
-        fileReader.readAsArrayBuffer(file);
-        fileReader.onload = () => {
-            var arrayBuffer = fileReader.result;
-            socketControl.uploadImage({
-                name: file.name,
-                type: file.type,
-                size: file.size,
-                binary: arrayBuffer
-             });
-         }
-        }
-
-    socket.on("send-image", function(data){
-        console.log( data )
-        appendImageMessage(data)
-    })
-
-    function appendImageMessage(data) {
-        $( 'div.message_holder' ).appendChild(createImageMessageDOM(data))
-    }
-
-    function createImageMessageDOM(data) {
-        var img = document.createElement("img");
-        var str = String.fromCharCode.apply(null, new Uint8Array(data.binary));
-        img.src = 'data:image/jpg;base64,' + btoa(str);
-        img.style.width = '100%';
-    }
     </script>
 
 

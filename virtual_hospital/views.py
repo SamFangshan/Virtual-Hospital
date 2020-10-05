@@ -9,13 +9,27 @@ socketio = SocketIO(app)
 
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
+
+
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
     print('received my event: ' + str(json))
     socketio.emit('my response', json, callback=messageReceived)
+
+
 @socketio.on('image-upload')
-def imageUpload(image):
-    emit('send-image', image, broadcast = True)
+def imageUpload(json):
+    print('image received')
+    socketio.emit('send-image', json)
+
+
+@socketio.on('connect')
+def connected():
+    print('connect')
+@socketio.on('disconnect')
+def disconnect():
+    print('disconnect')
+
 
 @app.route('/')
 def index():
