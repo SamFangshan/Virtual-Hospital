@@ -10,8 +10,8 @@ def test_login_injection_1(test_client):
 def test_login_injection_2(test_client):
     payload = {"email": "test_user@gmail.com';--", "password": "password"}
     response = test_client.post("/login", data=payload, follow_redirects=True)
-    assert response.status_code == 401
-    assert b'Wrong password' in response.data
+    assert response.status_code == 404
+    assert b'User does not exist' in response.data
 
 def test_login_injection_3(test_client):
     payload = {"email": "\" OR TRUE;--", "password": "password"}
@@ -63,11 +63,12 @@ def test_sign_up_injection_3(test_client):
     assert user.name == "injector"
     assert user.password == "'; SELECT * from users;--"
 
+
 ##def test_sign_up_existing_email(test_client):
 ##    assert User.query.filter_by(name="test_user").count() == 1
 ##    existing_user = User.query.filter_by(name="test_user").first()
 ##    payload = {
-##        "email": existing_user.email, 
+##        "email": existing_user.email,
 ##        "name": "test_user2",
 ##        "password": "ABcd_123",
 ##        "password_confirmed": "ABcd_123",
@@ -75,12 +76,12 @@ def test_sign_up_injection_3(test_client):
 ##        }
 ##    response = test_client.post("/sign_up", data=payload, follow_redirects=True)
 ##    assert response.status_code == 500
-##    assert b'Already Registered' in response.data   
+##    assert b'Already Registered' in response.data
 ##
 ##def test_sign_up_incorrect_password(test_client):
 ##    # password does not meet requirements
 ##    payload = {
-##        "email": "test_user3@gmail.com", 
+##        "email": "test_user3@gmail.com",
 ##        "name": "test_user3",
 ##        "password": "password",
 ##        "password_confirmed": "password",
@@ -91,7 +92,7 @@ def test_sign_up_injection_3(test_client):
 ##
 ##    # 2 passwords are different
 ##    payload = {
-##        "email": "test_user3@gmail.com", 
+##        "email": "test_user3@gmail.com",
 ##        "name": "test_user3",
 ##        "password": "ABcd_123",
 ##        "password_confirmed": "ABcd_456",
@@ -101,4 +102,4 @@ def test_sign_up_injection_3(test_client):
 ##    assert response.status_code == 500
 ##    print(response.data)
 ##    assert b'Please ensure that two password are the same.' in response.data
-    
+
