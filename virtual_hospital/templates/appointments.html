@@ -98,21 +98,29 @@
 
 <div class="container">
   <h3 class="header">Today's Appointments</h3>
+  {% if current_user.type == 'patient' %}
   <button onclick="document.location.href='/searchdoctor'" style="float: right; border-radius: 5px">Make a New Appointment</button>
+  {% endif %}
 
   {% for appt in todayAppt %}
   <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
-    <h1 class='BGcolor'>{{ appt.appointment_start_time }}</h1>
+    <h1 class='BGcolor'>{{ appt.aptTS.appointment_start_time }}</h1>
     <table>
       <tr>
-        <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        {% if appt.user.type == 'doctor' %}
+          <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        {% else %}
+          <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+        {% endif %}
         <td>
-          <h3 style='text-transform: none; padding-top: 40px'><strong>{{ user.name }}</strong></h3>
-          <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+          <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
+          {% if appt.user.type == 'doctor' %}
+            <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+          {% endif %}
           <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
         </td>
         <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-          {% if canEnterChat.id == appt.id %}
+          {% if canEnterChat.id == appt.aptTS.id %}
             <button class="buttonSmallHeight" style="border: 5px" onclick="document.location.href='/livechatroom'">Start Chatting</button>
             <button class="noBG leftBorderRadius5px buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
           {% else %}
@@ -128,17 +136,23 @@
   <h3 class="header" style="padding-top: 80px; margin: 0">Future Appointments</h3>
   {% for appt in futureAppt %}
     <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
-      <h1 class='BGcolor'>{{ appt.appointment_start_time }}</h1>
+      <h1 class='BGcolor'>{{ appt.aptTS.appointment_start_time }}</h1>
       <table>
         <tr>
-          <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+          {% if appt.user.type == 'doctor' %}
+            <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+          {% else %}
+            <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+          {% endif %}
           <td>
-            <h3 style='text-transform: none; padding-top: 40px'><strong>{{ user.name }}</strong></h3>
-            <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+            <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
+            {% if appt.user.type == 'doctor' %}
+              <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+            {% endif %}
             <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
           </td>
           <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-            <button class="rightBorderRadius5px buttonSmallHeight" onclick="document.location.href='/doctorprofile'">View Profile & Ratings</button>
+            <button class="rightBorderRadius5px buttonSmallHeight" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile & Ratings</button>
             <!-- prompt confirmation first? -->
             <button class="noBG leftBorderRadius5px buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
           </td>
