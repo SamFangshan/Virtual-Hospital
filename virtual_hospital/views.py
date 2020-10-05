@@ -179,3 +179,21 @@ def test():
     test_form = TestForm()
     test_form.validate_on_submit()
     return render_template("test.html", form=test_form)
+
+@app.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    if request.method == 'GET':
+        id = request.args.get('id')
+        user = User.query.filter_by(id=id).first()
+        if user is None:
+            return render_template("404.html")
+        else:
+            if user.type == 'patient':
+                if current_user.type == 'doctor' or current_user.id == user.id:
+                    return render_template('patientprofile.html', user=user, currPage="Patient's Profile")
+                else:
+                    return render_template('errors/403.html'), 403
+
+        dept = Department.query.filter_by(id=user.department_id).first()
+        return render_template('doctorprofile.html', user=user, dept=dept, currPage="Doctor's Profile")
