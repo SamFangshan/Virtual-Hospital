@@ -176,13 +176,8 @@ def setprofile():
     return render_template('setprofile.html')
 
 @app.route("/search", methods=['GET', 'POST'])
+@login_required
 def search():
-    # class Form(FlaskForm):
-    #     tags = SelectField('tags', choices=[])
-    #
-    # form = Form()
-    # form.tags.choices = [(0, "All Departments")]+[(department.id, department.name) for department in Department.query.order_by(Department.name).all()]
-
     if request.method == 'POST':
         text = request.form['title']
         if text:
@@ -197,11 +192,13 @@ def search():
         return render_template('search.html', search="", doctors=None)
 
 @app.route("/departments")
+@login_required
 def departments():
     depts = Department.query.order_by(Department.name).all()
     return render_template('departments.html', departments=depts)
 
 @app.route("/department/<id>")
+@login_required
 def department(id):
     dept = Department.query.filter_by(id=id).all()
     print(dept)
@@ -217,4 +214,21 @@ def test():
     test_form.validate_on_submit()
     return render_template("test.html", form=test_form)
 
+@app.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    if request.method == 'GET':
+        id = request.args.get('id')
+        user = User.query.filter_by(id=id).first()
+        if user is None:
+            return render_template("404.html")
+        else:
+            if user.type == 'patient':
+                if current_user.type == 'doctor' or current_user.id == user.id:
+                    return render_template('patientprofile.html', user=user, currPage="Patient's Profile")
+                else:
+                    return render_template('errors/403.html'), 403
+
+        dept = Department.query.filter_by(id=user.department_id).first()
+        return render_template('doctorprofile.html', user=user, dept=dept, currPage="Doctor's Profile")
 
