@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
+
+<!-- Style for Main UI -->
 <style>
 br {
    display: block;
@@ -93,6 +94,96 @@ a {
 .error { color: #ff0000; }
 </style>
 
+<!-- Style for Modal -->
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+#myImg {
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#myImg:hover {opacity: 0.7;}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 100px;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+}
+
+/* Caption of Modal Image */
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)}
+  to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+  from {transform:scale(0)}
+  to {transform:scale(1)}
+}
+
+/* The Close Button */
+.close {
+  position: absolute;
+  top: 0px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+  .modal-content {
+    width: 100%;
+  }
+}
+</style>
 
 <header class="special container" style="width:100%">
 	<h2 style = "color: #505F98;background-color:#E7ECFF"> <strong>Chat Room</strong> </h2>
@@ -112,7 +203,7 @@ a {
         </div>
         <div id="chatbox">
 
-            <div id="chatdisplay" class="message_holder"></div>
+            <div id="chatdisplay" class="message_holder"><img class="imageModal"  src="sample2.png" alt="Sample2" style="width:100%;max-width:300px"></div>
 
             <div id="uploadimage">
                 <input type="file" id="files" accept="image/*" />
@@ -129,7 +220,12 @@ a {
         <div id="clear"></div>
     </div>
 
-    <div id="image-container"></div>
+</div>
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+    <div id="caption"></div>
 </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -157,12 +253,11 @@ a {
       document.getElementById('files').addEventListener('change', function() {
           let user_name  = '{{ current_user.name }}'
           const reader = new FileReader();
-          reader.onload = function() {
-             const bytes = new Uint8Array(this.result);
+          reader.onload = function(evt) {
              socket.emit('image-upload',
              {
                user_name : user_name,
-               image : bytes
+               image : evt.target.result
              })
           };
           reader.readAsArrayBuffer(this.files[0]);
@@ -170,7 +265,6 @@ a {
 
 
       socket.on('send-image', function(data){
-        console.log( str(data.image) )
         var img = new Image();
         var str = String.fromCharCode.apply(null, new Uint8Array(data.image.binary));
         img.src = 'data:image/jpg;base64,' + btoa(str);
@@ -179,11 +273,11 @@ a {
         if (data.user_name !== '{{current_user.name}}')
         {
             $( 'div.message_holder' ).append('<div style="float:left"><image style="border-radius:50%;" src="https://ui-avatars.com/api/?name='+data.user_name+
-            '&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image><image src = "data:image/jpg;base64,'+source+'"></image></div><br><br>')
+            '&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image><image class="imageModal" src="data:image/jpg;base64,'+source+'"></image></div><br><br>')
         }
         else
         {
-            $( 'div.message_holder' ).append('<div style="float:right"><image src = "data:image/jpg;base64,'+source+'"></image><image style="border-radius:50%;" src="https://ui-avatars.com/api/?name='+data.user_name+
+            $( 'div.message_holder' ).append('<div style="float:right"><image class="imageModal" src="data:image/jpg;base64,'+source+'"></image><image style="border-radius:50%;" src="https://ui-avatars.com/api/?name='+data.user_name+
             '&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image></div><br><br>')
         }
 
@@ -241,5 +335,34 @@ a {
     document.getElementById('files').addEventListener('change', fileSelect, false);
     </script>
 
+    <!-- Display Modal -->
+    <script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    var imgs = document.getElementsByClassName("imageModal");
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
+    var i;
+    for (i = 0; i < imgs.length; i++) {
+      imgs[i].onclick = function(){
+        modal.style.display = "block";
+        modalImg.src = this.src;
+        captionText.innerHTML = this.alt;
+      }
+    }
+
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+    </script>
 
 {% endblock %}
+
+
