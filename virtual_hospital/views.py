@@ -200,7 +200,6 @@ def departments():
 @login_required
 def department(id):
     dept = Department.query.filter_by(id=id).all()
-    print(dept)
     if dept:
         doctors = Doctor.query.filter_by(department_id=id).all()
         return render_template('department.html', department=dept[0], doctors=doctors)
