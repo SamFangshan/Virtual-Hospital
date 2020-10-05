@@ -3,6 +3,7 @@ from virtual_hospital import app
 from virtual_hospital.models import *
 from virtual_hospital.forms import *
 from flask_login import login_user, login_required, logout_user, current_user
+from wtforms import SelectField
 
 
 @app.route('/')
@@ -174,8 +175,46 @@ def setprofile():
 
     return render_template('setprofile.html')
 
+@app.route("/search", methods=['GET', 'POST'])
+def search():
+    # class Form(FlaskForm):
+    #     tags = SelectField('tags', choices=[])
+    #
+    # form = Form()
+    # form.tags.choices = [(0, "All Departments")]+[(department.id, department.name) for department in Department.query.order_by(Department.name).all()]
+
+    if request.method == 'POST':
+        text = request.form['title']
+        if text:
+            return redirect(url_for('search', title=text))
+        else:
+            return redirect(url_for('search', title=None))
+    if request.values.__contains__("title"):
+        text = request.values["title"]
+        doctors = Doctor.query.filter(Doctor.name.ilike("%" + text + "%")).all()
+        return render_template('search.html', search=text, doctors=doctors)
+    else:
+        return render_template('search.html', search="", doctors=None)
+
+@app.route("/departments")
+def departments():
+    depts = Department.query.order_by(Department.name).all()
+    return render_template('departments.html', departments=depts)
+
+@app.route("/department/<id>")
+def department(id):
+    dept = Department.query.filter_by(id=id).all()
+    print(dept)
+    if dept:
+        doctors = Doctor.query.filter_by(department_id=id).all()
+        return render_template('department.html', department=dept[0], doctors=doctors)
+    else:
+        return render_template('errors/404.html')
+
 @app.route("/test", methods=['GET', 'POST'])
 def test():
     test_form = TestForm()
     test_form.validate_on_submit()
     return render_template("test.html", form=test_form)
+
+
