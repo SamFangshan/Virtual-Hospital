@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .container {
+    padding: 16px;
+  }
+
+  button {
+    display: inline-block;
+    background-color: #FFD166;
+    color: #505F98;
+    border: none;
+    outline: none;
+    float:right;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  .noBG {
+    background-color: #00000000;
+    color: #505F98;
+  }
+
+  .leftBorderRadius5px {
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+  }
+
+  .rightBorderRadius5px {
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+
+  .fullBorderRadius5px {
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    border-radius: 5px;
+  }
+
+  .buttonSmallHeight {
+    height: wrap-content;
+    font-size: 14px;
+  }
+
+  h1.BGcolor {
+    background-color: #BAC3E5;
+    text-transform: none;
+    font-weight: 500;
+    margin: 0px;
+  }
+
+  h1.BGcolor:before {
+    content: "\00a0 \00a0 \00a0 \00a0 \00a0";
+  }
+
+  h3.header {
+    text-transform:none;
+    display: inline-block;
+    font-weight: 600;
+  }
+
+  .appointmentCard {
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    word-wrap: break-word;
+  }
+
+  .user-image {
+    display: block;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    margin: 30px 50px 30px 50px; /* top right bottom left*/
+  }
+
+  table {
+    padding: 0;
+    margin: 0;
+    table-layout: auto;
+    cellspacing: 0;
+    cellpadding: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  td {
+    vertical-align: top;
+    text-align: left;
+  }
+</style>
+
+<article id="main">
+<header class="special container">
+  <h2 style="color: #505F98"><strong>Appointments</strong></h2>
+</header>
+
+<div class="container">
+  <h3 class="header">Today's Appointments</h3>
+  {% if current_user.type == 'patient' %}
+  <button onclick="document.location.href='/searchdoctor'" style="float: right; border-radius: 5px">Make a New Appointment</button>
+  {% endif %}
+
+  {% for appt in todayAppt %}
+  <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
+    <h1 class='BGcolor'>{{ appt.aptTS.appointment_start_time }}</h1>
+    <table>
+      <tr>
+        {% if appt.user.type == 'doctor' %}
+          <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        {% else %}
+          <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+        {% endif %}
+        <td>
+          <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
+          {% if appt.user.type == 'doctor' %}
+            <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+          {% endif %}
+          <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
+        </td>
+        <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
+          {% if canEnterChat.id == appt.aptTS.id %}
+            <button class="buttonSmallHeight" style="border: 5px" onclick="document.location.href='/livechatroom'">Start Chatting</button>
+            <button class="noBG leftBorderRadius5px buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
+          {% else %}
+            <!-- prompt confirmation first? -->
+            <button class="noBG fullBorderRadius5px buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
+          {% endif %}
+          </td>
+      </tr>
+    </table>
+  </div>
+  {% endfor %}
+
+  <h3 class="header" style="padding-top: 80px; margin: 0">Future Appointments</h3>
+  {% for appt in futureAppt %}
+    <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
+      <h1 class='BGcolor'>{{ appt.aptTS.appointment_start_time }}</h1>
+      <table>
+        <tr>
+          {% if appt.user.type == 'doctor' %}
+            <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+          {% else %}
+            <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+          {% endif %}
+          <td>
+            <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
+            {% if appt.user.type == 'doctor' %}
+              <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+            {% endif %}
+            <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
+          </td>
+          <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
+            <button class="rightBorderRadius5px buttonSmallHeight" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile & Ratings</button>
+            <!-- prompt confirmation first? -->
+            <button class="noBG leftBorderRadius5px buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  {% endfor %}
+</div>
+
+</article>
+{% endblock %}
