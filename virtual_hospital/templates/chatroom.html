@@ -41,13 +41,14 @@ a {
 
     a:hover { text-decoration:underline; }
 
-
+/* The Container for card and chat */
 #container {
     margin: auto;
     width: 90%;
     height: 60vh;
 }
 
+/* The Container card*/
 #card {
     width:30%;
     height:60vh;
@@ -58,6 +59,7 @@ a {
 
 }
 
+/* The Container chatUI */
 #chatbox{
     width:65%;
     float:right;
@@ -68,6 +70,7 @@ a {
     clear: both;
 }
 
+/* The Place where past chat display */
 #chatdisplay {
     text-align:left;
     background:#E7ECFF;
@@ -80,6 +83,7 @@ a {
     overflow:auto;
 }
 
+/* Upload Image button */
 #uploadimage{
     text-align:left;
     background:#ffffff;
@@ -87,6 +91,7 @@ a {
     width:100%
 }
 
+/* User input Message place */
 #usermsg {
     height:16vh;
 }
@@ -270,12 +275,12 @@ body {font-family: Arial, Helvetica, sans-serif;}
         if (data.user_name !== '{{current_user.name}}')
         {
             $( 'div.message_holder' ).append('<div style="float:left"><image style="border-radius:50%;" src="https://ui-avatars.com/api/?name='+data.user_name+
-            '&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image><image class="imageModal" src = "'+source+'" style="display:block;max-width:230px;max-height:95px;width:auto;height:auto"></image></div><br><br>')
+            '&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image><image class="imageModal" src = "'+source+'" style="max-width:230px;max-height:230px;width:auto;height:auto"></image></div><div id="clear"><br>')
         }
         else
         {
             $( 'div.message_holder' ).append('<div style="float:right;"><image class="imageModal" src = "'+source+'" style="max-width:230px;max-height:230px;width:auto;height:auto"></image><image style="border-radius:50%;" src="https://ui-avatars.com/api/?name='+data.user_name+
-            '&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image></div><br><br>')
+            '&background=3744ce&color=fff" height="25" width="25" alt="Avatar"></image></div><div id="clear"></div><br>')
         }
 
       })
