@@ -9,6 +9,8 @@
 	   <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
 		<noscript><link rel="stylesheet" href="{{ url_for('static', filename='assets/css/noscript.css') }}" /></noscript>
     {% endblock %}
+    {% block stylesheets %}
+    {% endblock %}
 </head>
 <body class="index is-preload">
   {% for category, message in get_flashed_messages(with_categories=True) %}

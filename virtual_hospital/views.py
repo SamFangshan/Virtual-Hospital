@@ -1,10 +1,18 @@
-from flask import render_template, request, url_for, redirect, flash
+import json
+import os
+
+import stripe
+from flask import flash, jsonify, redirect, render_template, request, url_for, session
+
+from flask_login import current_user, login_required, login_user, logout_user
 from virtual_hospital import app
-from virtual_hospital.models import *
 from virtual_hospital.forms import *
-from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime, timedelta
 from typing import NamedTuple
+
+from virtual_hospital.models import *
+
+stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
 @app.route('/')
 def index():
@@ -212,6 +220,100 @@ def test():
     test_form = TestForm()
     test_form.validate_on_submit()
     return render_template("test.html", form=test_form)
+
+@app.route('/checkout', methods=['POST'])
+@login_required
+def checkout():
+    if request.method == 'POST':
+        amount = int(round(float(request.form['amount']), 2) * 100)
+        return render_template('checkout.html', amount=amount, publishable_key=os.environ['STRIPE_PUBLISHABLE_KEY'])
+
+
+@app.route('/create-payment-intent', methods=['POST'])
+def create_payment():
+    try:
+        data = json.loads(request.data)
+        intent = stripe.PaymentIntent.create(
+            amount=int(data['amount']),
+            currency='sgd'
+        )
+
+        return jsonify({
+          'clientSecret': intent['client_secret']
+        })
+    except Exception as e:
+        return jsonify(error=str(e)), 403
+
+
+@app.route('/payment-success/<payment_intent_id>')
+@login_required
+def payment_success(payment_intent_id):
+    try:
+        intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+    except Exception:
+        return render_template('errors/404.html'), 404
+    if intent.status == 'succeeded':
+        appointment_id = session['appointment_id']
+        del session['appointment_id']
+
+        prescription = Prescription.query.get(appointment_id)
+        prescription.pick_up_status = 'pending'
+        db.session.commit()
+
+        return redirect(url_for('rate_doctor', appointment_id=appointment_id))
+    else:
+        return render_template('errors/403.html'), 403
+
+
+@app.route('/payment/prescription/<prescription_id>')
+@login_required
+def payment(prescription_id):
+    prescription = Prescription.query.get(int(prescription_id))
+    appointment = Appointment.query.filter_by(prescription_id=prescription.id).first()
+    if not prescription:
+        return render_template('errors/404.html'), 404
+    if current_user.type == 'doctor' or appointment.patient_id != current_user.id:
+        return render_template('errors/403.html'), 403
+    if prescription.pick_up_status != 'no payment':  # this payment has already been completed
+        return render_template('errors/404.html'), 404
+
+    total_price = 0
+    drugs = prescription.drugs
+    for drug in drugs:
+        total_price += drug.price
+    appointment_time_slot = AppointmentTimeSlot.query.get(appointment.appointment_time_slot_id)
+    doctor = Doctor.query.get(appointment_time_slot.doctor_id)
+    department = Department.query.get(doctor.department_id)
+
+    session['appointment_id'] = appointment.id
+    return render_template('payment.html', doctor=doctor, department=department,
+                           drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot)
+
+
+@app.route('/ratedoctor/appointment/<appointment_id>', methods=['GET', 'POST'])
+@login_required
+def rate_doctor(appointment_id):
+    appointment = Appointment.query.get(int(appointment_id))
+    if not appointment:
+        return render_template('errors/404.html'), 404
+    if current_user.type == 'doctor' or appointment.patient_id != current_user.id:
+        return render_template('errors/403.html'), 403
+    if appointment.rating != None:  # this rating has already been completed
+        return render_template('errors/404.html'), 404
+
+    if request.method == 'POST':
+        appointment = Appointment.query.get(int(appointment_id))
+        appointment.rating = int(request.form['rate'])
+        db.session.commit()
+        return redirect(url_for('index'))
+    appointment = Appointment.query.get(int(appointment_id))
+    appointment_time_slot = AppointmentTimeSlot.query.get(appointment.appointment_time_slot_id)
+    doctor = Doctor.query.get(appointment_time_slot.doctor_id)
+    department = Department.query.get(doctor.department_id)
+    return render_template('ratedoctor.html',
+                           doctor=doctor,
+                           department=department,
+                           appointment_time_slot=appointment_time_slot)
 
 class AptUser(NamedTuple):
     aptTS: AppointmentTimeSlot

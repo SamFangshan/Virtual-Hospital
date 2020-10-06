@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<style>
+
+button {
+  background-color: #FFD166;
+  color: white;
+  padding: 0px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 50%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.appointment_info {
+  border: 0.6000000238418579px solid rgba(186,195,229,1);
+}
+.appointment_info_text {
+  color: rgba(9,17,51,1);
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 24px;
+  text-align: left;
+}
+
+.appointment {
+  width: 100%;
+  height: 231px;
+  padding-top: 50px;
+}
+.appointment_info_column {
+  height: 60px;
+}
+.appointment_info_column_name {
+    width: 30%;
+  color: rgba(9,17,51,1);
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 15px;
+  float:left;
+}
+.appointment_info_value {
+  width: 30%;
+  color: rgba(55,68,126,1);
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 15px;
+  float:left;
+}
+
+.rate_doctor {
+  position: relative;
+  text-align: center;
+}
+.rate_doctor_title {
+  width: 100%;
+  height: 100px;
+  background: rgba(231,236,255,0.30000001192092896);
+}
+.rate_doctor_title_text {
+  color: rgba(9,17,51,1);
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 36px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.rating_title {
+  border: 0.6000000238418579px solid rgba(186,195,229,1);
+}
+
+.rating_title_text {
+  color: rgba(9,17,51,1);
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 24px;
+  text-align: left;
+}
+
+.rate {
+    padding-right: 40%;
+}
+.rate:not(:checked) > input {
+    position:absolute;
+}
+.rate:not(:checked) > label {
+    float:right;
+    width:1em;
+    overflow:hidden;
+    white-space:nowrap;
+    cursor:pointer;
+    font-size:30px;
+    color:#ccc;
+}
+.rate:not(:checked) > label:before {
+    content: '★ ';
+}
+.rate > input:checked ~ label {
+    color: #ffc700;
+}
+.rate:not(:checked) > label:hover,
+.rate:not(:checked) > label:hover ~ label {
+    color: #deb217;
+}
+.rate > input:checked + label:hover,
+.rate > input:checked + label:hover ~ label,
+.rate > input:checked ~ label:hover,
+.rate > input:checked ~ label:hover ~ label,
+.rate > label:hover ~ input:checked ~ label {
+    color: #c59b08;
+}
+</style>
+<article id="main">
+<section class="wrapper style4 special container medium">
+<div class="content">
+  <div class="rate_doctor">
+    <div class="rate_doctor_title"></div>
+    <div class="rate_doctor_title_text">Rate your doctor</div>
+  </div>
+
+  <div class="appointment">
+    <div class="appointment_info"></div><span class="appointment_info_text">Appointment Information</span><br><br>
+
+    <div class="appointment_info_column"><span class="appointment_info_column_name">Doctor</span>
+      <span class="appointment_info_value">{{ doctor.name }}</span></div>
+
+    <div class="appointment_info_column"><span class="appointment_info_column_name">Department</span>
+      <span class="appointment_info_value">{{ department.name }}</span></div>
+
+    <div class="appointment_info_column"><span class="appointment_info_column_name">Appointment Time</span>
+      <span class="appointment_info_value">{{ appointment_time_slot.appointment_start_time.strftime('%d/%m/%Y, %H:%M:%S') }}</span></div>
+  </div>
+
+  <br><br>
+
+  <div class="rating">
+    <div class="rating_title"></div><span class="rating_title_text">Please provide a rating</span>
+    <form name="rating_form" action="" method="post" onsubmit="">
+      <div class="rate">
+        <input type="radio" id="star5" name="rate" value="5"/>
+        <label for="star5" title="text">5 stars</label>
+        <input type="radio" id="star4" name="rate" value="4"/>
+        <label for="star4" title="text">4 stars</label>
+        <input type="radio" id="star3" name="rate" value="3"/>
+        <label for="star3" title="text">3 stars</label>
+        <input type="radio" id="star2" name="rate" value="2"/>
+        <label for="star2" title="text">2 stars</label>
+        <input type="radio" id="star1" name="rate" value="1"/>
+        <label for="star1" title="text">1 star</label>
+        <br/><br/>
+      </div>
+      <button style = "color : #505F98" type="submit" name = "submit" value = "Submit">Confirm</button>
+    </form>
+  </div>
+</section>
+</article>
+{% endblock %}
