@@ -126,14 +126,7 @@
               <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
             </form>
 
-            <form action="/chatroom" method="POST">
-              {% if appt.user.type == 'doctor' %}
-                <input type="hidden" name="patient_id" value="{{ appt.apt.patient_id }}">
-                <input type="hidden" name="doctor_id" value="{{ appt.user.id }}">
-              {% else %}
-                <input type="hidden" name="patient_id" value="{{ appt.user.id }}">
-                <input type="hidden" name="doctor_id" value="{{ appt.aptTS.doctor_id }}">
-              {% endif %}
+            <form action="/chatroom" method="GET">
               <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
               <button class="rightBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Start Chatting</button>
             </form>
