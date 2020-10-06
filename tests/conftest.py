@@ -1,10 +1,15 @@
 import os
+from dotenv import load_dotenv
+
+# load environmental variables
+dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
 
 import sqlalchemy
 from flask import Flask
 
 import pytest
-from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from pytest_postgresql.janitor import DatabaseJanitor
 from virtual_hospital import app as _app
@@ -12,10 +17,6 @@ from virtual_hospital import db
 from virtual_hospital.models import *
 import tests.factories as factories
 
-# load environmental variables
-dotenv_path = os.path.join(os.path.dirname(__file__), '../.env')
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
 
 try:
     pg_user = os.environ['PG_USER']
@@ -93,6 +94,21 @@ def init_db():
     # reset increment id sequence number
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('user', 'id', 3 + 1))
 
+    factories.PatientFactory.create_batch(2)
+    # reset increment id sequence number
+    # db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('user', 'id', 3 + 2 + 1))
+
     factories.AppointmentTimeSlotFactory.create_batch(1)
     # reset increment id sequence number
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('appointment_time_slot', 'id', 1 + 1))
+
+    factories.PrescriptionFactoryForPayment()
+    factories.PrescriptionFactoryPaid()
+    db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('prescription', 'id', 2 + 1))
+
+    factories.DrugFactory.create_batch(3)
+    db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('drug', 'id', 3 + 1))
+
+    factories.PrescriptionDrugFactory.create_batch(3)
+    db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('prescription_drug', 'id', 3 + 1))
+

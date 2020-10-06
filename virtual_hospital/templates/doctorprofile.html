@@ -102,10 +102,6 @@
           <h4 class="alignLeftNoCaps noMargin"><strong>Distinguished Doctor</strong></h4>
           <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
         </td>
-        <td style="vertical-align: bottom; padding: 0">
-          <!-- The button below needs to update with the current doctor's info -->
-          <button class="buttonSmallHeight buttonAlignRight" style="border-radius: 5px;" onclick="document.location.href='/newappointment'">Book an Appointment</button>
-        </td>
       </tr>
     </table>
     <hr style="margin-top:50px"/>
@@ -119,6 +115,13 @@
 
       <h3 class="alignLeftNoCaps"><strong>Working Hours</strong></h3>
       <p class="alignLeftNoCaps">Daily: {{ user.office_hour_start_time }} - {{ user.office_hour_end_time }}</p>
+
+      <form action="/newappointment" method="GET">
+          <td style="vertical-align: bottom; padding: 0">
+            <!-- The button below needs to update with the current doctor's info -->
+              <button class="buttonSmallHeight buttonAlignRight" style="border-radius: 5px;" type="submit" name="doctor_id" value="{{ user.id }}">Book an Appointment</button>
+          </td>
+      </form>
 
       <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" onclick="document.location.href='/searchdoctor'">< Search Other Doctors</button>
     </div>
