@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <article id="main">
+        <section class="wrapper style1 special container medium">
+            {% if doctors|length == 0 %}
+                <div class="col-8">Sorry, there is no doctors in {{ department.name }} currently</div>
+            {% else %}
+                <div class="col-8">Doctors in {{ department.name }} Department</div>
+                {% for doctor in doctors %}
+                    <div class="col-8">
+                        <a href="#">{{ doctor.name }}</a>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </section>
+    </article>
+{% endblock %}

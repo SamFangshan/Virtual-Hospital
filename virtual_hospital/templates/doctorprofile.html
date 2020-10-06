@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  button {
+    display: block;
+    background-color: #FFD166;
+    color: #505F98;
+    border: none;
+    outline: none;
+    /* float:right; */
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  .header {
+    text-transform:none;
+    display: inline-block;
+    font-weight: 600;
+  }
+
+  .alignLeftNoCaps {
+    text-transform: none;
+    text-align: left;
+  }
+
+  .noMargin {
+    margin: 0;
+  }
+
+  .user-image {
+    display: block;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+  }
+
+  .buttonSmallHeight {
+    height: wrap-content;
+    font-size: 14px;
+  }
+
+  .noBG {
+    background-color: #00000000;
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    color: #505F98;
+  }
+
+  .noBorderOutline {
+    outline: 0;
+    border: 0;
+  }
+
+  .buttonAlignRight {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .buttonAlignLeft {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  table {
+    padding: 0;
+    margin: 0;
+    table-layout: auto;
+    cellspacing: 0;
+    cellpadding: 0;
+  }
+
+  td {
+    vertical-align: top;
+    text-align: left;
+  }
+
+  hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 1em 0;
+    padding: 0;
+  }
+</style>
+
+<article id="main">
+  <header class="special container">
+    <h2 style="color: #505F98"><strong>Doctor's Profile</strong></h2>
+  </header>
+
+  <section class="wrapper style4 special container medium" style="align-content: left">
+    <table>
+      <tr>
+        <td width = '250px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        <td>
+          <h3 class="alignLeftNoCaps" style='padding-top: 40px'><strong>{{ user.name }}</strong></h3>
+          <h4 class="alignLeftNoCaps noMargin"><strong>Distinguished Doctor</strong></h4>
+          <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
+        </td>
+      </tr>
+    </table>
+    <hr style="margin-top:50px"/>
+    <div class="container">
+      <h3 class="alignLeftNoCaps"><strong>Department of {{ dept.name }}</strong></h3>
+      <p class="alignLeftNoCaps">{{ dept.description }}
+      </p>
+
+      <h3 class="alignLeftNoCaps"><strong>Specialties</strong></h3>
+      <p class="alignLeftNoCaps">{{ user.specialties }}</p>
+
+      <h3 class="alignLeftNoCaps"><strong>Working Hours</strong></h3>
+      <p class="alignLeftNoCaps">Daily: {{ user.office_hour_start_time }} - {{ user.office_hour_end_time }}</p>
+
+      <form action="/newappointment" method="GET">
+          <td style="vertical-align: bottom; padding: 0">
+            <!-- The button below needs to update with the current doctor's info -->
+              <button class="buttonSmallHeight buttonAlignRight" style="border-radius: 5px;" type="submit" name="doctor_id" value="{{ user.id }}">Book an Appointment</button>
+          </td>
+      </form>
+
+      <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" onclick="document.location.href='/searchdoctor'">< Search Other Doctors</button>
+    </div>
+  </section>
+</article>
+{% endblock %}

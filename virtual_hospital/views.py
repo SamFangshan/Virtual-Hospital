@@ -7,10 +7,12 @@ from flask import flash, jsonify, redirect, render_template, request, url_for, s
 from flask_login import current_user, login_required, login_user, logout_user
 from virtual_hospital import app
 from virtual_hospital.forms import *
+from datetime import datetime, timedelta
+from typing import NamedTuple
+
 from virtual_hospital.models import *
 
 stripe.api_key = os.environ['STRIPE_SECRET_KEY']
-
 
 @app.route('/')
 def index():
@@ -181,12 +183,43 @@ def setprofile():
 
     return render_template('setprofile.html')
 
+@app.route("/search", methods=['GET', 'POST'])
+@login_required
+def search():
+    if request.method == 'POST':
+        text = request.form['title']
+        if text:
+            return redirect(url_for('search', title=text))
+        else:
+            return redirect(url_for('search', title=None))
+    if request.values.__contains__("title"):
+        text = request.values["title"]
+        doctors = Doctor.query.filter(Doctor.name.ilike("%" + text + "%")).all()
+        return render_template('search.html', search=text, doctors=doctors)
+    else:
+        return render_template('search.html', search="", doctors=None)
+
+@app.route("/departments")
+@login_required
+def departments():
+    depts = Department.query.order_by(Department.name).all()
+    return render_template('departments.html', departments=depts)
+
+@app.route("/department/<id>")
+@login_required
+def department(id):
+    dept = Department.query.filter_by(id=id).all()
+    if dept:
+        doctors = Doctor.query.filter_by(department_id=id).all()
+        return render_template('department.html', department=dept[0], doctors=doctors)
+    else:
+        return render_template('errors/404.html')
+
 @app.route("/test", methods=['GET', 'POST'])
 def test():
     test_form = TestForm()
     test_form.validate_on_submit()
     return render_template("test.html", form=test_form)
-
 
 @app.route('/checkout', methods=['POST'])
 @login_required
@@ -281,3 +314,125 @@ def rate_doctor(appointment_id):
                            doctor=doctor,
                            department=department,
                            appointment_time_slot=appointment_time_slot)
+
+class AptUser(NamedTuple):
+    aptTS: AppointmentTimeSlot
+    user: User
+    apt: Appointment
+
+@app.route('/appointments', methods=['GET'])
+@login_required
+def appointments():
+    if request.method == 'GET':
+        id = current_user.id
+        user = User.query.filter_by(id=id).first()
+        if current_user.type == 'doctor': # user is a doctor, can fetch time slot directly
+            apptTimeSlot = AppointmentTimeSlot.query.filter_by(doctor_id=id).all()
+        elif current_user.type == 'patient': # user is a patient, need to fetch all appointments, then all corresponding time slots
+            apptTimeSlot = []
+            apptSlot = Appointment.query.filter_by(patient_id=id).all()
+            for a in apptSlot:
+                    slot = AppointmentTimeSlot.query.filter_by(id=a.appointment_time_slot_id).first()
+                    if (slot is not None) and (slot not in apptTimeSlot):
+                        apptTimeSlot.append(slot)
+
+        canEnterChat = []
+        todayAppt = []
+        futureAppt = []
+
+        for appt in apptTimeSlot:
+            exe = 0
+            if (datetime.now().date() == appt.appointment_start_time.date()):
+                exe = 1
+
+            if (datetime.now() >= appt.appointment_start_time) and (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15))): # if within 15 minutes of appointment_start_time
+                exe = 2
+
+            if(datetime.now().date() < appt.appointment_start_time.date()):
+                exe = 3
+
+            u = None
+
+            fetchapt = Appointment.query.filter_by(appointment_time_slot_id=appt.id).all()
+
+            for apt in fetchapt:
+                if current_user.type == 'patient':
+                    u = User.query.filter_by(id=appt.doctor_id).first()
+                elif current_user.type == 'doctor':
+                    u = User.query.filter_by(id=apt.patient_id).first()
+
+                if u is not None:
+                    d = AptUser(appt, u, apt)
+                    if exe == 1:
+                        todayAppt.append(d)
+                    elif exe == 2:
+                        canEnterChat.append(d)
+                    elif exe == 3:
+                        futureAppt.append(d)
+
+        if user is None:
+            return render_template("errors/404.html")
+        else:
+            return render_template('appointments.html', currPage='Appointments', user=user, todayAppt=todayAppt, canEnterChat=canEnterChat, futureAppt=futureAppt)
+
+@app.route('/newappointment', methods=['POST', 'GET'])
+@login_required
+def newappointment():
+    doctor_id = request.args.get('doctor_id')
+    doctor = User.query.filter_by(id=doctor_id).first()
+    if doctor is None:
+        return render_template("errors/404.html")
+
+    current_Datetime = datetime.now()
+    selected_date = request.args.get('date')
+    if (selected_date is not None) and (selected_date != str(current_Datetime.date())):
+        info = selected_date.split('-', 2)
+        year = info[0]
+        month = info[1]
+        day = info[2]
+        current_Datetime = datetime(int(year), int(month), int(day));
+
+    time_slot_data_today = []
+    time_slot_data = AppointmentTimeSlot.query.filter_by(doctor_id=doctor_id).all()
+
+    for data in time_slot_data:
+        if (current_Datetime < data.appointment_start_time) and (data.number_of_vacancies > 0) and (current_Datetime.date() == data.appointment_start_time.date()):
+            time_slot_data_today.append(data)
+
+    if request.method == 'GET':
+        return render_template('newappointment.html', date=current_Datetime.date(), error=None, doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+
+    elif request.method == 'POST':
+        appointment_time_slot_id = request.form['appointment_time_slot_id']
+        doctor_id = request.form['doctor_id']
+        if appointment_time_slot_id == "0":
+            return render_template('newappointment.html', date=current_Datetime.date(), error="Invalid selections! Please try again.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+        else:
+            appointmentSlot = AppointmentTimeSlot.query.filter_by(id=appointment_time_slot_id).first()
+            appointmentCount = Appointment.query.filter_by(appointment_time_slot_id=appointment_time_slot_id).count()
+            if appointmentCount < int(appointmentSlot.number_of_vacancies):
+                apt = Appointment(patient_id=current_user.id, status="Scheduled", queue_number=(appointmentCount+1), appointment_time_slot_id=appointment_time_slot_id)
+                db.session.add(apt)
+                db.session.commit()
+                flash('Appointment booked.', 'info')
+                return redirect(url_for('appointments'))
+            else:
+                return render_template('newappointment.html', date=current_Datetime.date(), error="Sorry, this timeslot has been fully booked.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+
+@app.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    if request.method == 'GET':
+        id = request.args.get('id')
+        user = User.query.filter_by(id=id).first()
+        if user is None:
+            return render_template("errors/404.html")
+        else:
+            if user.type == 'patient':
+                if current_user.type == 'doctor' or current_user.id == user.id:
+                    return render_template('patientprofile.html', user=user, currPage="Patient's Profile")
+                else:
+                    return render_template('errors/403.html'), 403
+
+        dept = Department.query.filter_by(id=user.department_id).first()
+        return render_template('doctorprofile.html', user=user, dept=dept, currPage="Doctor's Profile")
