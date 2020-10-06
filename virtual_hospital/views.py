@@ -317,59 +317,74 @@ def rate_doctor(appointment_id):
 
 class AptUser(NamedTuple):
     aptTS: AppointmentTimeSlot
-    user: User
+    user: User # user refers to the user that the currently logged on user will see (e.g. patient will see doctor info)
     apt: Appointment
 
-@app.route('/appointments', methods=['GET'])
+@app.route('/appointments', methods=['GET', 'POST'])
 @login_required
 def appointments():
+    id = current_user.id
+    user = User.query.filter_by(id=id).first()
+    if current_user.type == 'doctor': # user is a doctor, can fetch time slot directly
+        apptTimeSlot = AppointmentTimeSlot.query.filter_by(doctor_id=id).all()
+    elif current_user.type == 'patient': # user is a patient, need to fetch all appointments, then all corresponding time slots
+        apptTimeSlot = []
+        apptSlot = Appointment.query.filter_by(patient_id=id).all()
+        for a in apptSlot:
+                slot = AppointmentTimeSlot.query.filter_by(id=a.appointment_time_slot_id).first()
+                if (slot is not None) and (slot not in apptTimeSlot):
+                    apptTimeSlot.append(slot)
+
+    canEnterChat = []
+    todayAppt = []
+    futureAppt = []
+
+    for appt in apptTimeSlot:
+        exe = 0
+        if (datetime.now().date() == appt.appointment_start_time.date()):
+            exe = 1
+
+        if (datetime.now() >= appt.appointment_start_time) and (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15))): # if within 15 minutes of appointment_start_time
+            exe = 2
+
+        if(datetime.now().date() < appt.appointment_start_time.date()):
+            exe = 3
+
+        u = None
+
+        fetchapt = Appointment.query.filter_by(appointment_time_slot_id=appt.id).all()
+
+        for apt in fetchapt:
+            if current_user.type == 'patient':
+                u = User.query.filter_by(id=appt.doctor_id).first()
+            elif current_user.type == 'doctor':
+                u = User.query.filter_by(id=apt.patient_id).first()
+
+            if u is not None:
+                d = AptUser(appt, u, apt)
+                if exe == 1:
+                    todayAppt.append(d)
+                elif exe == 2:
+                    canEnterChat.append(d)
+                elif exe == 3:
+                    futureAppt.append(d)
+
+    # Appointment.query.filter_by(id=123).delete()
+    # db.session.commit()
+
+    if request.method =='POST':
+        if user is None:
+            return render_template("errors/404.html")
+        else:
+            # apptSlot = Appointment.query.filter_by(patient_id=id).all()
+            print(request.form)
+            deleteApptId = request.form['appt_id']
+            deleteApptSlot = Appointment.query.filter_by(id=deleteApptId).delete()
+            db.session.commit()
+            flash('Appointment deleted.', 'info')
+            return redirect(url_for('appointments'))
+            
     if request.method == 'GET':
-        id = current_user.id
-        user = User.query.filter_by(id=id).first()
-        if current_user.type == 'doctor': # user is a doctor, can fetch time slot directly
-            apptTimeSlot = AppointmentTimeSlot.query.filter_by(doctor_id=id).all()
-        elif current_user.type == 'patient': # user is a patient, need to fetch all appointments, then all corresponding time slots
-            apptTimeSlot = []
-            apptSlot = Appointment.query.filter_by(patient_id=id).all()
-            for a in apptSlot:
-                    slot = AppointmentTimeSlot.query.filter_by(id=a.appointment_time_slot_id).first()
-                    if (slot is not None) and (slot not in apptTimeSlot):
-                        apptTimeSlot.append(slot)
-
-        canEnterChat = []
-        todayAppt = []
-        futureAppt = []
-
-        for appt in apptTimeSlot:
-            exe = 0
-            if (datetime.now().date() == appt.appointment_start_time.date()):
-                exe = 1
-
-            if (datetime.now() >= appt.appointment_start_time) and (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15))): # if within 15 minutes of appointment_start_time
-                exe = 2
-
-            if(datetime.now().date() < appt.appointment_start_time.date()):
-                exe = 3
-
-            u = None
-
-            fetchapt = Appointment.query.filter_by(appointment_time_slot_id=appt.id).all()
-
-            for apt in fetchapt:
-                if current_user.type == 'patient':
-                    u = User.query.filter_by(id=appt.doctor_id).first()
-                elif current_user.type == 'doctor':
-                    u = User.query.filter_by(id=apt.patient_id).first()
-
-                if u is not None:
-                    d = AptUser(appt, u, apt)
-                    if exe == 1:
-                        todayAppt.append(d)
-                    elif exe == 2:
-                        canEnterChat.append(d)
-                    elif exe == 3:
-                        futureAppt.append(d)
-
         if user is None:
             return render_template("errors/404.html")
         else:

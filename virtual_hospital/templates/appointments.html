@@ -99,7 +99,7 @@
 <div class="container">
   <h3 class="header">Today's Appointments</h3>
   {% if current_user.type == 'patient' %}
-  <button onclick="document.location.href='/searchdoctor'" style="float: right; border-radius: 5px">Make a New Appointment</button>
+  <button onclick="document.location.href='/search'" style="float: right; border-radius: 5px">Make a New Appointment</button>
   {% endif %}
 
   {% for appt in todayAppt %}
@@ -121,11 +121,17 @@
         </td>
         <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
           {% if canEnterChat.id == appt.aptTS.id %}
+            <form method="POST">
+              <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
+              <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
+            </form>
             <button class="buttonSmallHeight" style="border: 5px" onclick="document.location.href='/livechatroom'">Start Chatting</button>
-            <button class="noBG leftBorderRadius5px buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
           {% else %}
             <!-- prompt confirmation first? -->
-            <button class="noBG fullBorderRadius5px buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
+            <form method="POST">
+              <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
+              <button class="noBG fullBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
+            </form>
           {% endif %}
           </td>
       </tr>
@@ -153,8 +159,10 @@
           </td>
           <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
             <button class="rightBorderRadius5px buttonSmallHeight" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile & Ratings</button>
-            <!-- prompt confirmation first? -->
-            <button class="noBG leftBorderRadius5px buttonSmallHeight" onclick='/cancelledappointment'>Cancel Appointment</button>
+            <form method="POST">
+              <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
+              <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
+            </form>
           </td>
         </tr>
       </table>
