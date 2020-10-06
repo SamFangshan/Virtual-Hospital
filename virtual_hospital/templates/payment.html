@@ -1,29 +1,38 @@
 {% extends 'base.html' %}
 
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet" />
+{% endblock %}
+
 {% block content %}
 <style>
 
 .submit {
   width: 321px;
   height: 46px;
-  background: url("{{ url_for('static', filename='assets/css/images/v58_1.png') }}");
+  background: url("{{ url_for('static', filename='assets/css/images/payment_button.png') }}");
+}
+
+.submit:hover {
+  background: url("{{ url_for('static', filename='assets/css/images/payment_button.png') }}");
+  opacity: 0.8;
 }
 
 .total_price {
-  width: 50%
+  width: 50%;
   float: left;
   color: rgba(55,68,126,1);
   font-family: Roboto;
   font-weight: Medium;
-  font-size: 22px;
+  font-size: 18px;
 }
 .total_text {
-  width: 50%
+  width: 50%;
   float: left;
   color: rgba(111,124,178,1);
   font-family: Roboto;
   font-weight: Medium;
-  font-size: 22px;
+  font-size: 18px;
 }
 .drug {
   height: 24px;
@@ -33,15 +42,15 @@
   color: rgba(55,68,126,1);
   font-family: Roboto;
   font-weight: Medium;
-  font-size: 22px;
+  font-size: 18px;
   float: left;
 }
 .drug_price {
   width: 30%;
-  color: rgba(55,68,126,1);
+  color: rgba(111,124,178,1);
   font-family: Roboto;
   font-weight: Medium;
-  font-size: 22px;
+  font-size: 18px;
   float: left;
 }
 .drug_columns {
@@ -49,18 +58,18 @@
 }
 .drug_name_column {
   width: 30%;
-  color: rgba(111,124,178,1);
+  color: rgba(9,17,51,1);
   font-family: Roboto;
   font-weight: Medium;
-  font-size: 22px;
+  font-size: 18px;
   float: left;
 }
 .drug_price_column {
   width: 30%;
-  color: rgba(111,124,178,1);
+  color: rgba(9,17,51,1);
   font-family: Roboto;
   font-weight: Medium;
-  font-size: 22px;
+  font-size: 18px;
   float: left;
 }
 .prescriptions_text {
@@ -68,11 +77,10 @@
   color: rgba(9,17,51,1);
   font-family: Roboto;
   font-weight: Medium;
-  font-size: 22px;
+  font-size: 18px;
   float: left;
 }
 .prescriptions_title {
-  background: url("./images/v57_570.png");
   border: 0.6000000238418579px solid rgba(186,195,229,1);
 }
 .prescriptions_title_text {
@@ -88,36 +96,27 @@
   height: 231px;
   padding-top: 50px;
 }
-.doctor {
+.appointment_info_column {
   height: 60px;
 }
-.doctor_text {
+.appointment_info_column_name {
     width: 30%;
   color: rgba(9,17,51,1);
   font-family: Roboto;
   font-weight: Medium;
-  font-size: 22px;
+  font-size: 18px;
   float:left;
 }
-.doctor_name {
+.appointment_info_value {
   width: 30%;
   color: rgba(55,68,126,1);
   font-family: Roboto;
   font-weight: Medium;
-  font-size: 22px;
+  font-size: 18px;
   float:left;
 }
-.department_name {
-    width: 30%;
-  color: rgba(111,124,178,1);
-  font-family: Roboto;
-  font-weight: Medium;
-  font-size: 22px;
-  float:left;
-  display: inline;
-}
+
 .appointment_info {
-  background: url("./images/v57_518.png");
   border: 0.6000000238418579px solid rgba(186,195,229,1);
 }
 .appointment_info_text {
@@ -157,10 +156,19 @@
 
   <div class="appointment">
     <div class="appointment_info"></div><span class="appointment_info_text">Appointment Information</span><br><br>
-    <div class="doctor"><span class="doctor_text">Doctor</span>
-      <span class="doctor_name">{{ doctor.name }}</span>
-      <span class="department_name">{{ department.name }}</span></div>
+
+    <div class="appointment_info_column"><span class="appointment_info_column_name">Doctor</span>
+      <span class="appointment_info_value">{{ doctor.name }}</span></div>
+
+    <div class="appointment_info_column"><span class="appointment_info_column_name">Department</span>
+      <span class="appointment_info_value">{{ department.name }}</span></div>
+
+    <div class="appointment_info_column"><span class="appointment_info_column_name">Appointment Time</span>
+      <span class="appointment_info_value">{{ appointment_time_slot.appointment_start_time.strftime('%d/%m/%Y, %H:%M:%S') }}</span></div>
   </div>
+
+  <br><br>
+  <br><br>
 
   <div class="prescriptions_title"></div><span class="prescriptions_title_text">Prescriptions</span><br><br>
   <div class="prescription" style="width:100%;float:left">
