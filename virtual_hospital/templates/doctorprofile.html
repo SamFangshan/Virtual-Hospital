@@ -122,8 +122,9 @@
               <button class="buttonSmallHeight buttonAlignRight" style="border-radius: 5px;" type="submit" name="doctor_id" value="{{ user.id }}">Book an Appointment</button>
           </td>
       </form>
-
-      <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" onclick="document.location.href='/searchdoctor'">< Search Other Doctors</button>
+      <form action="/search" method="GET">
+        <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" type="submit">< Search Other Doctors</button>
+      </form>
     </div>
   </section>
 </article>
