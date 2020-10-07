@@ -4,7 +4,7 @@ from virtual_hospital.models import *
 def test_payment_no_log_in(test_client):
     test_client.get("/logout", follow_redirects=True)
 
-    response = test_client.get('/payment/1')
+    response = test_client.get('/payment/prescription/1')
     assert 302 == response.status_code
 
 
@@ -19,7 +19,7 @@ def test_payment_normal(test_client):
         ), follow_redirects=True)
 
     # payment
-    response = test_client.get('/payment/1', follow_redirects=True)
+    response = test_client.get('/payment/prescription/1', follow_redirects=True)
     assert b'Apomorphine' in response.data
     assert b'Cupric Sulfate' in response.data
     assert b'Ipecac' in response.data
@@ -45,7 +45,7 @@ def test_payment_paid(test_client):
         ), follow_redirects=True)
 
     # payment
-    response = test_client.get('/payment/2', follow_redirects=True)
+    response = test_client.get('/payment/prescription/2', follow_redirects=True)
 
     assert 404 == response.status_code
     test_client.get("/logout", follow_redirects=True)
@@ -62,7 +62,7 @@ def test_payment_unauthorized_doctor(test_client):
         ), follow_redirects=True)
 
     # payment
-    response = test_client.get('/payment/1', follow_redirects=True)
+    response = test_client.get('/payment/prescription/1', follow_redirects=True)
 
     assert 403 == response.status_code
     test_client.get("/logout", follow_redirects=True)
@@ -79,7 +79,7 @@ def test_payment_unauthorized_patient(test_client):
         ), follow_redirects=True)
 
     # payment
-    response = test_client.get('/payment/1', follow_redirects=True)
+    response = test_client.get('/payment/prescription/1', follow_redirects=True)
 
     assert 403 == response.status_code
     test_client.get("/logout", follow_redirects=True)
@@ -96,7 +96,7 @@ def test_payment_non_existent(test_client):
         ), follow_redirects=True)
 
     # payment
-    response = test_client.get('/payment/1024', follow_redirects=True)
+    response = test_client.get('/payment/prescription/1024', follow_redirects=True)
 
     assert 404 == response.status_code
     test_client.get("/logout", follow_redirects=True)

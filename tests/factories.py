@@ -61,6 +61,18 @@ class PrescriptionFactoryForPayment(SQLAlchemyModelFactory):
         model = Prescription
         sqlalchemy_session = db.session
 
+class AppointmentFactoryForPayment(SQLAlchemyModelFactory):
+    id = factory.Sequence(lambda x: x + 1)
+    patient_id = 101
+    status = "Scheduled"
+    queue_number = 1
+    appointment_time_slot_id = 1
+    rating = 4.0
+    prescription_id = factory.Sequence(lambda x: x + 1)
+
+    class Meta:
+        model = Appointment
+        sqlalchemy_session = db.session
 
 class PrescriptionFactoryPaid(SQLAlchemyModelFactory):
     id = 2
