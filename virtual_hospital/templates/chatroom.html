@@ -228,11 +228,12 @@ body {font-family: Arial, Helvetica, sans-serif;}
             {% elif current_user.type == 'doctor' %}
             <h1 style="text-align:center">Diagnosis</h1>
             <div id="Diagnosis">
-                <input style="height:10vh; border:0" type="text" placeholder="Enter diagnosis while chatting with patient" required>
+                <input style="height:10vh; border:0" type="text" id="InputDiagnosis" placeholder="Enter diagnosis while chatting with patient" required>
                 <div class="btn-holder">
                 <button style="margin:0;float:right;bottom:0;height:2vh;width:10%;" type="submit" name = "send" value = "Submit">Save</button>
                 </div>
             </div>
+
             {% endif %}
 
         </div>

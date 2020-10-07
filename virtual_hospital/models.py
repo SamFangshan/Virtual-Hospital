@@ -72,10 +72,10 @@ class Prescription(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey(Patient.id), nullable=False)
     doctor_id = db.Column(db.Integer, db.ForeignKey(Doctor.id), nullable=False)
 
-    pick_up_start_date = db.Column(db.Date, nullable=False)
+    pick_up_start_date = db.Column(db.Date)
     pick_up_status = db.Column(db.String(10), nullable=False)
-    medicines = db.Column(db.ARRAY(db.String(100)))
-    prescription_instructions = db.Column(db.Text, nullable=False)
+    prescription_instructions = db.Column(db.Text, nullable=True)
+    diagnosis = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     drugs = db.relationship('Drug', secondary='prescription_drug')

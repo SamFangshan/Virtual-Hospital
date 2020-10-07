@@ -229,9 +229,13 @@ def chatroom(appointment_id):
             return render_template('errors/403.html'), 403
         chatting_user = User.query.filter_by(id=appointment.patient_id).first()
         department = Department.query.filter_by(id=current_user.department_id).first()
+
     elif current_user.type == 'patient':
+        if appointment.patient_id != current_user.id:
+            return render_template('errors/403.html'), 403
         chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
         department = Department.query.filter_by(id=chatting_user.department_id).first()
+
     return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user, department=department)
 
   
