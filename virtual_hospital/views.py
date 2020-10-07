@@ -7,8 +7,38 @@ from flask import flash, jsonify, redirect, render_template, request, url_for, s
 from flask_login import current_user, login_required, login_user, logout_user
 from virtual_hospital import app
 from virtual_hospital.forms import *
+
+from flask_login import login_user, login_required, logout_user, current_user
+from flask_socketio import SocketIO,emit
+
 from datetime import datetime, timedelta
 from typing import NamedTuple
+
+socketio = SocketIO(app)
+
+def messageReceived(methods=['GET', 'POST']):
+    print('message was received!!!')
+
+
+@socketio.on('my event')
+def handle_my_custom_event(json, methods=['GET', 'POST']):
+    print('received my event: ' + str(json))
+    socketio.emit('my response', json, callback=messageReceived)
+
+
+@socketio.on('image-upload')
+def imageUpload(json):
+    print('image received')
+    socketio.emit('send-image', json)
+
+
+@socketio.on('connect')
+def connected():
+    print('connect')
+@socketio.on('disconnect')
+def disconnect():
+    print('disconnect')
+
 
 from virtual_hospital.models import *
 
@@ -183,6 +213,13 @@ def setprofile():
 
     return render_template('setprofile.html')
 
+
+@app.route("/chatroom",methods=['Get','Post'])
+@login_required
+def chatroom():
+    return render_template("chatroom.html")
+
+  
 @app.route("/search", methods=['GET', 'POST'])
 @login_required
 def search():
@@ -214,6 +251,7 @@ def department(id):
         return render_template('department.html', department=dept[0], doctors=doctors)
     else:
         return render_template('errors/404.html')
+
 
 @app.route("/test", methods=['GET', 'POST'])
 def test():
