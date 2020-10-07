@@ -9,7 +9,10 @@
                 <div class="col-8">Doctors in {{ department.name }} Department</div>
                 {% for doctor in doctors %}
                     <div class="col-8">
-                        <a href="#">{{ doctor.name }}</a>
+                      <form action="/profile" method="GET">
+                        <input type="hidden" name="id" value="{{ doctor.id }}">
+                        <button type="submit">{{ doctor.name }}</button>
+                      </form>
                     </div>
                 {% endfor %}
             {% endif %}
