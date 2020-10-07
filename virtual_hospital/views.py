@@ -232,7 +232,7 @@ def search():
     if request.values.__contains__("title"):
         text = request.values["title"]
         doctors = Doctor.query.filter(Doctor.name.ilike("%" + text + "%")).all()
-        return render_template('search.html', search=text, doctors=doctors)
+        return (render_template('search.html', search=text, doctors=doctors), 200)
     else:
         return render_template('search.html', search="", doctors=None)
 

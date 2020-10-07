@@ -105,4 +105,3 @@ class PrescriptionDrug(db.Model):
 
     prescription = db.relationship(Prescription, backref=db.backref('prescription_drugs'))
     drug = db.relationship(Drug, backref=db.backref('prescription_drugs'))
-    
