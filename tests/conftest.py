@@ -86,6 +86,9 @@ def _db(app):
 
     return db
 
+@pytest.fixture(scope="session", autouse=True)
+def faker_session_locale():
+    return "en_US"
 
 def init_db():
     factories.TestUserFactory()
@@ -103,6 +106,7 @@ def init_db():
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('appointment_time_slot', 'id', 1 + 1))
 
     factories.PrescriptionFactoryForPayment()
+    factories.AppointmentFactoryForPayment.create_batch(2)
     factories.PrescriptionFactoryPaid()
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('prescription', 'id', 2 + 1))
 

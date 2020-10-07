@@ -232,7 +232,7 @@ def search():
     if request.values.__contains__("title"):
         text = request.values["title"]
         doctors = Doctor.query.filter(Doctor.name.ilike("%" + text + "%")).all()
-        return render_template('search.html', search=text, doctors=doctors)
+        return (render_template('search.html', search=text, doctors=doctors), 200)
     else:
         return render_template('search.html', search="", doctors=None)
 
@@ -307,9 +307,9 @@ def payment_success(payment_intent_id):
 @login_required
 def payment(prescription_id):
     prescription = Prescription.query.get(int(prescription_id))
-    appointment = Appointment.query.filter_by(prescription_id=prescription.id).first()
     if not prescription:
         return render_template('errors/404.html'), 404
+    appointment = Appointment.query.filter_by(prescription_id=prescription.id).first()
     if current_user.type == 'doctor' or appointment.patient_id != current_user.id:
         return render_template('errors/403.html'), 403
     if prescription.pick_up_status != 'no payment':  # this payment has already been completed
