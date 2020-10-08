@@ -128,7 +128,7 @@ def signup():
             db.session.commit()
             flash('New User Created.', 'info')
             login_user(newUser)
-            return redirect((url_for('index')), 200)
+            return redirect(url_for('index'))
 
     return (render_template('sign_up.html', currPage="SignUp", error=error), 500)
 
@@ -214,10 +214,29 @@ def setprofile():
     return render_template('setprofile.html')
 
 
-@app.route("/chatroom",methods=['Get','Post'])
+@app.route("/chatroom/<appointment_id>",methods=['Get','Post'])
 @login_required
-def chatroom():
-    return render_template("chatroom.html")
+def chatroom(appointment_id):
+    appointment = Appointment.query.filter_by(id=appointment_id).first()
+    if not appointment:
+        return render_template('errors/404.html'), 404
+    appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
+    #if datetime.now() < appointment_time_slot.appointment_start_time or datetime.now() > appointment_time_slot.appointment_end_time:
+    #    return render_template('errors/403.html'), 403
+
+    if current_user.type == 'doctor':
+        if current_user.id != appointment_time_slot.doctor_id:
+            return render_template('errors/403.html'), 403
+        chatting_user = User.query.filter_by(id=appointment.patient_id).first()
+        department = Department.query.filter_by(id=current_user.department_id).first()
+
+    elif current_user.type == 'patient':
+        if appointment.patient_id != current_user.id:
+            return render_template('errors/403.html'), 403
+        chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
+        department = Department.query.filter_by(id=chatting_user.department_id).first()
+
+    return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user, department=department)
 
   
 @app.route("/search", methods=['GET', 'POST'])
