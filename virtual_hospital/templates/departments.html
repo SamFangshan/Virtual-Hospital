@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <article id="main">
+        <section class="wrapper style1 special container medium">
+            {% for department in departments %}
+                <div class="col-8">
+                    <a href="../department/{{ department.id }}"}>{{ department.name }}</a>
+                </div>
+            {% endfor %}
+        </section>
+    </article>
+{% endblock %}

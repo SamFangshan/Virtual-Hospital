@@ -67,16 +67,6 @@ class AppointmentTimeSlot(db.Model):
     appointments = db.relationship('Appointment', lazy='select',
                                    backref=db.backref('appointment_time_slot', lazy='joined'))
 
-
-class Appointment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    patient_id = db.Column(db.Integer, db.ForeignKey(Patient.id), nullable=False)
-    status = db.Column(db.String(10), nullable=False)
-    queue_number = db.Column(db.Integer)
-    appointment_time_slot_id = db.Column(db.Integer, db.ForeignKey(AppointmentTimeSlot.id), nullable=False)
-    rating = db.Column(db.Float)
-
-
 class Prescription(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey(Patient.id), nullable=False)
@@ -89,6 +79,16 @@ class Prescription(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     drugs = db.relationship('Drug', secondary='prescription_drug')
+
+
+class Appointment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_id = db.Column(db.Integer, db.ForeignKey(Patient.id), nullable=False)
+    status = db.Column(db.String(10), nullable=False)
+    queue_number = db.Column(db.Integer)
+    appointment_time_slot_id = db.Column(db.Integer, db.ForeignKey(AppointmentTimeSlot.id), nullable=False)
+    rating = db.Column(db.Float)
+    prescription_id = db.Column(db.Integer, db.ForeignKey(Prescription.id), nullable=True)
 
 
 class Drug(db.Model):

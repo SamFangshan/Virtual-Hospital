@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <article id="main">
+        <section class="wrapper style5 container medium">
+            {# searchbox #}
+            <div class="content">
+                <form method="post">
+                    <div class="row gtr-50">
+                        <div class="col-8 col-12-mobile">
+                            <input type="text" name="title" placeholder="Input here" value={{ search }}>
+                        </div>
+                        <div class="col-4 col-12-mobile">
+                            <ul class="buttons">
+                                <li><input type="submit" class="special" value="Search"/></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </form>
+                <a href="../departments">Check Departments</a>
+            </div>
+        </section>
+    </article>
+
+    {# result #}
+    {% if doctors != None %}
+        <article id="menubar">
+            <section class="wrapper style1 special container medium">
+                {% if doctors|length != 0 %}
+                    {% for doctor in doctors %}
+                        <div class="col-8">
+                            <a href="#">{{ doctor.name }}</a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-8">Doctor's name with keyword "{{ search }}" cannot be found in the system</div>
+                {% endif %}
+            </section>
+        </article>
+    {% endif %}
+{% endblock %}

@@ -9,7 +9,6 @@ def test_login(test_client):
 
 def test_logout(test_client):
     assert User.query.filter_by(name="test_user").count() == 1
-    payload = {"email": "test_user@gmail.com", "password": "password"}
     response = test_client.get("/logout", follow_redirects=True)
     assert response.status_code == 200
     assert b'Goodbye.' in response.data
