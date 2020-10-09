@@ -91,6 +91,7 @@ def faker_session_locale():
     return "en_US"
 
 def init_db():
+    factories.DepartmentFactoryForRateDoctor()
     factories.TestUserFactory()
 
     factories.DoctorFactory.create_batch(3)
@@ -115,4 +116,3 @@ def init_db():
 
     factories.PrescriptionDrugFactory.create_batch(3)
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('prescription_drug', 'id', 3 + 1))
-
