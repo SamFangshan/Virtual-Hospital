@@ -210,7 +210,9 @@ body {font-family: Arial, Helvetica, sans-serif;}
 
 <header class="special container" style="width:100%">
 	<h2 style = "color: #505F98;background-color:#E7ECFF"> <strong>Chat Room</strong> </h2>
-    <button style="float:right;margin:8px 5vw;" type="submit" name="submit" value = "Submit">Complete Appointment</button>
+    <form method="GET">
+        <button style="float:right;margin:8px 5vw;" type="submit" name="submit">Complete Appointment</button>
+    </form>
 </header>
 
 <div class="content">
@@ -228,10 +230,13 @@ body {font-family: Arial, Helvetica, sans-serif;}
             {% elif current_user.type == 'doctor' %}
             <h1 style="text-align:center">Diagnosis</h1>
             <div id="Diagnosis">
-                <input style="height:10vh; border:0" type="text" id="InputDiagnosis" placeholder="Enter diagnosis while chatting with patient" required>
+                <form method="POST">
+                <input style="height:10vh; border:0" type="text" name="InputDiagnosis" id="InputDiagnosis" placeholder="Enter diagnosis while chatting with patient" required>
                 <div class="btn-holder">
-                <button style="margin:0;float:right;bottom:0;height:2vh;width:10%;" type="submit" name = "send" value = "Submit">Save</button>
+                <button style="margin:0;float:right;bottom:0;height:2vh;width:10%;" type="submit" name = "send">Save</button>
                 </div>
+                </form>
+
             </div>
 
             {% endif %}
@@ -245,7 +250,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
                 <input type="file" id="files" accept="image/*" />
             </div>
             <div id="usermsg">
-                <form id="chatsubmit" method="post" action="/chatroom">
+                <form id="chatsubmit" action="/chatroom">
                     <!-- <output id="filesInfo"></output> -->
                     <input style="height:16vh; border:0" type="text" class="inputmsg" id="inputmsg" placeholder="|" required>
                     <button style="margin:0;float:right;height:2vh;" type="submit" name = "send" value = "Submit">Send</button>

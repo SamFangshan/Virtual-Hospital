@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+/* The Container for card and chat */
+#container {
+    margin: auto;
+    width: 90%;
+    height: 80vh;
+}
+
+/* The Container receipt*/
+#receipt {
+    width:30%;
+    height:80vh;
+    float:left;
+    background:#ffffff;
+    border:1px solid #ababab;
+    text-align:center;
+}
+
+/* The Container drugList */
+#drugList{
+    width:70%;
+    float:right;
+    height:80vh;
+    background:#aaaaaa;
+    border:1px solid #ababab; }
+
+.message_holder{
+    overflow:auto;
+}
+
+#clear {
+    clear: both;
+}
+
+</style>
+
+<header class="special container" style="width:100%">
+</header>
+
+<div class="content">
+
+    <div id = "container">
+        <div id="receipt">
+            <h5 style="text-align:center;color:#505F98"> Patient: {{patient.name}}</h5>
+            <h5 style="text-align:center;color:#505F98"> Diagnosis: {{prescription.diagnosis}}</h5>
+        </div>
+
+        <div id="drugList" class="message_holder">
+            <input type="text" name="title" placeholder="Input here">
+            {% for drug in drugs %}
+                        <div class>
+                            <span>{{drug.name}}</span>
+                        </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

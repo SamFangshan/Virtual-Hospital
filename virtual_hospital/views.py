@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from typing import NamedTuple
 
 socketio = SocketIO(app)
+FINISHED = "finished"
 
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
@@ -220,6 +221,8 @@ def chatroom(appointment_id):
     appointment = Appointment.query.filter_by(id=appointment_id).first()
     if not appointment:
         return render_template('errors/404.html'), 404
+    #if appointment.status == FINISHED:
+    #    return render_template('errors/403.html'), 403
     appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
     #if datetime.now() < appointment_time_slot.appointment_start_time or datetime.now() > appointment_time_slot.appointment_end_time:
     #    return render_template('errors/403.html'), 403
@@ -229,15 +232,46 @@ def chatroom(appointment_id):
             return render_template('errors/403.html'), 403
         chatting_user = User.query.filter_by(id=appointment.patient_id).first()
         department = Department.query.filter_by(id=current_user.department_id).first()
-
+        if request.method == 'POST':
+            diagnosis = request.form['InputDiagnosis']
+            presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+            if not presrciption:
+                new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                                diagnosis=diagnosis)
+                db.session.add(new_presrciption)
+                db.session.commit()
+                appointment.prescription_id = new_presrciption.id
+            else:
+                presrciption.diagnosis = diagnosis
+            db.session.commit()
+        if request.method == 'GET':
+            presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+            if not presrciption:
+                presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                            diagnosis="No diagnosis")
+                db.session.add(presrciption)
+                appointment.prescription_id = presrciption.id
+            appointment.status = FINISHED
+            db.session.commit()
+            return redirect(url_for('presrciption', prescription_id=presrciption.id))
+        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
+                               department=department)
     elif current_user.type == 'patient':
         if appointment.patient_id != current_user.id:
             return render_template('errors/403.html'), 403
         chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
         department = Department.query.filter_by(id=chatting_user.department_id).first()
+        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
+                               department=department)
 
-    return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user, department=department)
-
+@app.route("/presrciption/<prescription_id>",methods=['Get','Post'])
+@login_required
+def presrciption(prescription_id):
+    prescription = Prescription.query.filter_by(id=prescription_id).first()
+    patient = User.query.filter_by(id=prescription.patient_id).first()
+    drugs = Drug.query.order_by(Drug.category).all()
+    return render_template("presrciption.html", prescription_id=prescription_id, patient=patient,
+                           prescription=prescription, drugs=drugs)
   
 @app.route("/search", methods=['GET', 'POST'])
 @login_required
