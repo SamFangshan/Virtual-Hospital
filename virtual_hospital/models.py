@@ -53,6 +53,16 @@ class Doctor(User):
     appointment_time_slots = db.relationship('AppointmentTimeSlot', lazy='select',
                                              backref=db.backref('doctor', lazy='joined'))
 
+    # calculate doctor rating based on past appointments
+    def get_rating(self):
+        ratings = []
+        for appointment_time_slot in self.appointment_time_slots:
+            for appointment in appointment_time_slot.appointments:
+                if appointment.rating is not None:
+                    ratings.append(appointment.rating)
+        return sum(ratings) / len(ratings)
+
+
     __mapper_args__ = {
         'polymorphic_identity': 'doctor',
     }
