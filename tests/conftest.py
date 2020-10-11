@@ -91,6 +91,7 @@ def faker_session_locale():
     return "en_US"
 
 def init_db():
+
     factories.TestUserFactory()
 
     factories.DoctorFactory.create_batch(3)
@@ -116,3 +117,9 @@ def init_db():
     factories.PrescriptionDrugFactory.create_batch(3)
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('prescription_drug', 'id', 3 + 1))
 
+    # factories would result in error... so add like this
+    department = Department(name='Anaesthesia', description='no description')
+    for doctor in Doctor.query.all():
+        department.doctors.append(doctor)
+    db.session.add(department)
+    db.session.commit()

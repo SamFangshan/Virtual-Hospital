@@ -28,10 +28,21 @@ class DoctorFactory(SQLAlchemyModelFactory):
     #     lambda x: ['08:30', None, '09:00'][x % 3])
     # office_hour_end_time = factory.Sequence(
     #     lambda x: ['18:00', None, '19:00'][x % 3])
+    # department_id = 1
 
     class Meta:
         model = Doctor
         sqlalchemy_session = db.session
+
+
+# class DepartmentFactoryForRateDoctor(SQLAlchemyModelFactory):
+#     id = factory.Sequence(lambda x: x + 1)
+#     name = 'Anaesthesia'
+#     description = 'no description'
+#
+#     class Meta:
+#         model = Department
+#         sqlalchemy_session = db.session
 
 
 class PatientFactory(SQLAlchemyModelFactory):
@@ -67,7 +78,7 @@ class AppointmentFactoryForPayment(SQLAlchemyModelFactory):
     status = "Scheduled"
     queue_number = 1
     appointment_time_slot_id = 1
-    rating = 4.0
+    # rating = 4.0
     prescription_id = factory.Sequence(lambda x: x + 1)
 
     class Meta:
