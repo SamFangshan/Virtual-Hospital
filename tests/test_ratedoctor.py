@@ -1,5 +1,6 @@
 from virtual_hospital.models import *
 import datetime
+import tests.factories as factories
 
 
 def test_ratedoctor_no_log_in(test_client):
@@ -24,7 +25,7 @@ def test_ratedoctor_normal(test_client):
     doctor_name = Doctor.query.get(1).name
     assert b'Anaesthesia' in response.data
     assert bytes(doctor_name, 'utf-8') in response.data
-    assert bytes(datetime.datetime.today().date().strftime('%d/%m/%Y, %H:%M:%S'), 'utf-8') in response.data
+    assert bytes(datetime.datetime.today().date().strftime('%d/%m/%Y'), 'utf-8') in response.data
     assert 200 == response.status_code
 
     response = test_client.post('/ratedoctor/appointment/1', data=dict(
