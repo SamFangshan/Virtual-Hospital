@@ -65,7 +65,7 @@ class PrescriptionFactoryForPayment(SQLAlchemyModelFactory):
     doctor_id = 1
     pick_up_start_date = datetime.today().date()
     pick_up_status = 'no payment'
-    prescription_instructions = 'no'
+    diagnosis = 'cold'
     created_at = datetime.now()
 
     class Meta:
@@ -91,7 +91,7 @@ class PrescriptionFactoryPaid(SQLAlchemyModelFactory):
     doctor_id = 1
     pick_up_start_date = datetime.today().date()
     pick_up_status = 'pending'
-    prescription_instructions = 'no'
+    diagnosis = 'cold'
     created_at = datetime.now()
 
     class Meta:
