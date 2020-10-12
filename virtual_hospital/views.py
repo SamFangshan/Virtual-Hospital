@@ -14,6 +14,8 @@ from flask_socketio import SocketIO,emit
 from datetime import datetime, timedelta
 from typing import NamedTuple
 
+from collections import defaultdict
+
 socketio = SocketIO(app)
 FINISHED = "finished"
 
@@ -270,8 +272,11 @@ def presrciption(prescription_id):
     prescription = Prescription.query.filter_by(id=prescription_id).first()
     patient = User.query.filter_by(id=prescription.patient_id).first()
     drugs = Drug.query.order_by(Drug.category).all()
+    categories = defaultdict(list)
+    for drug in drugs:
+        categories[drug.category].append(drug)
     return render_template("presrciption.html", prescription_id=prescription_id, patient=patient,
-                           prescription=prescription, drugs=drugs)
+                           prescription=prescription, drugs=drugs, categories=categories)
   
 @app.route("/search", methods=['GET', 'POST'])
 @login_required

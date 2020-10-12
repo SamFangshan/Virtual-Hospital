@@ -20,6 +20,32 @@
     text-align:center;
 }
 
+.patient_info_holder {
+    width:100%;
+    height:10vh;
+    margin:0;
+    padding:0;
+
+}
+
+.prescription_list {
+    width:100%;
+    height:60vh;
+    overflow:auto;
+}
+.button_holder{
+    width:100%;
+    height:10vh;
+    display: table;
+    margin:0;
+    padding:0;
+}
+.submit_button {
+    height: 3vh;
+    display: table-cell;
+    vertical-align: bottom;
+}
+
 /* The Container drugList */
 #drugList{
     width:70%;
@@ -36,8 +62,11 @@
     clear: both;
 }
 
-</style>
 
+/* The dropdown bar for drugs in a category */
+
+</style>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <header class="special container" style="width:100%">
 </header>
 
@@ -45,19 +74,82 @@
 
     <div id = "container">
         <div id="receipt">
-            <h5 style="text-align:center;color:#505F98"> Patient: {{patient.name}}</h5>
-            <h5 style="text-align:center;color:#505F98"> Diagnosis: {{prescription.diagnosis}}</h5>
+            <div class="patient_info_holder">
+                <h5 style="text-align:center;color:#505F98;margin:0;padding:0;"> Patient: {{patient.name}}</h5>
+                <h5 style="text-align:center;color:#505F98"> Diagnosis: {{prescription.diagnosis}}</h5>
+            </div>
+
+            <div class="prescription_list" id="prescription_list_id">
+
+            </div>
+
+            <div class="button_holder">
+                <div class="submit_button">
+                    <button style="float:right;color : #505F98;background-color: #FFD166;">submit</button>
+                </div>
+            </div>
+
         </div>
 
         <div id="drugList" class="message_holder">
-            <input type="text" name="title" placeholder="Input here">
-            {% for drug in drugs %}
-                        <div class>
-                            <span>{{drug.name}}</span>
-                        </div>
-            {% endfor %}
+            <input type="submit"value="Search" style="float: right;background:#ffffff;height:3.5vh" />
+            <div style="overflow: hidden;">
+                <input type="text" style="width: 100%;background:#ffffff;height:3.5vh" placeholder="Input here"/>
+            </div>
+            <div style="width:100%" class="w3-dropdown-click">
+                {% for category in categories %}
+                    <button style="width:100%" onclick="extendDrugList(this.id)" id='{{category}}' class="w3-button w3-gray">{{category}}</button>
+                    <div style="width:100%" id='drug_{{category}}' class="w3-dropdown-content w3-bar-block w3-card-4 w3-animate-zoom">
+                        {% for drug in categories[category]%}
+                            <input type="submit" onclick="addDrug(this.id)" id='{{drug.name}}_{{drug.price}}' name='selected_drug'
+                                   style="width:100%" value="{{drug.name}} : ${{drug.price}}" class="w3-bar-item w3-button prescription-list-drug">
+                        {% endfor %}
+                    </div>
+                <br>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
 </div>
+<div class="temp"></div>
+<script>
+function extendDrugList(category) {
+  var div_id = 'drug_' + category;
+  var x = document.getElementById(div_id);
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+  } else {
+    x.className = x.className.replace(" w3-show", "");
+  }
+}
+</script>
+
+<script>
+$('.w3-bar-item w3-button prescription-list-drug').click(function() {
+  var drug = $(this).data("id");
+  var drug_name = drug.split('_')[0];
+  var drug_price = drug.split('_')[1];
+  $('div.prescription_list').append('<button class="prescription-added-drugs" style="width:100%">' +
+  drug_name + ' : $' + drug_price+ '</button>');
+  $(".prescription-added-drugs").click(function() {
+    $(this).remove();
+  });
+});
+</script>
+
+<script>
+function addDrug(drug) {
+  var drug_name = drug.split('_')[0];
+  var drug_price = drug.split('_')[1];
+  $('div.prescription_list').append('<input type="submit" class="prescriptionAddedDrugs" style="width:100%" value="' +
+  drug_name + ' : $' + drug_price + '"></input>');
+}
+</script>
+
+<script>
+$('#prescription_list').on('click', '.prescriptionAddedDrugs', function () {
+   $(this).remove()
+});
+</script>
 {% endblock %}
