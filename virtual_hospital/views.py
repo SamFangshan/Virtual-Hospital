@@ -221,6 +221,7 @@ def setprofile():
 @login_required
 def chatroom(appointment_id):
     appointment = Appointment.query.filter_by(id=appointment_id).first()
+    # print(appointment, current_user)
     if not appointment:
         return render_template('errors/404.html'), 404
     #if appointment.status == FINISHED:
@@ -236,19 +237,23 @@ def chatroom(appointment_id):
         department = Department.query.filter_by(id=current_user.department_id).first()
         if request.method == 'POST':
             try:
+                print("!", request.form)
                 diagnosis = request.form['InputDiagnosis']
+                print(diagnosis)
+                    # diagnosis = "sore throat"
                 presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+                print(presrciption)
                 if not presrciption:
-                    new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
-                                                    diagnosis=diagnosis)
-                    db.session.add(new_presrciption)
-                    db.session.commit()
-                    appointment.prescription_id = new_presrciption.id
+                        new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id, pick_up_start_date='2020-10-13',
+                                                        pick_up_status='', prescription_instructions='', diagnosis=diagnosis)
+                        db.session.add(new_presrciption)
+                        db.session.commit()
+                        appointment.prescription_id = new_presrciption.id
                 else:
-                    presrciption.diagnosis = diagnosis
+                        presrciption.diagnosis = diagnosis
                 db.session.commit()
-            except:
-                request.form['submit']
+            except KeyError:
+                assert request.form['submit']
                 presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
                 if not presrciption:
                     presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
@@ -276,25 +281,35 @@ def presrciption(prescription_id):
     drugs = Drug.query.order_by(Drug.category).all()
     categories = defaultdict(list)
     given_drug = prescription.drugs
-    for drug in drugs:
-        categories[drug.category].append(drug)
 
     if request.method == 'POST':
-        try:
+        post_item = next(request.form.keys())
+        print(post_item)
+        if post_item == 'selected_drug':
             request_value = request.form['selected_drug']
             drug_name = request_value.split(' : $')[0]
             drug = Drug.query.filter_by(name=drug_name).first()
             prescription.drugs.append(drug)
-        except:
+            db.session.commit()
+        elif post_item == 'added_drug':
             request_value = request.form['added_drug']
             drug_name = request_value.split(' : $')[0]
             drug = Drug.query.filter_by(name=drug_name).first()
-            prescription.drugs.remove(drug)
-        db.session.commit()
+            try:
+                prescription.drugs.remove(drug)
+            except ValueError:
+                pass
+            db.session.commit()
+        elif post_item == 'search_drug':
+            request_value = request.form['search_drug']
+            drugs = Drug.query.filter(Drug.category.ilike("%" + request_value + "%")).all()
+    for drug in drugs:
+        categories[drug.category].append(drug)
+    categories = dict(sorted(categories.items(), key=lambda x: x[0]))
 
     return render_template("presrciption.html", prescription_id=prescription_id, patient=patient,
                            prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug)
-  
+
 @app.route("/search", methods=['GET', 'POST'])
 @login_required
 def search():

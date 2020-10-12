@@ -78,9 +78,8 @@
                 <h5 style="text-align:center;color:#505F98;margin:0;padding:0;"> Patient: {{patient.name}}</h5>
                 <h5 style="text-align:center;color:#505F98"> Diagnosis: {{prescription.diagnosis}}</h5>
             </div>
-
             <div class="prescription_list" id="prescription_list_id">
-            {% for drug in given_drug%}
+            {% for drug in given_drug %}
                   <form method="post">
                        <input type="submit" id='given_{{drug.name}}_{{drug.price}}' name='added_drug'
                               style="width:100%" value="{{drug.name}} : ${{drug.price}}">
@@ -93,14 +92,25 @@
                     <button onclick="./index" type="submit" style="float:right;color : #505F98;background-color: #FFD166;">submit</button>
                 </div>
             </div>
+{#        <form method="post">#}
+{#            <div class="button_holder">#}
+{#                <div class="submit_button">#}
+{#                    <input type="submit" value="submit" name="submit" tyle="float:right;color : #505F98;background-color: #FFD166;">#}
+{#                </div>#}
+{#            </div>#}
+{#        </form>#}
 
         </div>
 
         <div id="drugList" class="message_holder">
-            <input type="submit"value="Search" style="float: right;background:#ffffff;height:3.5vh" />
-            <div style="overflow: hidden;">
-                <input type="text" style="width: 100%;background:#ffffff;height:3.5vh" placeholder="Input here"/>
-            </div>
+{#            <input type="submit" value="Search" style="float: right;background:#ffffff;height:3.5vh" />#}
+            <form action="/presrciption/{{ prescription_id }}" method="post">
+                <input type="submit" value="Search" style="float: right;background:#ffffff;height:3.5vh" />
+                <div style="overflow: hidden;">
+                    <input type="text" name='search_drug' style="width: 100%;background:#ffffff;height:3.5vh" placeholder="Input here"/>
+                </div>
+            </form>
+
             <div style="width:100%" class="w3-dropdown-click">
                 {% for category in categories %}
                     <button style="width:100%" onclick="extendDrugList(this.id)" id='{{category}}' class="w3-button w3-gray">{{category}}</button>
@@ -122,13 +132,30 @@
 
 <div class="temp"></div>
 <script>
+var cat_id = [];
+{% for category in categories %}
+    cat_id.push('drug_{{ category }}')
+{% endfor %}
+
 function extendDrugList(category) {
   var div_id = 'drug_' + category;
   var x = document.getElementById(div_id);
-  if (x.className.indexOf("w3-show") == -1) {
-    x.className += " w3-show";
-  } else {
-    x.className = x.className.replace(" w3-show", "");
+  for (var i in cat_id) {
+      var id = cat_id[i]
+
+      if (id == div_id) {
+          console.log('yes!')
+            if (x.className.indexOf("w3-show") == -1) {
+                x.className += " w3-show";
+            } else {
+                x.className = x.className.replace(" w3-show", "");
+            }
+      } else {
+          if (document.getElementById(id).className.includes(" w3-show")) {
+              document.getElementById(id).className = document.getElementById(id).className.replace(" w3-show", "");
+              console.log(document.getElementById(id).className)
+          }
+      }
   }
 }
 </script>
