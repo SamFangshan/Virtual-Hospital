@@ -235,27 +235,29 @@ def chatroom(appointment_id):
         chatting_user = User.query.filter_by(id=appointment.patient_id).first()
         department = Department.query.filter_by(id=current_user.department_id).first()
         if request.method == 'POST':
-            diagnosis = request.form['InputDiagnosis']
-            presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
-            if not presrciption:
-                new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
-                                                diagnosis=diagnosis)
-                db.session.add(new_presrciption)
+            try:
+                diagnosis = request.form['InputDiagnosis']
+                presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+                if not presrciption:
+                    new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                                    diagnosis=diagnosis)
+                    db.session.add(new_presrciption)
+                    db.session.commit()
+                    appointment.prescription_id = new_presrciption.id
+                else:
+                    presrciption.diagnosis = diagnosis
                 db.session.commit()
-                appointment.prescription_id = new_presrciption.id
-            else:
-                presrciption.diagnosis = diagnosis
-            db.session.commit()
-        if request.method == 'GET':
-            presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
-            if not presrciption:
-                presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
-                                            diagnosis="No diagnosis")
-                db.session.add(presrciption)
-                appointment.prescription_id = presrciption.id
-            appointment.status = FINISHED
-            db.session.commit()
-            return redirect(url_for('presrciption', prescription_id=presrciption.id))
+            except:
+                request.form['submit']
+                presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+                if not presrciption:
+                    presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                                diagnosis="No diagnosis")
+                    db.session.add(presrciption)
+                    appointment.prescription_id = presrciption.id
+                appointment.status = FINISHED
+                db.session.commit()
+                return redirect(url_for('presrciption', prescription_id=presrciption.id))
         return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
                                department=department)
     elif current_user.type == 'patient':
