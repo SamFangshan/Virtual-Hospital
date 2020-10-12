@@ -1,18 +1,51 @@
 {% extends 'base.html' %}
-
 {% block content %}
+
+    <style>
+        #card {
+            border: 1px solid black;
+            background: #eeeeee;
+        }
+
+        h4 {
+            display: inline;
+        }
+    </style>
     <article id="main">
-        <section class="wrapper style1 special container medium">
-            {% if doctors|length == 0 %}
-                <div class="col-8">Sorry, there is no doctors in {{ department.name }} currently</div>
-            {% else %}
-                <div class="col-8">Doctors in {{ department.name }} Department</div>
-                {% for doctor in doctors %}
-                    <div class="col-8">
-                        <a href="#">{{ doctor.name }}</a>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </section>
+
+        {% if doctors|length == 0 %}
+            <div class="col-12-normal" style="text-align: center;"><strong>Sorry, there is no doctors in {{ department.name }}
+                    currently</strong></div>
+        {% else %}
+
+            <div class="col-12-normal" style="text-align: center;"><strong>Doctors in {{ department.name }} Department</strong></div>
+            <section class="wrapper container wide">
+                <div class="content row gtr-150">
+                    {% for doctor in doctors %}
+                        <div class="col-6 col-12-normal">
+                            <section id="card">
+                                <img class=user-image src="..\static\images\doctor_img.png" alt="Doctor's Photo"
+                                     width="100" height="100">
+                                <br>
+                                <a href="/profile?id={{ doctor.id }}"
+                                   title="Click to view {{ doctor.name }}'s profile">{{ doctor.name }}</a>
+                                <br>
+                                <h4 class="alignLeftNoCaps"><strong>Rate:</strong></h4>
+
+                                <h4 class="alignLeftNoCaps" style='color: #F2994A; margin-bottom: auto'>
+                                    <strong>★ 5.0</strong></h4>
+
+                                <h4 class="alignLeftNoCaps" style="margin-left: 10px"><strong>Mon -
+                                    Fri: {{ doctor.office_hour_start_time }}
+                                    - {{ doctor.office_hour_end_time }}</strong></h4>
+                            </section>
+                        </div>
+                    {% endfor %}
+                </div>
+                </div>
+            </section>
+        {% endif %}
+
     </article>
 {% endblock %}
+

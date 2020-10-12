@@ -9,6 +9,8 @@
 	   <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
 		<noscript><link rel="stylesheet" href="{{ url_for('static', filename='assets/css/noscript.css') }}" /></noscript>
     {% endblock %}
+    {% block stylesheets %}
+    {% endblock %}
 </head>
 <body class="index is-preload">
   {% for category, message in get_flashed_messages(with_categories=True) %}
@@ -32,12 +34,24 @@
 				{% endif %}
 
 				{% if current_user.is_authenticated %}
+          {% if currPage == "Appointments" %}
+            <li class="current"><a href="/appointments">Appointments</a></li>
+          {% else %}
+            <li><a href="/appointments">Appointments</a></li>
+          {% endif %}
+
+          {% if currPage == "Search" %}
+              <li class="current"><a href="/search">Search</a></li>
+          {% else %}
+              <li><a href="/search">Search</a></li>
+          {% endif %}
+
           <li class="submenu"> <!-- Note: Submenu can be nested twice -->
             <a href="#"> {{ current_user.name }} </a>
             <ul>
               <li><a href="/profile?id={{ current_user.id }}">View Profile</a></li>
               <li><a href="/setprofile">Set Profile</a></li>
-                <li><a href="/settings">Account Management</a></li>
+              <li><a href="/settings">Account Management</a></li>
             </ul>
           </li>
   				<li><a href="/logout" class="button primary">Logout</a></li>

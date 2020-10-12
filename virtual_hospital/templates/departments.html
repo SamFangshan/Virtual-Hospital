@@ -1,13 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <style>
+        #card {
+            border: 1px solid black;
+            background: #eeeeee;
+        }
+    </style>
+
     <article id="main">
-        <section class="wrapper style1 special container medium">
-            {% for department in departments %}
-                <div class="col-8">
-                    <a href="../department/{{ department.id }}"}>{{ department.name }}</a>
-                </div>
-            {% endfor %}
+{#        <section class="wrapper style1 special container medium">#}
+            <div class="col-12-normal" style="text-align: center;"><strong>All Departments Available</strong></div>
+{#        </section>#}
+
+        <section class="wrapper container normal">
+            <div class="row gtr-150">
+                {% for department in departments %}
+                    <div class="col-6 col-12-normal">
+                        <section id="card" style="text-align: center">
+                            <a href="../department/{{ department.id }}" } title="Click to view all doctors in this department"><strong>{{ department.name }}</strong></a>
+                        </section>
+                    </div>
+                {% endfor %}
+            </div>
         </section>
     </article>
 {% endblock %}
