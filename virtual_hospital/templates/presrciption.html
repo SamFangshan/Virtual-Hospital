@@ -103,8 +103,7 @@
         </div>
 
         <div id="drugList" class="message_holder">
-{#            <input type="submit" value="Search" style="float: right;background:#ffffff;height:3.5vh" />#}
-            <form action="/presrciption/{{ prescription_id }}" method="post">
+            <form method="post">
                 <input type="submit" value="Search" style="float: right;background:#ffffff;height:3.5vh" />
                 <div style="overflow: hidden;">
                     <input type="text" name='search_drug' style="width: 100%;background:#ffffff;height:3.5vh" placeholder="Input here"/>
@@ -151,9 +150,9 @@ function extendDrugList(category) {
                 x.className = x.className.replace(" w3-show", "");
             }
       } else {
-          if (document.getElementById(id).className.includes(" w3-show")) {
-              document.getElementById(id).className = document.getElementById(id).className.replace(" w3-show", "");
-              console.log(document.getElementById(id).className)
+          var y = document.getElementById(id).className;
+          if (y.includes(" w3-show")) {
+              document.getElementById(id).className = y.replace(" w3-show", "");
           }
       }
   }
