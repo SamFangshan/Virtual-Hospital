@@ -273,10 +273,25 @@ def presrciption(prescription_id):
     patient = User.query.filter_by(id=prescription.patient_id).first()
     drugs = Drug.query.order_by(Drug.category).all()
     categories = defaultdict(list)
+    given_drug = prescription.drugs
     for drug in drugs:
         categories[drug.category].append(drug)
+
+    if request.method == 'POST':
+        try:
+            request_value = request.form['selected_drug']
+            drug_name = request_value.split(' : $')[0]
+            drug = Drug.query.filter_by(name=drug_name).first()
+            prescription.drugs.append(drug)
+        except:
+            request_value = request.form['added_drug']
+            drug_name = request_value.split(' : $')[0]
+            drug = Drug.query.filter_by(name=drug_name).first()
+            prescription.drugs.remove(drug)
+        db.session.commit()
+
     return render_template("presrciption.html", prescription_id=prescription_id, patient=patient,
-                           prescription=prescription, drugs=drugs, categories=categories)
+                           prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug)
   
 @app.route("/search", methods=['GET', 'POST'])
 @login_required

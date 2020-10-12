@@ -80,12 +80,17 @@
             </div>
 
             <div class="prescription_list" id="prescription_list_id">
-
+            {% for drug in given_drug%}
+                  <form method="post">
+                       <input type="submit" id='given_{{drug.name}}_{{drug.price}}' name='added_drug'
+                              style="width:100%" value="{{drug.name}} : ${{drug.price}}">
+                  </form>
+            {% endfor %}
             </div>
 
             <div class="button_holder">
                 <div class="submit_button">
-                    <button style="float:right;color : #505F98;background-color: #FFD166;">submit</button>
+                    <button onclick="./index" type="submit" style="float:right;color : #505F98;background-color: #FFD166;">submit</button>
                 </div>
             </div>
 
@@ -101,8 +106,10 @@
                     <button style="width:100%" onclick="extendDrugList(this.id)" id='{{category}}' class="w3-button w3-gray">{{category}}</button>
                     <div style="width:100%" id='drug_{{category}}' class="w3-dropdown-content w3-bar-block w3-card-4 w3-animate-zoom">
                         {% for drug in categories[category]%}
-                            <input type="submit" onclick="addDrug(this.id)" id='{{drug.name}}_{{drug.price}}' name='selected_drug'
+                        <form method="post">
+                            <input type="submit" id='{{drug.name}}_{{drug.price}}' name='selected_drug'
                                    style="width:100%" value="{{drug.name}} : ${{drug.price}}" class="w3-bar-item w3-button prescription-list-drug">
+                        </form>
                         {% endfor %}
                     </div>
                 <br>
@@ -112,6 +119,7 @@
     </div>
 
 </div>
+
 <div class="temp"></div>
 <script>
 function extendDrugList(category) {
@@ -125,31 +133,4 @@ function extendDrugList(category) {
 }
 </script>
 
-<script>
-$('.w3-bar-item w3-button prescription-list-drug').click(function() {
-  var drug = $(this).data("id");
-  var drug_name = drug.split('_')[0];
-  var drug_price = drug.split('_')[1];
-  $('div.prescription_list').append('<button class="prescription-added-drugs" style="width:100%">' +
-  drug_name + ' : $' + drug_price+ '</button>');
-  $(".prescription-added-drugs").click(function() {
-    $(this).remove();
-  });
-});
-</script>
-
-<script>
-function addDrug(drug) {
-  var drug_name = drug.split('_')[0];
-  var drug_price = drug.split('_')[1];
-  $('div.prescription_list').append('<input type="submit" class="prescriptionAddedDrugs" style="width:100%" value="' +
-  drug_name + ' : $' + drug_price + '"></input>');
-}
-</script>
-
-<script>
-$('#prescription_list').on('click', '.prescriptionAddedDrugs', function () {
-   $(this).remove()
-});
-</script>
 {% endblock %}
