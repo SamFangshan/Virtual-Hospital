@@ -1,8 +1,18 @@
 {% extends 'base.html' %}
-
 {% block content %}
+    <style>
+        #card {
+            border: 1px solid black;
+            background: #eeeeee;
+        }
+
+        h4 {
+            display: inline;
+        }
+    </style>
+
     <article id="main">
-        <section class="wrapper style5 container medium">
+        <section class="wrapper special container medium">
             {# searchbox #}
             <div class="content">
                 <form method="post">
@@ -18,23 +28,45 @@
 
                     </div>
                 </form>
-                <a href="../departments">Check Departments</a>
             </div>
+            <a href="../departments" style="text-align: center"><strong>Browse Doctors' Profile by Departments</strong></a>
         </section>
+
     </article>
 
     {# result #}
     {% if doctors != None %}
         <article id="menubar">
-            <section class="wrapper style1 special container medium">
+            <section class="wrapper container wide">
                 {% if doctors|length != 0 %}
-                    {% for doctor in doctors %}
-                        <div class="col-8">
-                            <a href="#">{{ doctor.name }}</a>
+                    <div class="content">
+                        <div class="row gtr-150">
+                            {% for doctor in doctors %}
+                                <div class="col-6 col-12-normal">
+                                    <section id="card">
+                                        <img class=user-image src="static\images\doctor_img.png" alt="Doctor's Photo"
+                                             width="100" height="100">
+                                        <br>
+                                        <a href="/profile?id={{ doctor.id }}"
+                                           title="Click to view {{ doctor.name }}'s profile">{{ doctor.name }}</a>
+                                        <br>
+                                                <h4 class="alignLeftNoCaps"><strong>Rate:</strong></h4>
+
+                                                <h4 class="alignLeftNoCaps" style='color: #F2994A; margin-bottom: auto'>
+                                                    <strong>★ 5.0</strong></h4>
+
+                                        <h4 class="alignLeftNoCaps" style="margin-left: 10px"><strong>Mon -
+                                            Fri: {{ doctor.office_hour_start_time }}
+                                            - {{ doctor.office_hour_end_time }}</strong></h4>
+                                    </section>
+                                </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
+                    </div>
                 {% else %}
-                    <div class="col-8">Doctor's name with keyword "{{ search }}" cannot be found in the system</div>
+
+                <div class="col-8" style="text-align: center;">Doctor's name with keyword "{{ search }}" cannot be found in the system</div>
+
                 {% endif %}
             </section>
         </article>

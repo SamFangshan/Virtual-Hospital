@@ -19,7 +19,6 @@ socketio = SocketIO(app)
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
 
-
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
     print('received my event: ' + str(json))
@@ -38,7 +37,6 @@ def connected():
 @socketio.on('disconnect')
 def disconnect():
     print('disconnect')
-
 
 from virtual_hospital.models import *
 
@@ -264,7 +262,10 @@ def departments():
 @app.route("/department/<id>")
 @login_required
 def department(id):
-    dept = Department.query.filter_by(id=id).all()
+    if id.isdigit():
+        dept = Department.query.filter_by(id=id).all()
+    else:
+        return render_template('errors/404.html')
     if dept:
         doctors = Doctor.query.filter_by(department_id=id).all()
         return render_template('department.html', department=dept[0], doctors=doctors)
