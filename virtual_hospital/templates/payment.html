@@ -145,6 +145,22 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+.total_price_column {
+  width: 30%;
+  color: rgba(9,17,51,1);
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 18px;
+  float: left;
+}
+.total_price_value {
+  width: 30%;
+  color: rgba(111,124,178,1);
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 18px;
+  float: left;
+}
 </style>
 <article id="main">
 <section class="wrapper style4 special container medium">
@@ -182,9 +198,16 @@
       ${{ '{0:.2f}'.format(drug.price) }} <br>
     {% endfor %}</span>
   </div>
-  {% for drug in drugs %}
-    <br><br>
-  {% endfor %}
+  <br></br>
+  <br></br>
+  <br></br>
+  <div class="total_price" style="width:100%;float:left">
+  <span class="total_price_column">Total</span><span class="total_price_value">{{ '${0:.2f}'.format(total_price) }}</span></div>
+  <!-- {% for drug in drugs %}
+    <br></br>
+  {% endfor %} -->
+  <br></br>
+  <br></br>
 
   <div style="width:100%;float:left;">
   <form action="/checkout" method="post">
