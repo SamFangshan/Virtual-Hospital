@@ -236,7 +236,7 @@ def chatroom(appointment_id):
 
     return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user, department=department)
 
-  
+
 @app.route("/search", methods=['GET', 'POST'])
 @login_required
 def search():
@@ -441,7 +441,7 @@ def appointments():
             db.session.commit()
             flash('Appointment deleted.', 'info')
             return redirect(url_for('appointments'))
-            
+
     if request.method == 'GET':
         if user is None:
             return render_template("errors/404.html")
@@ -503,7 +503,7 @@ def profile():
         else:
             if user.type == 'patient':
                 if current_user.type == 'doctor' or current_user.id == user.id:
-                    return render_template('patientprofile.html', user=user, currPage="Patient's Profile")
+                    return render_template('patientprofile.html', user=user, current_user=current_user, currPage="Patient's Profile")
                 else:
                     return render_template('errors/403.html'), 403
 
