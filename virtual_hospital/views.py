@@ -237,20 +237,16 @@ def chatroom(appointment_id):
         department = Department.query.filter_by(id=current_user.department_id).first()
         if request.method == 'POST':
             try:
-                print("!", request.form)
                 diagnosis = request.form['InputDiagnosis']
-                print(diagnosis)
-                    # diagnosis = "sore throat"
                 presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
                 print(presrciption)
                 if not presrciption:
-                        new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id, pick_up_start_date='2020-10-13',
-                                                        pick_up_status='', prescription_instructions='', diagnosis=diagnosis)
-                        db.session.add(new_presrciption)
-                        db.session.commit()
-                        appointment.prescription_id = new_presrciption.id
+                    new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id, diagnosis=diagnosis)
+                    db.session.add(new_presrciption)
+                    db.session.commit()
+                    appointment.prescription_id = new_presrciption.id
                 else:
-                        presrciption.diagnosis = diagnosis
+                    presrciption.diagnosis = diagnosis
                 db.session.commit()
             except KeyError:
                 assert request.form['submit']
