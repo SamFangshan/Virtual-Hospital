@@ -82,7 +82,7 @@
             {% for drug in given_drug %}
                   <form method="post">
                        <input type="submit" id='given_{{drug.name}}_{{drug.price}}' name='added_drug'
-                              style="width:100%" value="{{drug.name}} : ${{drug.price}}">
+                              style="width:100%" value="{{drug.name}} : ${{drug.price}} - {{ drug.category }}">
                   </form>
             {% endfor %}
             </div>
@@ -108,23 +108,42 @@
             <form method="post">
                 <input type="submit" value="Search" style="float: right;background:#ffffff;height:3.5vh" />
                 <div style="overflow: hidden;">
-                    <input type="text" name='search_drug' style="width: 100%;background:#ffffff;height:3.5vh" placeholder="Input here"/>
+                    <input type="text" value='{{ title }}' name='search_drug' style="width: 100%;background:#ffffff;height:3.5vh" placeholder="Input here"/>
                 </div>
             </form>
 
             <div style="width:100%" class="w3-dropdown-click">
-                {% for category in categories %}
-                    <button style="width:100%" onclick="extendDrugList(this.id)" id='{{category}}' class="w3-button w3-gray">{{category}}</button>
-                    <div style="width:100%" id='drug_{{category}}' class="w3-dropdown-content w3-bar-block w3-card-4 w3-animate-zoom">
-                        {% for drug in categories[category]%}
-                        <form method="post">
-                            <input type="submit" id='{{drug.name}}_{{drug.price}}' name='selected_drug'
-                                   style="width:100%" value="{{drug.name}} : ${{drug.price}}" class="w3-bar-item w3-button prescription-list-drug">
-                        </form>
+                {% if title|length > 0 %}
+                    <input class="w3-button w3-gray w3-show" style="width:100%" value="DRUGS" disabled>
+                    {% if drugs|length > 0 %}
+                        {% for drug in drugs %}
+                                <form method="post">
+                                    <input type="submit" id='{{drug.name}}_{{drug.price}}' name='selected_drug'
+                                           style="width:100%" value="{{drug.name}} : ${{drug.price}} - {{ drug.category }}" class="w3-bar-item w3-button prescription-list-drug">
+                                </form>
                         {% endfor %}
-                    </div>
-                <br>
-                {% endfor %}
+                    {% else %}
+                        <input class="w3-button w3-gray w3-show" style="width:100%" value='NO DRUGS RELATED TO "{{ title }}" AVAILABLE' disabled>
+                    {% endif %}
+                {% else %}
+                {% endif %}
+                <input class="w3-button w3-gray w3-show" style="width:100%" value="CATEGORIES" disabled>
+                {% if categories|length > 0 %}
+                    {% for category in categories %}
+                        <button style="width:100%" onclick="extendDrugList(this.id)" id='{{category}}' class="w3-button w3-gray">{{category}}</button>
+                        <div style="width:100%" id='drug_{{category}}' class="w3-dropdown-content w3-bar-block w3-card-4 w3-animate-zoom">
+                            {% for drug in categories[category]%}
+                            <form method="post">
+                                <input type="submit" id='{{drug.name}}_{{drug.price}}' name='selected_drug'
+                                       style="width:100%" value="{{drug.name}} : ${{drug.price}}" class="w3-bar-item w3-button prescription-list-drug">
+                            </form>
+                            {% endfor %}
+                        </div>
+                    <br>
+                    {% endfor %}
+                {% else %}
+                    <input class="w3-button w3-gray w3-show" style="width:100%" value='NO CATEGORIES RELATED TO "{{ title }}" AVAILABLE' disabled>
+                {% endif %}
             </div>
         </div>
     </div>

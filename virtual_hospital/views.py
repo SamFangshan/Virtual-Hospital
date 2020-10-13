@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 import stripe
 from flask import flash, jsonify, redirect, render_template, request, url_for, session
@@ -241,8 +242,7 @@ def chatroom(appointment_id):
                 presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
                 print(presrciption)
                 if not presrciption:
-                    new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
-                                                    diagnosis=diagnosis, pick_up_status="no payment")
+                    new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id, diagnosis=diagnosis)
                     db.session.add(new_presrciption)
                     db.session.commit()
                     appointment.prescription_id = new_presrciption.id
@@ -254,7 +254,7 @@ def chatroom(appointment_id):
                 presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
                 if not presrciption:
                     presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
-                                                diagnosis="No diagnosis", pick_up_status="no payment")
+                                                diagnosis="No diagnosis")
                     db.session.add(presrciption)
                     appointment.prescription_id = presrciption.id
                 appointment.status = FINISHED
@@ -281,33 +281,39 @@ def presrciption(prescription_id):
     drugs = Drug.query.order_by(Drug.category).all()
     categories = defaultdict(list)
     given_drug = prescription.drugs
+    title = ""
 
     if request.method == 'POST':
         post_item = next(request.form.keys())
-        print(post_item)
         if post_item == 'selected_drug':
             request_value = request.form['selected_drug']
-            drug_name = request_value.split(' : $')[0]
-            drug = Drug.query.filter_by(name=drug_name).first()
+            drug_info = re.split(r' - | : ', request_value)
+            drug = Drug.query.filter_by(name=drug_info[0], category=drug_info[2]).first()
             prescription.drugs.append(drug)
             db.session.commit()
+            for drug in drugs:
+                categories[drug.category].append(drug)
         elif post_item == 'added_drug':
             request_value = request.form['added_drug']
-            drug_name = request_value.split(' : $')[0]
-            drug = Drug.query.filter_by(name=drug_name).first()
+            drug_info = re.split(r' - | : ', request_value)
+            drug = Drug.query.filter_by(name=drug_info[0], category=drug_info[2]).first()
             try:
                 prescription.drugs.remove(drug)
             except ValueError:
                 pass
-            db.session.commit()
+            finally:
+                db.session.commit()
+                for drug in drugs:
+                    categories[drug.category].append(drug)
         elif post_item == 'search_drug':
-            request_value = request.form['search_drug']
-            drugs = Drug.query.filter(Drug.category.ilike("%" + request_value + "%")).all()
-    for drug in drugs:
-        categories[drug.category].append(drug)
+            title = request.form['search_drug']
+            drugs = Drug.query.filter(Drug.category.ilike("%" + title + "%")).all()
+            for drug in drugs:
+                categories[drug.category].append(drug)
+            drugs = Drug.query.filter(Drug.name.ilike("%" + title + "%")).all()
     categories = dict(sorted(categories.items(), key=lambda x: x[0]))
 
-    return render_template("presrciption.html", prescription_id=prescription_id, patient=patient,
+    return render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
                            prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug)
 
 @app.route("/search", methods=['GET', 'POST'])
