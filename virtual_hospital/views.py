@@ -242,7 +242,8 @@ def chatroom(appointment_id):
                 presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
                 print(presrciption)
                 if not presrciption:
-                    new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id, diagnosis=diagnosis)
+                    new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                                    diagnosis=diagnosis, pick_up_status="no payment")
                     db.session.add(new_presrciption)
                     db.session.commit()
                     appointment.prescription_id = new_presrciption.id
@@ -254,7 +255,7 @@ def chatroom(appointment_id):
                 presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
                 if not presrciption:
                     presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
-                                                diagnosis="No diagnosis")
+                                                diagnosis="No diagnosis", pick_up_status="no payment")
                     db.session.add(presrciption)
                     appointment.prescription_id = presrciption.id
                 appointment.status = FINISHED
