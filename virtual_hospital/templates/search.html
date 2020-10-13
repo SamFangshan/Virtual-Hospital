@@ -53,7 +53,7 @@
                                                 <h4 class="alignLeftNoCaps"><strong>Rate:</strong></h4>
 
                                                 <h4 class="alignLeftNoCaps" style='color: #F2994A; margin-bottom: auto'>
-                                                    <strong>★ 5.0</strong></h4>
+                                                    <strong>★ {{ '{0:.1f}'.format(doctor.get_rating()) }}</strong></h4>
 
                                         <h4 class="alignLeftNoCaps" style="margin-left: 10px"><strong>Mon -
                                             Fri: {{ doctor.office_hour_start_time }}

@@ -100,7 +100,7 @@
         <td>
           <h3 class="alignLeftNoCaps" style='padding-top: 40px'><strong>{{ user.name }}</strong></h3>
           <h4 class="alignLeftNoCaps noMargin"><strong>Distinguished Doctor</strong></h4>
-          <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
+          <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ {{ '{0:.1f}'.format(user.get_rating()) }}</strong></h4>
         </td>
       </tr>
     </table>
@@ -111,7 +111,10 @@
       </p>
 
       <h3 class="alignLeftNoCaps"><strong>Specialties</strong></h3>
-      <p class="alignLeftNoCaps">{{ user.specialties }}</p>
+      <!-- <p class="alignLeftNoCaps">{{ user.specialties }}</p> -->
+      {% for specialty in user.specialties %}
+        <li class="alignLeftNoCaps">{{ specialty }}</li>
+      {% endfor %}
 
       <h3 class="alignLeftNoCaps"><strong>Working Hours</strong></h3>
       <p class="alignLeftNoCaps">Mon - Fri: {{ user.office_hour_start_time }} - {{ user.office_hour_end_time }}</p>

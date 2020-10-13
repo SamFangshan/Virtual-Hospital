@@ -55,12 +55,12 @@ class Doctor(User):
 
     # calculate doctor rating based on past appointments
     def get_rating(self):
-        ratings = []
-        for appointment_time_slot in self.appointment_time_slots:
-            for appointment in appointment_time_slot.appointments:
-                if appointment.rating is not None:
-                    ratings.append(appointment.rating)
-        return sum(ratings) / len(ratings)
+        result = db.session.execute('select avg(rating) from appointment a, appointment_time_slot ats, "user" u where a.appointment_time_slot_id = ats.id and ats.doctor_id = u.id and u.id = {};'.format(self.id))
+        result = result.first()[0]
+        if result is not None:
+            return result
+        else:
+            return 0
 
 
     __mapper_args__ = {
