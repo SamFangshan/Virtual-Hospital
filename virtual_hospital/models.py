@@ -58,9 +58,9 @@ class Doctor(User):
         result = db.session.execute('select avg(rating) from appointment a, appointment_time_slot ats, "user" u where a.appointment_time_slot_id = ats.id and ats.doctor_id = u.id and u.id = {};'.format(self.id))
         result = result.first()[0]
         if result is not None:
-            return result
+            return '{0:.1f}'.format(result)
         else:
-            return 0
+            return 'No ratings'
 
 
     __mapper_args__ = {
