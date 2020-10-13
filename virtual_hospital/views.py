@@ -399,13 +399,13 @@ def appointments():
 
     for appt in apptTimeSlot:
         exe = 0
-        if (datetime.now().date() == appt.appointment_start_time.date()):
+        if (datetime.now().date() == appt.appointment_start_time.date()): #today's appt
             exe = 1
 
         if (datetime.now() >= appt.appointment_start_time) and (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15))): # if within 15 minutes of appointment_start_time
             exe = 2
 
-        if(datetime.now().date() < appt.appointment_start_time.date()):
+        if(datetime.now().date() < appt.appointment_start_time.date()): #future appt
             exe = 3
 
         u = None
@@ -426,9 +426,6 @@ def appointments():
                     canEnterChat.append(d)
                 elif exe == 3:
                     futureAppt.append(d)
-
-    # Appointment.query.filter_by(id=123).delete()
-    # db.session.commit()
 
     if request.method =='POST':
         if user is None:

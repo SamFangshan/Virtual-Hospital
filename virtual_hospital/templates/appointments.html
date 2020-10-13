@@ -120,15 +120,15 @@
           <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
         </td>
         <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-          {% if canEnterChat.id == appt.aptTS.id %}
+          {% if appt is in canEnterChat %}
+            <form action="/chatroom" method="GET">
+              <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
+              <button class="rightBorderRadius5px buttonSmallHeight" type="submit">Start Chatting</button>
+            </form>
+
             <form method="POST">
               <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
               <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
-            </form>
-
-            <form action="/chatroom" method="GET">
-              <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
-              <button class="rightBorderRadius5px buttonSmallHeight" type="submit" name="submit">Start Chatting</button>
             </form>
 
           {% else %}
