@@ -264,6 +264,9 @@ def chatroom(appointment_id):
     elif current_user.type == 'patient':
         if appointment.patient_id != current_user.id:
             return render_template('errors/403.html'), 403
+        if request.method == 'POST':
+            presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+            return redirect(url_for('payment', prescription_id=presrciption.id))
         chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
         department = Department.query.filter_by(id=chatting_user.department_id).first()
         return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
