@@ -73,7 +73,7 @@ class Prescription(db.Model):
     doctor_id = db.Column(db.Integer, db.ForeignKey(Doctor.id), nullable=False)
 
     pick_up_start_date = db.Column(db.Date)
-    pick_up_status = db.Column(db.String(10), nullable=True)
+    pick_up_status = db.Column(db.String(10), nullable=False)
     prescription_instructions = db.Column(db.Text, nullable=True)
     diagnosis = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
