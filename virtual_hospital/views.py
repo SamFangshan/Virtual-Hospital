@@ -402,7 +402,7 @@ def appointments():
         if (datetime.now().date() == appt.appointment_start_time.date()): #today's appt
             exe = 1
 
-        if (datetime.now() >= appt.appointment_start_time) and (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15))): # if within 15 minutes of appointment_start_time
+        if (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15)) and (datetime.now() >= (appt.appointment_start_time - timedelta(minutes=30)))): # if within 15 minutes of appointment_start_time
             exe = 2
 
         if(datetime.now().date() < appt.appointment_start_time.date()): #future appt
@@ -424,6 +424,7 @@ def appointments():
                     todayAppt.append(d)
                 elif exe == 2:
                     canEnterChat.append(d)
+                    todayAppt.append(d)
                 elif exe == 3:
                     futureAppt.append(d)
 
