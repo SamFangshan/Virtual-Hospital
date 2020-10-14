@@ -14,6 +14,8 @@ from flask_socketio import SocketIO,emit
 from datetime import datetime, timedelta
 from typing import NamedTuple
 
+import operator
+
 socketio = SocketIO(app)
 
 def messageReceived(methods=['GET', 'POST']):
@@ -402,14 +404,13 @@ def appointments():
         if (datetime.now().date() == appt.appointment_start_time.date()): #today's appt
             exe = 1
 
-        if (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15)) and (datetime.now() >= (appt.appointment_start_time - timedelta(minutes=30)))): # if within 15 minutes of appointment_start_time
+        if (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15)) and (datetime.now() >= (appt.appointment_start_time - timedelta(minutes=15)))): # if within 15 minutes of appointment_start_time
             exe = 2
 
         if(datetime.now().date() < appt.appointment_start_time.date()): #future appt
             exe = 3
 
         u = None
-
         fetchapt = Appointment.query.filter_by(appointment_time_slot_id=appt.id).all()
 
         for apt in fetchapt:
@@ -427,6 +428,9 @@ def appointments():
                     todayAppt.append(d)
                 elif exe == 3:
                     futureAppt.append(d)
+
+    todayAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'))
+    futureAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'))
 
     if request.method =='POST':
         if user is None:
