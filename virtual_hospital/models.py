@@ -87,6 +87,7 @@ class Prescription(db.Model):
     prescription_instructions = db.Column(db.Text, nullable=True)
     diagnosis = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    pick_up_location = db.Column(db.Text, default='Ng Teng Fong General Hospital')
 
     drugs = db.relationship('Drug', secondary='prescription_drug')
 
