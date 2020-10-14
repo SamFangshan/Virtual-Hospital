@@ -398,16 +398,21 @@ def appointments():
     canEnterChat = []
     todayAppt = []
     futureAppt = []
+    pastAppt = []
 
     for appt in apptTimeSlot:
         exe = 0
-        if (datetime.now().date() == appt.appointment_start_time.date()): #today's appt
+
+        if (datetime.now().date() == appt.appointment_start_time.date()): #today's appt (cannot enter chatroom)
             exe = 1
 
-        if (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15)) and (datetime.now() >= (appt.appointment_start_time - timedelta(minutes=15)))): # if within 15 minutes of appointment_start_time
+        if(datetime.now() > appt.appointment_start_time): #past appt (date & time)
+            exe = 4
+
+        if (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15)) and (datetime.now() >= (appt.appointment_start_time - timedelta(minutes=15)))): # +/- 15 minutes of appointment_start_time
             exe = 2
 
-        if(datetime.now().date() < appt.appointment_start_time.date()): #future appt
+        if(datetime.now().date() < appt.appointment_start_time.date()): #future dates appt
             exe = 3
 
         u = None
@@ -425,18 +430,22 @@ def appointments():
                     todayAppt.append(d)
                 elif exe == 2:
                     canEnterChat.append(d)
-                    todayAppt.append(d)
                 elif exe == 3:
                     futureAppt.append(d)
+                elif exe == 4:
+                    pastAppt.append(d)
 
     todayAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'))
     futureAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'))
+    pastAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'), reverse=True) # most recent on top
+
+    futureApptDates = {apt.aptTS.appointment_start_time.date() for apt in futureAppt}
+    pastApptDates = {apt.aptTS.appointment_start_time.date() for apt in pastAppt}
 
     if request.method =='POST':
         if user is None:
             return render_template("errors/404.html")
         else:
-            # apptSlot = Appointment.query.filter_by(patient_id=id).all()
             print(request.form)
             deleteApptId = request.form['appt_id']
             deleteApptSlot = Appointment.query.filter_by(id=deleteApptId).delete()
@@ -448,7 +457,7 @@ def appointments():
         if user is None:
             return render_template("errors/404.html")
         else:
-            return render_template('appointments.html', currPage='Appointments', user=user, todayAppt=todayAppt, canEnterChat=canEnterChat, futureAppt=futureAppt)
+            return render_template('appointments.html', currPage='Appointments', user=user, todayAppt=todayAppt, canEnterChat=canEnterChat, futureAppt=futureAppt, pastAppt=pastAppt, futureApptDates=futureApptDates, pastApptDates=sorted(pastApptDates, reverse=True))
 
 @app.route('/newappointment', methods=['POST', 'GET'])
 @login_required
