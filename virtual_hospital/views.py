@@ -318,6 +318,14 @@ def payment_success(payment_intent_id):
 
         prescription = Prescription.query.get(appointment_id)
         prescription.pick_up_status = 'pending'
+
+        # pickup on the next week day
+        pickup_date = datetime.today() + timedelta(days=1)
+        if pickup_date.weekday() == 5:
+            pickup_date += timedelta(days=2)
+        elif pickup_date.weekday() == 6:
+            pickup_date += timedelta(days=1)
+        prescription.pick_up_start_date = pickup_date
         db.session.commit()
 
         return redirect(url_for('rate_doctor', appointment_id=appointment_id))
@@ -325,10 +333,15 @@ def payment_success(payment_intent_id):
         return render_template('errors/403.html'), 403
 
 
-@app.route('/payment/prescription/<prescription_id>')
+@app.route('/payment/prescription/<prescription_id>', methods=['POST', 'GET'])
 @login_required
 def payment(prescription_id):
     prescription = Prescription.query.get(int(prescription_id))
+
+    if request.method == 'POST':
+        prescription.pick_up_location = request.form['location']
+        db.session.commit()
+
     if not prescription:
         return render_template('errors/404.html'), 404
     appointment = Appointment.query.filter_by(prescription_id=prescription.id).first()
@@ -345,9 +358,12 @@ def payment(prescription_id):
     doctor = Doctor.query.get(appointment_time_slot.doctor_id)
     department = Department.query.get(doctor.department_id)
 
+    pick_up_location = prescription.pick_up_location
+
     session['appointment_id'] = appointment.id
     return render_template('payment.html', doctor=doctor, department=department,
-                           drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot)
+                           drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot,
+                           pick_up_location=pick_up_location)
 
 
 @app.route('/ratedoctor/appointment/<appointment_id>', methods=['GET', 'POST'])
