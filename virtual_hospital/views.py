@@ -1,7 +1,9 @@
 import json
 import os
+import re
 
 import stripe
+from sqlalchemy.orm.collections import InstrumentedList
 from flask import flash, jsonify, redirect, render_template, request, url_for, session
 
 from flask_login import current_user, login_required, login_user, logout_user
@@ -14,9 +16,12 @@ from flask_socketio import SocketIO,emit
 from datetime import datetime, timedelta
 from typing import NamedTuple
 
+from collections import defaultdict
+
 import operator
 
 socketio = SocketIO(app)
+FINISHED = "finished"
 
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
@@ -218,8 +223,11 @@ def setprofile():
 @login_required
 def chatroom(appointment_id):
     appointment = Appointment.query.filter_by(id=appointment_id).first()
+    # print(appointment, current_user)
     if not appointment:
         return render_template('errors/404.html'), 404
+    #if appointment.status == FINISHED:
+    #    return render_template('errors/403.html'), 403
     appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
     #if datetime.now() < appointment_time_slot.appointment_start_time or datetime.now() > appointment_time_slot.appointment_end_time:
     #    return render_template('errors/403.html'), 403
@@ -229,15 +237,98 @@ def chatroom(appointment_id):
             return render_template('errors/403.html'), 403
         chatting_user = User.query.filter_by(id=appointment.patient_id).first()
         department = Department.query.filter_by(id=current_user.department_id).first()
-
+        if request.method == 'POST':
+            try:
+                diagnosis = request.form['InputDiagnosis']
+                presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+                print(presrciption)
+                if not presrciption:
+                    new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                                    diagnosis=diagnosis, pick_up_status="no payment")
+                    db.session.add(new_presrciption)
+                    db.session.commit()
+                    appointment.prescription_id = new_presrciption.id
+                else:
+                    presrciption.diagnosis = diagnosis
+                db.session.commit()
+            except KeyError:
+                assert request.form['submit']
+                presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+                if not presrciption:
+                    presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                                diagnosis="No diagnosis", pick_up_status="no payment")
+                    db.session.add(presrciption)
+                    appointment.prescription_id = presrciption.id
+                appointment.status = FINISHED
+                db.session.commit()
+                return redirect(url_for('presrciption', prescription_id=presrciption.id))
+        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
+                               department=department)
     elif current_user.type == 'patient':
         if appointment.patient_id != current_user.id:
             return render_template('errors/403.html'), 403
+        if request.method == 'POST':
+            presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+            return redirect(url_for('payment', prescription_id=presrciption.id))
         chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
         department = Department.query.filter_by(id=chatting_user.department_id).first()
+        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
+                               department=department)
 
-    return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user, department=department)
+@app.route("/presrciption/<prescription_id>",methods=['Get','Post'])
+@login_required
+def presrciption(prescription_id):
+    prescription = Prescription.query.filter_by(id=prescription_id).first()
+    patient = User.query.filter_by(id=prescription.patient_id).first()
+    drugs = Drug.query.order_by(Drug.category).all()
+    categories = defaultdict(list)
+    given_drug = prescription.drugs
+    title = ""
 
+    if len(title) == 0:
+        for drug in drugs:
+            categories[drug.category].append(drug)
+
+    if request.method == 'POST':
+        post_item = next(request.form.keys())
+        if post_item == 'selected_drug':
+            request_value = request.form['selected_drug']
+            drug_info = re.split(r' - | : ', request_value)
+            drug = Drug.query.filter_by(name=drug_info[0], category=drug_info[2]).first()
+            prescription.drugs.append(drug)
+            db.session.commit()
+            for drug in drugs:
+                categories[drug.category].append(drug)
+        elif post_item == 'added_drug':
+            request_value = request.form['added_drug']
+            drug_info = re.split(r' - | : ', request_value)
+            drug = Drug.query.filter_by(name=drug_info[0], category=drug_info[2]).first()
+            try:
+                prescription.drugs.remove(drug)
+            except ValueError:
+                pass
+            finally:
+                db.session.commit()
+                for drug in drugs:
+                    categories[drug.category].append(drug)
+        elif post_item == 'search_drug':
+            title = request.form['search_drug']
+            if len(title) > 0:
+                drugs = Drug.query.filter(Drug.category.ilike("%" + title + "%")).all()
+                for drug in drugs:
+                    categories[drug.category].append(drug)
+                drugs = Drug.query.filter(Drug.name.ilike("%" + title + "%")).all()
+            else:
+                for drug in drugs:
+                    categories[drug.category].append(drug)
+
+    categories = dict(sorted(categories.items(), key=lambda x: x[0]))
+    given_drug = sorted(given_drug, key=lambda x: x.name)
+    total_price = sum([drug.price for drug in given_drug]) if len(given_drug) > 0 else 0
+
+    return render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
+                           prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug,
+                           total_price=total_price)
 
 @app.route("/search", methods=['GET', 'POST'])
 @login_required
