@@ -3,6 +3,7 @@ import os
 import re
 
 import stripe
+from sqlalchemy.orm.collections import InstrumentedList
 from flask import flash, jsonify, redirect, render_template, request, url_for, session
 
 from flask_login import current_user, login_required, login_user, logout_user
@@ -16,6 +17,7 @@ from datetime import datetime, timedelta
 from typing import NamedTuple
 
 from collections import defaultdict
+from werkzeug import ImmutableDict
 
 socketio = SocketIO(app)
 FINISHED = "finished"
@@ -284,6 +286,10 @@ def presrciption(prescription_id):
     given_drug = prescription.drugs
     title = ""
 
+    if len(title) == 0:
+        for drug in drugs:
+            categories[drug.category].append(drug)
+
     if request.method == 'POST':
         post_item = next(request.form.keys())
         if post_item == 'selected_drug':
@@ -308,14 +314,22 @@ def presrciption(prescription_id):
                     categories[drug.category].append(drug)
         elif post_item == 'search_drug':
             title = request.form['search_drug']
-            drugs = Drug.query.filter(Drug.category.ilike("%" + title + "%")).all()
-            for drug in drugs:
-                categories[drug.category].append(drug)
-            drugs = Drug.query.filter(Drug.name.ilike("%" + title + "%")).all()
+            if len(title) > 0:
+                drugs = Drug.query.filter(Drug.category.ilike("%" + title + "%")).all()
+                for drug in drugs:
+                    categories[drug.category].append(drug)
+                drugs = Drug.query.filter(Drug.name.ilike("%" + title + "%")).all()
+            else:
+                for drug in drugs:
+                    categories[drug.category].append(drug)
+
     categories = dict(sorted(categories.items(), key=lambda x: x[0]))
+    given_drug = sorted(given_drug, key=lambda x: x.name)
+    total_price = sum([drug.price for drug in given_drug]) if len(given_drug) > 0 else 0
 
     return render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
-                           prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug)
+                           prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug,
+                           total_price=total_price)
 
 @app.route("/search", methods=['GET', 'POST'])
 @login_required

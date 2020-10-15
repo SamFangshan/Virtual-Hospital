@@ -81,26 +81,20 @@
             <div class="prescription_list" id="prescription_list_id">
             {% for drug in given_drug %}
                   <form method="post">
-                       <input type="submit" id='given_{{drug.name}}_{{drug.price}}' name='added_drug'
+                       <input type="submit" id='given_{{drug.name}}_{{drug.price}}' name='added_drug' title="${{ drug.price }}"
                               style="width:100%" value="{{drug.name}} : ${{drug.price}} - {{ drug.category }}">
                   </form>
             {% endfor %}
             </div>
 
             <div class="button_holder">
+                <h5 style="text-align: center;color:#505F98;margin:0;padding:0; ">Total Price: ${{ total_price }}</h5>
                 <div class="submit_button">
                     <a href="../">
                     <button type="submit" style="float:right;color : #505F98;background-color: #FFD166;">submit</button>
                     </a>
                 </div>
             </div>
-{#        <form method="post">#}
-{#            <div class="button_holder">#}
-{#                <div class="submit_button">#}
-{#                    <input type="submit" value="submit" name="submit" tyle="float:right;color : #505F98;background-color: #FFD166;">#}
-{#                </div>#}
-{#            </div>#}
-{#        </form>#}
 
         </div>
 
@@ -125,7 +119,6 @@
                     {% else %}
                         <input class="w3-button w3-gray w3-show" style="width:100%" value='NO DRUGS RELATED TO "{{ title }}" AVAILABLE' disabled>
                     {% endif %}
-                {% else %}
                 {% endif %}
                 <input class="w3-button w3-gray w3-show" style="width:100%" value="CATEGORIES" disabled>
                 {% if categories|length > 0 %}
@@ -135,7 +128,7 @@
                             {% for drug in categories[category]%}
                             <form method="post">
                                 <input type="submit" id='{{drug.name}}_{{drug.price}}' name='selected_drug'
-                                       style="width:100%" value="{{drug.name}} : ${{drug.price}}" class="w3-bar-item w3-button prescription-list-drug">
+                                       style="width:100%" value="{{drug.name}} : ${{drug.price}} - {{ drug.category }}" class="w3-bar-item w3-button prescription-list-drug">
                             </form>
                             {% endfor %}
                         </div>
