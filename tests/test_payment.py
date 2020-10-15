@@ -31,6 +31,18 @@ def test_payment_normal(test_client):
     assert b'75' in response.data  # total
 
     assert 200 == response.status_code
+
+    test_client.post('/payment/prescription/1', data=dict(
+            location='Tan Tock Seng Hospital'
+        ), follow_redirects=True)
+
+    assert Prescription.query.get(1).pick_up_location == 'Tan Tock Seng Hospital'
+    assert b'Tan Tock Seng Hospital' in response.data
+
+    assert 200 == response.status_code
+
+
+
     test_client.get("/logout", follow_redirects=True)
 
 
