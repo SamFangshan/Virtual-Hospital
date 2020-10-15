@@ -1,182 +1,76 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!-- banner commented <section id="banner">
-	<div class="inner">
 
-		<header>
-			<h2>Virtual Hospital</h2>
-		</header>
-		<p>This is <strong>Virtual Hospital</strong>,
-		<br />
-		your virtual healthcare provider.
-		<footer>
-			<ul class="buttons stacked">
-				<li><a href="#main" class="button fit scrolly">Tell Me More</a></li>
-			</ul>
-		</footer>
+<style>
+	.hero-image {
+		background-image: url("static/images/landing-page-banner-2.png");
+	  background-position: center;
+	  background-repeat: no-repeat;
+	  background-size: 100% 100%;
+		height: 600px;
+	  position: relative;
+	}
 
-	</div>
+	.hero-text {
+		width: 100%;
+		text-indent:10%;
+		font-weight: 600;
+		margin: 0;
+	  position: absolute;
+	  top: 50%;
+	  -ms-transform: translateY(-50%);
+	  transform: translateY(-50%);
+	}
 
-</section>-->
+	button {
+    display: inline-block;
+    background-color: #FFD166;
+    color: #505F98;
+    border: none;
+    outline: none;
+  }
 
-<!-- Main -->
-	<article id="main">
+  button:hover {
+    opacity: 0.8;
+  }
 
-		<header class="special container">
-			<span class="icon solid fa-chart-bar"></span>
-			Content - Here
-		</header>
+	.noBG {
+    background-color: #00000000;
+    color: #505F98;
+  }
 
-		<!-- One -->
-			<section class="wrapper style2 container special-alt">
-				<div class="row gtr-50">
-					<div class="col-8 col-12-narrower">
+	.fullBorderRadius5px {
+    border: 1px solid rgba(55, 68, 126, 0.2);
+    border-radius: 5px;
+  }
 
-						<header>
-							<h2>Content - Here</h2>
-						</header>
-						<p>Content - Here</p>
-						<footer>
-							<ul class="buttons">
-								<li><a href="#" class="button">Find Out More</a></li>
-							</ul>
-						</footer>
+</style>
 
-					</div>
-					<div class="col-4 col-12-narrower imp-narrower">
+<article id="main">
+	<section class='hero-image'>
+		<div class="hero-text">
+			<h2 style="text-transform:none; margin-bottom: 0; color: #505F98"><strong>Virtual Hospital</bold></h2>
+			<h2 style="text-transform:none; color: #505F98">The Online Healthcare Provider</h2>
+			<p style="max-width:40%; text-indent: 0; margin-left: 10%">Stay safe in the comfort of your home to receive an online consultation and prescriptions from doctors of various departments. Pay online and pick up your medication at your convenience. </p>
 
-						<ul class="featured-icons">
-							<li><span class="icon fa-clock"><span class="label">Feature 1</span></span></li>
-							<li><span class="icon solid fa-volume-up"><span class="label">Feature 2</span></span></li>
-							<li><span class="icon solid fa-laptop"><span class="label">Feature 3</span></span></li>
-							<li><span class="icon solid fa-inbox"><span class="label">Feature 4</span></span></li>
-							<li><span class="icon solid fa-lock"><span class="label">Feature 5</span></span></li>
-							<li><span class="icon solid fa-cog"><span class="label">Feature 6</span></span></li>
-						</ul>
-
-					</div>
-				</div>
-			</section>
-
-		<!-- Two -->
-			<section class="wrapper style1 container special">
-				<div class="row">
-					<div class="col-4 col-12-narrower">
-
-						<section>
-							<span class="icon solid featured fa-check"></span>
-							<header>
-								<h3>Content - Here</h3>
-							</header>
-							<p>Content - Here</p>
-						</section>
-
-					</div>
-					<div class="col-4 col-12-narrower">
-
-						<section>
-							<span class="icon solid featured fa-check"></span>
-							<header>
-								<h3>Content - Here</h3>
-							</header>
-							<p>Content - Here</p>
-						</section>
-
-					</div>
-					<div class="col-4 col-12-narrower">
-
-						<section>
-							<span class="icon solid featured fa-check"></span>
-							<header>
-								<h3>Content - Here</h3>
-							</header>
-							<p>Content - Here</p>
-						</section>
-
-					</div>
-				</div>
-			</section>
-
-		<!-- Three -->
-			<section class="wrapper style3 container special">
-
-				<header class="major">
-					<h2>Content - <strong>here</strong></h2>
-				</header>
-
-				<div class="row">
-					<div class="col-6 col-12-narrower">
-
-						<section>
-							<a href="#" class="image featured"><img src="{{ url_for('static', filename='images/pic01.jpg') }}" alt="" /></a>
-							<header>
-								<h3>Content - Here</h3>
-							</header>
-							<p>Content - Here</p>
-						</section>
-
-					</div>
-					<div class="col-6 col-12-narrower">
-
-						<section>
-							<a href="#" class="image featured"><img src="{{ url_for('static', filename='images/pic02.jpg') }}" alt="" /></a>
-							<header>
-								<h3>Content - Here</h3>
-							</header>
-							<p>Content - Here</p>
-						</section>
-
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-6 col-12-narrower">
-
-						<section>
-							<a href="#" class="image featured"><img src="{{ url_for('static', filename='images/pic03.jpg') }}" alt="" /></a>
-							<header>
-								<h3>Content - Here</h3>
-							</header>
-							<p>Content - Here</p>
-						</section>
-
-					</div>
-					<div class="col-6 col-12-narrower">
-
-						<section>
-							<a href="#" class="image featured"><img src="{{ url_for('static', filename='images/pic04.jpg') }}" alt="" /></a>
-							<header>
-								<h3>Content - Here</h3>
-							</header>
-							<p>Content - Here</p>
-						</section>
-
-					</div>
-				</div>
-
-				<footer class="major">
-					<ul class="buttons">
-						<li><a href="#" class="button">See More</a></li>
-					</ul>
-				</footer>
-
-			</section>
-
-	</article>
-
-<!-- CTA -->
-	<section id="cta">
-
-		<header>
-			<h2>Content - <strong>Here</strong>?</h2>
-			<p>Content - Here</p>
-		</header>
-		<footer>
-			<ul class="buttons">
-				<li><a href="#" class="button primary">Button 1</a></li>
-				<li><a href="#" class="button">Button 2</a></li>
-			</ul>
-		</footer>
-
+			<form action="/search" method="GET">
+				<button style="border-radius: 5px" type="submit">Try now</button>
+			</form>
+		</div>
 	</section>
+
+	<h2 style="text-transform:none; letter-spacing:0.1; text-align: center; padding-top:80px; color: #505F98"><strong>Live Consultation from our Doctors</bold></h2>
+	<p style="text-align:center">Use Virtual Hospital to find doctors with the best patient reviews. Simple, secure, and free.</p>
+
+	<img style='margin-left:auto; margin-right: auto; display: block;' src='static/images/chatroom_screenshot.png'></img>
+
+	<footer>
+		<ul class="buttons" style="text-align: center; padding-top: 80px">
+			<li><form action="/login" method="GET"><button class="noBG fullBorderRadius5px" style="border-radius: 5px">Log in</button></form></li>
+			<li><form action="/search" method="GET"><button style="border-radius: 5px">Try now</button></form></li>
+		</ul>
+	</footer>
+</article>
+
 {% endblock %}

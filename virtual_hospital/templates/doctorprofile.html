@@ -100,7 +100,7 @@
         <td>
           <h3 class="alignLeftNoCaps" style='padding-top: 40px'><strong>{{ user.name }}</strong></h3>
           <h4 class="alignLeftNoCaps noMargin"><strong>Distinguished Doctor</strong></h4>
-          <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
+          <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ {{ user.get_rating() }}</strong></h4>
         </td>
       </tr>
     </table>
@@ -111,17 +111,26 @@
       </p>
 
       <h3 class="alignLeftNoCaps"><strong>Specialties</strong></h3>
-      <p class="alignLeftNoCaps">{{ user.specialties }}</p>
+      <!-- <p class="alignLeftNoCaps">{{ user.specialties }}</p> -->
+      {% for specialty in user.specialties %}
+        <li class="alignLeftNoCaps">{{ specialty }}</li>
+      {% endfor %}
 
       <h3 class="alignLeftNoCaps"><strong>Working Hours</strong></h3>
       <p class="alignLeftNoCaps">Mon - Fri: {{ user.office_hour_start_time }} - {{ user.office_hour_end_time }}</p>
 
+      {% if current_user.type == 'doctor' %}
+        <h4 style="text-transform:none">Kindly create a patient account to book an appointment with doctors. </h4>
+      {% endif %}
+
+      {% if current_user.type == 'patient' %}
       <form action="/newappointment" method="GET">
           <td style="vertical-align: bottom; padding: 0">
-            <!-- The button below needs to update with the current doctor's info -->
               <button class="buttonSmallHeight buttonAlignRight" style="border-radius: 5px;" type="submit" name="doctor_id" value="{{ user.id }}">Book an Appointment</button>
           </td>
       </form>
+      {% endif %}
+
       <form action="/search" method="GET">
         <button class="noBG noBorderOutline buttonSmallHeight buttonAlignLeft" type="submit">< Search Other Doctors</button>
       </form>

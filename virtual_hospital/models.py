@@ -8,7 +8,7 @@ from virtual_hospital import db
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=True)
+    name = db.Column(db.String(100), nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), unique=True, nullable=False)
     phone_number = db.Column(db.String(20))
@@ -53,6 +53,16 @@ class Doctor(User):
     appointment_time_slots = db.relationship('AppointmentTimeSlot', lazy='select',
                                              backref=db.backref('doctor', lazy='joined'))
 
+    # calculate doctor rating based on past appointments
+    def get_rating(self):
+        result = db.session.execute('select avg(rating) from appointment a, appointment_time_slot ats, "user" u where a.appointment_time_slot_id = ats.id and ats.doctor_id = u.id and u.id = {};'.format(self.id))
+        result = result.first()[0]
+        if result is not None:
+            return '{0:.1f}'.format(result)
+        else:
+            return 'No ratings'
+
+
     __mapper_args__ = {
         'polymorphic_identity': 'doctor',
     }
@@ -77,6 +87,7 @@ class Prescription(db.Model):
     prescription_instructions = db.Column(db.Text, nullable=True)
     diagnosis = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    pick_up_location = db.Column(db.Text, default='Ng Teng Fong General Hospital')
 
     drugs = db.relationship('Drug', secondary='prescription_drug')
 

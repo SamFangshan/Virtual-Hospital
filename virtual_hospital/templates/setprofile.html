@@ -11,6 +11,14 @@ input[type=text] {
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
+select {
+  width: 50%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
 </style>
 <script>
     function errorMessage() {
@@ -23,6 +31,19 @@ input[type=text] {
         } else {
             error.textContent = ""
         }
+    }
+
+    function test() {
+      $('#birthday').change(function () {
+        var date = new Date($('#birthday').val());
+        var s = date.getFullYear() + '-' +
+                ('0' + (date.getMonth()+1)).slice(-2) + '-' +
+                ('0' + date.getDate()).slice(-2);
+        var finaldate = [s].join('-');
+        this.value = finaldate
+        console.log(finaldate)
+
+      });
     }
 </script>
 <article id="main">
@@ -38,35 +59,39 @@ input[type=text] {
     <input type="text" name="name" autocomplete="off" required value="{{ current_user.name }}"><br><br>
 
     <h1 style="text-align:center">Phone Number</h1>
-    <input type="text" name="phone_number" autocomplete="off" required value="{{ current_user.phone_number }}"><br><br>
+    <input type="text" name="phone_number" autocomplete="off" required value="{{ '' if not current_user.phone_number else current_user.phone_number }}"><br><br>
 
     <h1 style="text-align:center">NRIC</h1>
-    <input type="text" name="nric" autocomplete="off" required value="{{ current_user.nric }}"><br><br>
+    <input type="text" name="nric" autocomplete="off" required value="{{ '' if not current_user.nric else current_user.nric }}"><br><br>
 
     <h1 style="text-align:center">Gender</h1>
-    <input type="text" name="gender" autocomplete="off" required value="{{ current_user.gender }}"><br><br><br>
+    <!-- <input type="text" name="gender" autocomplete="off" required value="{{ '' if not current_user.gender else current_user.gender }}"><br><br><br> -->
+    <select name="gender" autocomplete="off" required value="{{ '' if not current_user.gender else current_user.gender }}">
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select><br><br><br>
 
     {% if current_user.type == 'doctor' %}
       <h1 style="text-align:center">Account Type: Doctor</h1><br>
 
       <h1 style="text-align:center">Credentials</h1>
-      <input type="text" name="credentials" autocomplete="off" required value="{{ current_user.credentials }}"><br><br>
+      <input type="text" name="credentials" autocomplete="off" required value="{{ '' if not current_user.credentials else current_user.credentials }}"><br><br>
 
       <h1 style="text-align:center">Specialties</h1>
-      <input type="text" name="specialties" autocomplete="off" required value="{{ current_user.specialties }}"><br><br>
+      <input type="text" name="specialties" autocomplete="off" required value="{{ '' if not current_user.specialties else current_user.specialties }}"><br><br>
 
       <h1 style="text-align:center">Office Hours</h1>
-      Start<br><input type="text" name="office_hour_start_time" autocomplete="off" required value="{{ current_user.office_hour_start_time }}">
-      <br>End<br><input type="text" name="office_hour_end_time" autocomplete="off" required value="{{ current_user.office_hour_end_time }}"><br><br>
+      Start<br><input type="text" name="office_hour_start_time" autocomplete="off" required value="{{ '' if not current_user.office_hour_start_time else current_user.office_hour_start_time }}">
+      <br>End<br><input type="text" name="office_hour_end_time" autocomplete="off" required value="{{ '' if not current_user.office_hour_end_time else current_user.office_hour_end_time }}"><br><br>
 
       <h1 style="text-align:center">Department ID</h1>
-      <input type="text" name="department_id" autocomplete="off" required value="{{ current_user.department_id }}">
+      <input type="text" name="department_id" autocomplete="off" required value="{{ '' if not current_user.department_id else current_user.department_id }}">
 
     {% elif current_user.type == 'patient' %}
       <h1 style="text-align:center">Account Type: Patient</h1><br>
 
       <h1 style="text-align:center">Date Of Birth</h1>
-      <input type="text" name="date_of_birth" autocomplete="off" required value="{{ current_user.date_of_birth }}">
+      <input id="birthday" type="date" name="date_of_birth" onclick="test()" autocomplete="off" required value="{{ '' if not current_user.date_of_birth else current_user.date_of_birth.strftime("%Y-%m-%d") }}">
 
     {% endif %}
 

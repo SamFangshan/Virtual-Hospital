@@ -17,14 +17,14 @@ from datetime import datetime, timedelta
 from typing import NamedTuple
 
 from collections import defaultdict
-from werkzeug import ImmutableDict
+
+import operator
 
 socketio = SocketIO(app)
 FINISHED = "finished"
 
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
-
 
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
@@ -44,7 +44,6 @@ def connected():
 @socketio.on('disconnect')
 def disconnect():
     print('disconnect')
-
 
 from virtual_hospital.models import *
 
@@ -356,7 +355,10 @@ def departments():
 @app.route("/department/<id>")
 @login_required
 def department(id):
-    dept = Department.query.filter_by(id=id).all()
+    if id.isdigit():
+        dept = Department.query.filter_by(id=id).all()
+    else:
+        return render_template('errors/404.html')
     if dept:
         doctors = Doctor.query.filter_by(department_id=id).all()
         return render_template('department.html', department=dept[0], doctors=doctors)
@@ -407,6 +409,14 @@ def payment_success(payment_intent_id):
 
         prescription = Prescription.query.get(appointment_id)
         prescription.pick_up_status = 'pending'
+
+        # pickup on the next week day
+        pickup_date = datetime.today() + timedelta(days=1)
+        if pickup_date.weekday() == 5:
+            pickup_date += timedelta(days=2)
+        elif pickup_date.weekday() == 6:
+            pickup_date += timedelta(days=1)
+        prescription.pick_up_start_date = pickup_date
         db.session.commit()
 
         return redirect(url_for('rate_doctor', appointment_id=appointment_id))
@@ -414,10 +424,15 @@ def payment_success(payment_intent_id):
         return render_template('errors/403.html'), 403
 
 
-@app.route('/payment/prescription/<prescription_id>')
+@app.route('/payment/prescription/<prescription_id>', methods=['POST', 'GET'])
 @login_required
 def payment(prescription_id):
     prescription = Prescription.query.get(int(prescription_id))
+
+    if request.method == 'POST':
+        prescription.pick_up_location = request.form['location']
+        db.session.commit()
+
     if not prescription:
         return render_template('errors/404.html'), 404
     appointment = Appointment.query.filter_by(prescription_id=prescription.id).first()
@@ -434,9 +449,12 @@ def payment(prescription_id):
     doctor = Doctor.query.get(appointment_time_slot.doctor_id)
     department = Department.query.get(doctor.department_id)
 
+    pick_up_location = prescription.pick_up_location
+
     session['appointment_id'] = appointment.id
     return render_template('payment.html', doctor=doctor, department=department,
-                           drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot)
+                           drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot,
+                           pick_up_location=pick_up_location)
 
 
 @app.route('/ratedoctor/appointment/<appointment_id>', methods=['GET', 'POST'])
@@ -487,20 +505,24 @@ def appointments():
     canEnterChat = []
     todayAppt = []
     futureAppt = []
+    pastAppt = []
 
     for appt in apptTimeSlot:
         exe = 0
-        if (datetime.now().date() == appt.appointment_start_time.date()):
+
+        if (datetime.now().date() == appt.appointment_start_time.date()): #today's appt (cannot enter chatroom)
             exe = 1
 
-        if (datetime.now() >= appt.appointment_start_time) and (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15))): # if within 15 minutes of appointment_start_time
+        if(datetime.now() > appt.appointment_start_time): #past appt (date & time)
+            exe = 4
+
+        if (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15)) and (datetime.now() >= (appt.appointment_start_time - timedelta(minutes=15)))): # +/- 15 minutes of appointment_start_time
             exe = 2
 
-        if(datetime.now().date() < appt.appointment_start_time.date()):
+        if(datetime.now().date() < appt.appointment_start_time.date()): #future dates appt
             exe = 3
 
         u = None
-
         fetchapt = Appointment.query.filter_by(appointment_time_slot_id=appt.id).all()
 
         for apt in fetchapt:
@@ -517,27 +539,32 @@ def appointments():
                     canEnterChat.append(d)
                 elif exe == 3:
                     futureAppt.append(d)
+                elif exe == 4:
+                    pastAppt.append(d)
 
-    # Appointment.query.filter_by(id=123).delete()
-    # db.session.commit()
+    todayAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'))
+    futureAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'))
+    pastAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'), reverse=True) # most recent on top
+
+    futureApptDates = {apt.aptTS.appointment_start_time.date() for apt in futureAppt}
+    pastApptDates = {apt.aptTS.appointment_start_time.date() for apt in pastAppt}
 
     if request.method =='POST':
         if user is None:
             return render_template("errors/404.html")
         else:
-            # apptSlot = Appointment.query.filter_by(patient_id=id).all()
             print(request.form)
             deleteApptId = request.form['appt_id']
             deleteApptSlot = Appointment.query.filter_by(id=deleteApptId).delete()
             db.session.commit()
             flash('Appointment deleted.', 'info')
             return redirect(url_for('appointments'))
-            
+
     if request.method == 'GET':
         if user is None:
             return render_template("errors/404.html")
         else:
-            return render_template('appointments.html', currPage='Appointments', user=user, todayAppt=todayAppt, canEnterChat=canEnterChat, futureAppt=futureAppt)
+            return render_template('appointments.html', currPage='Appointments', user=user, todayAppt=todayAppt, canEnterChat=canEnterChat, futureAppt=futureAppt, pastAppt=pastAppt, futureApptDates=futureApptDates, pastApptDates=sorted(pastApptDates, reverse=True))
 
 @app.route('/newappointment', methods=['POST', 'GET'])
 @login_required
@@ -594,7 +621,7 @@ def profile():
         else:
             if user.type == 'patient':
                 if current_user.type == 'doctor' or current_user.id == user.id:
-                    return render_template('patientprofile.html', user=user, currPage="Patient's Profile")
+                    return render_template('patientprofile.html', user=user, current_user=current_user, currPage="Patient's Profile")
                 else:
                     return render_template('errors/403.html'), 403
 
