@@ -304,9 +304,12 @@ def presrciption(prescription_id):
             exist_prescription = PrescriptionDrug.query.filter_by(prescription_id=prescription_id, drug_id=drug.id).first()
             if exist_prescription:
                 exist_prescription.count += 1
+                prescription_drug_count[exist_prescription.drug_id] = exist_prescription.count
             else:
-                db.session.add(PrescriptionDrug(prescription_id=prescription_id, drug_id=drug.id, count=1))
-
+                new_added_drug = PrescriptionDrug(prescription_id=prescription_id, drug_id=drug.id, count=1)
+                db.session.add(new_added_drug)
+                given_drug.append(Drug.query.filter_by(id=new_added_drug.drug_id).first())
+                prescription_drug_count[new_added_drug.drug_id] = new_added_drug.count
             for drug in drugs:
                 categories[drug.category].append(drug)
             db.session.commit()
@@ -317,6 +320,8 @@ def presrciption(prescription_id):
             drug = Drug.query.filter_by(name=drug_info[0], category=drug_info[2]).first()
             try:
                 PrescriptionDrug.query.filter_by(prescription_id=prescription_id, drug_id=drug.id).delete()
+                given_drug.remove(Drug.query.filter_by(id=drug.id).first())
+                del prescription_drug_count[drug.drug_id]
             except :
                 pass
             finally:
