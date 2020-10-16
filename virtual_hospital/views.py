@@ -275,9 +275,9 @@ def chatroom(appointment_id):
         return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
                                department=department)
 
-@app.route("/presrciption/<prescription_id>",methods=['Get','Post'])
+@app.route("/prescription/<prescription_id>",methods=['Get','Post'])
 @login_required
-def presrciption(prescription_id):
+def prescription(prescription_id):
     prescription = Prescription.query.filter_by(id=prescription_id).first()
     patient = User.query.filter_by(id=prescription.patient_id).first()
     drugs = Drug.query.order_by(Drug.category).all()
