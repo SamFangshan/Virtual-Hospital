@@ -151,20 +151,19 @@ def logout():
 def settings():
     error = None
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        password_confirmed =request.form['password_confirmed']
-
+        email = request.form.get('email', None)
+        password = request.form.get('password', None)
+        password_confirmed = request.form.get('password_confirmed', None)
         if current_user.email != email and User.query.filter_by(email=email).first():
             error = "Already Registered"
-        elif len(password) != 0:
+        elif password and len(password) != 0:
             if len(password_error(password))!=0:
                 error = password_error(password)
             elif password != password_confirmed:
                 error = "Please ensure that two password are the same."
             else:
                 user = User.query.filter_by(email=current_user.email).first()
-                user.email = email
+                user.email = current_user.email if email is None else email
                 user.set_password(password)
                 db.session.commit()
                 flash('Settings updated.', 'info')
