@@ -19,7 +19,7 @@ class DoctorFactory(SQLAlchemyModelFactory):
                                                                        x.name.split()[0],
                                                                        x.name.split()[1]).lower()
                                                                        )
-
+    specialties = "Dermatology"
     office_hour_start_time = factory.LazyAttribute(
         lambda x: ['08:30', None, '09:00'][(x.id - 1) % 3])
     office_hour_end_time = factory.LazyAttribute(
@@ -139,5 +139,5 @@ class TestUserFactory(SQLAlchemyModelFactory):
     email = "test_user@gmail.com"
 
     class Meta:
-        model = User
+        model = Patient
         sqlalchemy_session = db.session
