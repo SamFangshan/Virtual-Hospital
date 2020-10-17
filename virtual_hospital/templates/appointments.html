@@ -120,8 +120,6 @@
           {% if appt.user.type == 'doctor' %}
             <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
             <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
-          {% else %}
-            <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
           {% endif %}
         </td>
         <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
@@ -154,8 +152,6 @@
           {% if appt.user.type == 'doctor' %}
             <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
             <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
-          {% else %}
-            <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
           {% endif %}
         </td>
         <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
@@ -192,12 +188,10 @@
                 {% if appt.user.type == 'doctor' %}
                   <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
                   <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
-                {% else %}
-                  <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
                 {% endif %}
               </td>
               <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-                <button class="rightBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile & Ratings</button>
+                <button class="rightBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile</button>
                 <form method="POST">
                   <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
                   <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
@@ -233,12 +227,10 @@
               {% if appt.user.type == 'doctor' %}
                 <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
                 <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
-              {% else %}
-                <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
               {% endif %}
             </td>
             <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-              <button class="fullBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile & Ratings</button>
+              <button class="fullBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile</button>
             </td>
           </tr>
         </table>
