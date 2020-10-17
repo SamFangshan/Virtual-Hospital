@@ -421,7 +421,8 @@ def payment_success(payment_intent_id):
         appointment_id = session['appointment_id']
         del session['appointment_id']
 
-        prescription = Prescription.query.get(appointment_id)
+        prescription_id = session['prescription_id']
+        prescription = Prescription.query.get(int(prescription_id))
         prescription.pick_up_status = 'pending'
 
         # pickup on the next week day
@@ -466,6 +467,7 @@ def payment(prescription_id):
     pick_up_location = prescription.pick_up_location
 
     session['appointment_id'] = appointment.id
+    session['prescription_id'] = prescription_id
     return render_template('payment.html', doctor=doctor, department=department,
                            drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot,
                            pick_up_location=pick_up_location)
@@ -550,7 +552,10 @@ def appointments():
                 if exe == 1:
                     todayAppt.append(d)
                 elif exe == 2:
-                    canEnterChat.append(d)
+                    if d.apt.status == 'finished':
+                        pastAppt.append(d)
+                    else:
+                        canEnterChat.append(d)
                 elif exe == 3:
                     futureAppt.append(d)
                 elif exe == 4:
@@ -641,3 +646,27 @@ def profile():
 
         dept = Department.query.filter_by(id=user.department_id).first()
         return render_template('doctorprofile.html', user=user, dept=dept, currPage="Doctor's Profile")
+
+@app.route('/forceapt', methods=['GET'])
+def forceapt():
+    if request.method == 'GET':
+        patient_id = request.args.get('pid')
+        doctor_id = request.args.get('did')
+
+        if (patient_id is None or doctor_id is None):
+            flash('Error: no patient or doctor id.', 'error')
+        else:
+            today = datetime.today()
+            end = today + timedelta(minutes=180)
+            '''Create time slot'''
+            time_slot = AppointmentTimeSlot(appointment_start_time=today,
+                                            appointment_end_time=end,
+                                            number_of_vacancies=2,
+                                            doctor_id=doctor_id)
+            db.session.add(time_slot)
+            db.session.flush()
+            apt = Appointment(patient_id=patient_id, status="Scheduled", queue_number=1, appointment_time_slot_id=time_slot.id)
+            db.session.add(apt)
+            db.session.commit()
+            flash('Appointment booked.', 'info')
+            return redirect(url_for('appointments'))

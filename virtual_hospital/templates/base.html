@@ -18,7 +18,7 @@
   {% endfor %}
 <div id="page-wrapper">
 	<header id="header" class="alt">
-		<img src='static/logo.png' style="position:absolute; width:10%; margin-top: -19px" alt="Virtual Hospital" />
+		<img src='{{ url_for('static', filename='logo.png') }}' style="position:absolute; width:10%; margin-top: -19px" alt="Virtual Hospital" />
 		<nav id="nav" style="display:inline-block; vertical-align:middle">
 			<ul style="margin:0">
 				{% if currPage == "Home" %}
