@@ -310,8 +310,9 @@ def presrciption(prescription_id):
                 db.session.add(new_added_drug)
                 given_drug.append(Drug.query.filter_by(id=new_added_drug.drug_id).first())
                 prescription_drug_count[new_added_drug.drug_id] = new_added_drug.count
-            for drug in drugs:
-                categories[drug.category].append(drug)
+            if len(categories) == 0:
+                for drug in drugs:
+                    categories[drug.category].append(drug)
             db.session.commit()
 
         elif post_item == 'added_drug':
@@ -322,12 +323,13 @@ def presrciption(prescription_id):
                 PrescriptionDrug.query.filter_by(prescription_id=prescription_id, drug_id=drug.id).delete()
                 given_drug.remove(Drug.query.filter_by(id=drug.id).first())
                 del prescription_drug_count[drug.drug_id]
-            except :
+            except Exception:
                 pass
             finally:
                 db.session.commit()
-                for drug in drugs:
-                    categories[drug.category].append(drug)
+                if len(categories) == 0:
+                    for drug in drugs:
+                        categories[drug.category].append(drug)
         elif post_item == 'search_drug':
             title = request.form['search_drug']
             if len(title) > 0:
@@ -335,12 +337,12 @@ def presrciption(prescription_id):
                 for drug in drugs:
                     categories[drug.category].append(drug)
                 drugs = Drug.query.filter(Drug.name.ilike("%" + title + "%")).all()
-            else:
-                for drug in drugs:
-                    categories[drug.category].append(drug)
 
     categories = dict(sorted(categories.items(), key=lambda x: x[0]))
-    total_price = sum([drug.price for drug in given_drug]) if len(given_drug) > 0 else 0
+    given_drug = sorted(given_drug, key=lambda x: x.name)
+    total_price = 0
+    for drug in given_drug:
+        total_price += drug.price * prescription_drug_count[drug.id]
     return render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
                            prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug,
                            total_price=total_price, prescription_drug_count=prescription_drug_count)
