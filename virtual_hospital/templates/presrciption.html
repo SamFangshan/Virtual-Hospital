@@ -83,7 +83,7 @@
                   <form method="post">
                        <input type="submit" id='given_{{drug.name}}_{{drug.price}}' name='added_drug' title="${{ drug.price }}"
                               style="width:100%" value="{{drug.name}} : ${{drug.price}} - {{ drug.category }}">
-                      <span name="drug.name">{{ prescription_drug_count[drug.id] }}</span>
+                      <span name="drug.name">Count: {{ prescription_drug_count[drug.id] }}</span>
                   </form>
             {% endfor %}
             </div>
