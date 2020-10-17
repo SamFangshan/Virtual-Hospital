@@ -113,6 +113,7 @@ class PrescriptionDrug(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     prescription_id = db.Column(db.Integer, db.ForeignKey(Prescription.id), nullable=False)
     drug_id = db.Column(db.Integer, db.ForeignKey(Drug.id), nullable=False)
+    count = db.Column(db.Integer, nullable=False)
 
     prescription = db.relationship(Prescription, backref=db.backref('prescription_drugs'))
     drug = db.relationship(Drug, backref=db.backref('prescription_drugs'))

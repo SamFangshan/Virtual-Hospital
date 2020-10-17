@@ -225,10 +225,10 @@ def chatroom(appointment_id):
     # print(appointment, current_user)
     if not appointment:
         return render_template('errors/404.html'), 404
-    #if appointment.status == FINISHED:
+    #if appointment.status != 'Scheduled':
     #    return render_template('errors/403.html'), 403
     appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
-    #if datetime.now() < appointment_time_slot.appointment_start_time or datetime.now() > appointment_time_slot.appointment_end_time:
+    #if datetime.now() < appointment_time_slot.appointment_start_time - datetime.timedelta(minutes=15):
     #    return render_template('errors/403.html'), 403
 
     if current_user.type == 'doctor':
@@ -281,7 +281,12 @@ def presrciption(prescription_id):
     patient = User.query.filter_by(id=prescription.patient_id).first()
     drugs = Drug.query.order_by(Drug.category).all()
     categories = defaultdict(list)
-    given_drug = prescription.drugs
+    given_drug_id = PrescriptionDrug.query.filter_by(prescription_id=prescription_id).all()
+    given_drug = []
+    prescription_drug_count = defaultdict(int)
+    for drug_id in given_drug_id:
+        given_drug.append(Drug.query.filter_by(id=drug_id.drug_id).first())
+        prescription_drug_count[drug_id.drug_id] = drug_id.count
     title = ""
 
     if len(title) == 0:
@@ -294,17 +299,29 @@ def presrciption(prescription_id):
             request_value = request.form['selected_drug']
             drug_info = re.split(r' - | : ', request_value)
             drug = Drug.query.filter_by(name=drug_info[0], category=drug_info[2]).first()
-            prescription.drugs.append(drug)
-            db.session.commit()
+
+            exist_prescription = PrescriptionDrug.query.filter_by(prescription_id=prescription_id, drug_id=drug.id).first()
+            if exist_prescription:
+                exist_prescription.count += 1
+                prescription_drug_count[exist_prescription.drug_id] = exist_prescription.count
+            else:
+                new_added_drug = PrescriptionDrug(prescription_id=prescription_id, drug_id=drug.id, count=1)
+                db.session.add(new_added_drug)
+                given_drug.append(Drug.query.filter_by(id=new_added_drug.drug_id).first())
+                prescription_drug_count[new_added_drug.drug_id] = new_added_drug.count
             for drug in drugs:
                 categories[drug.category].append(drug)
+            db.session.commit()
+
         elif post_item == 'added_drug':
             request_value = request.form['added_drug']
             drug_info = re.split(r' - | : ', request_value)
             drug = Drug.query.filter_by(name=drug_info[0], category=drug_info[2]).first()
             try:
-                prescription.drugs.remove(drug)
-            except ValueError:
+                PrescriptionDrug.query.filter_by(prescription_id=prescription_id, drug_id=drug.id).delete()
+                given_drug.remove(Drug.query.filter_by(id=drug.id).first())
+                del prescription_drug_count[drug.drug_id]
+            except :
                 pass
             finally:
                 db.session.commit()
@@ -322,12 +339,10 @@ def presrciption(prescription_id):
                     categories[drug.category].append(drug)
 
     categories = dict(sorted(categories.items(), key=lambda x: x[0]))
-    given_drug = sorted(given_drug, key=lambda x: x.name)
     total_price = sum([drug.price for drug in given_drug]) if len(given_drug) > 0 else 0
-
     return render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
                            prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug,
-                           total_price=total_price)
+                           total_price=total_price, prescription_drug_count=prescription_drug_count)
 
 @app.route("/search", methods=['GET', 'POST'])
 @login_required
