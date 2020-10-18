@@ -502,6 +502,7 @@ class AptUser(NamedTuple):
     aptTS: AppointmentTimeSlot
     user: User # user refers to the user that the currently logged on user will see (e.g. patient will see doctor info)
     apt: Appointment
+    prescpt: Prescription
 
 @app.route('/appointments', methods=['GET', 'POST'])
 @login_required
@@ -547,8 +548,10 @@ def appointments():
             elif current_user.type == 'doctor':
                 u = User.query.filter_by(id=apt.patient_id).first()
 
+            prescr = Prescription.query.filter_by(id=apt.prescription_id).first()
+
             if u is not None:
-                d = AptUser(appt, u, apt)
+                d = AptUser(appt, u, apt, prescr)
                 if exe == 1:
                     todayAppt.append(d)
                 elif exe == 2:

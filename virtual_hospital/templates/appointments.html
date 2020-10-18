@@ -227,6 +227,16 @@
               {% if appt.user.type == 'doctor' %}
                 <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
                 <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
+
+                {% if appt.prescpt is not none %}
+                  <h4 style="text-transform: none;">Prescription Instructions: {{ appt.prescpt.prescription_instructions }}</h4>
+                  <h4 style="text-transform: none; margin: 0;">Prescription:</h4>
+                  <ol>
+                    {% for drug in appt.prescpt.prescription_drugs %}
+                      <li class="alignLeftNoCaps">{{ drug.drug.name }}</li>
+                    {% endfor %}
+                  </ol>
+                {% endif %}
               {% endif %}
             </td>
             <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
