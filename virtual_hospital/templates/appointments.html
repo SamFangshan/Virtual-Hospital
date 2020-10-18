@@ -236,6 +236,8 @@
                       <li class="alignLeftNoCaps">{{ drug.drug.name }}</li>
                     {% endfor %}
                   </ol>
+                {% else %}
+                  <h4 style="text-transform: none;">No Prescription Given</h4>
                 {% endif %}
               {% endif %}
             </td>
