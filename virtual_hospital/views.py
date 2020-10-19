@@ -222,11 +222,10 @@ def setprofile():
 @login_required
 def chatroom(appointment_id):
     appointment = Appointment.query.filter_by(id=appointment_id).first()
-    # print(appointment, current_user)
     if not appointment:
         return render_template('errors/404.html'), 404
-    #if appointment.status != 'Scheduled':
-    #    return render_template('errors/403.html'), 403
+    if appointment.status != 'Scheduled':
+        return render_template('errors/403.html'), 403
     appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
     #if datetime.now() < appointment_time_slot.appointment_start_time - datetime.timedelta(minutes=15):
     #    return render_template('errors/403.html'), 403
@@ -257,13 +256,20 @@ def chatroom(appointment_id):
                     presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
                                                 diagnosis="No diagnosis", pick_up_status="no payment")
                     db.session.add(presrciption)
+                    db.session.commit()
                     appointment.prescription_id = presrciption.id
                 appointment.status = FINISHED
                 db.session.commit()
-                return redirect(url_for('presrciption', prescription_id=presrciption.id))
+                if request.form['submit'] == "complete":
+                    return redirect(url_for('presrciption', prescription_id=presrciption.id))
+                elif request.form['submit'] == "complete-appointment":
+                    return redirect(url_for('index'))
+
         return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
                                department=department)
     elif current_user.type == 'patient':
+        appointment.status = FINISHED
+        db.session.commit()
         if appointment.patient_id != current_user.id:
             return render_template('errors/403.html'), 403
         if request.method == 'POST':

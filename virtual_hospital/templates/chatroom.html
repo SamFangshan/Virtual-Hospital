@@ -261,8 +261,8 @@ transform:rotate(270deg);
         <button style="float:right;margin:8px 5vw;" type="submit" name="submit" value="complete">Complete Appointment</button>
     </form>
     {% elif current_user.type == 'doctor' %}
-        <a href="../"><button style="float:right;margin:8px 5vw;">Complete Appointment</button></a>
     <form method="post">
+        <button style="float:right;margin:8px 5vw;" name="submit" value="complete-appointment">Complete Appointment</button>
         <button style="float:right;margin:8px 5vw;" type="submit" name="submit" value="complete">Give Prescription</button>
     </form>
     {% endif %}
