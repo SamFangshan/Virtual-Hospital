@@ -37,8 +37,8 @@ def test_sign_up_injection_2(test_client):
     payload = {
         "email": "test_user4@gmail.com", 
         "name": "'; SELECT * from users;--",
-        "password": "ABcd_123",
-        "password_confirmed": "ABcd_123",
+        "password": "ABcd_123!",
+        "password_confirmed": "ABcd_123!",
         "user_type": "patient"
         }
     response = test_client.post("/sign_up", data=payload, follow_redirects=True)
@@ -57,11 +57,8 @@ def test_sign_up_injection_3(test_client):
         "user_type": "patient"
         }
     response = test_client.post("/sign_up", data=payload, follow_redirects=True)
-    assert response.status_code == 200
-    user = User.query.filter_by(email="test_user50@gmail.com").first()
-    assert user is not None
-    assert user.name == "injector"
-    assert user.password == "'; SELECT * from users;--"
+    assert response.status_code == 401
+    assert b'Length should be not be greater than 20. Password should have at least one numeral. Password should have at least one of the symbols $@#_!' in response.data
 
 
 ##def test_sign_up_existing_email(test_client):
