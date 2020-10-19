@@ -268,11 +268,11 @@ def chatroom(appointment_id):
         return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
                                department=department)
     elif current_user.type == 'patient':
-        appointment.status = FINISHED
-        db.session.commit()
         if appointment.patient_id != current_user.id:
             return render_template('errors/403.html'), 403
         if request.method == 'POST':
+            appointment.status = FINISHED
+            db.session.commit()
             presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
             return redirect(url_for('payment', prescription_id=presrciption.id))
         chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()

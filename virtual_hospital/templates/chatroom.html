@@ -171,6 +171,8 @@ body {font-family: Arial, Helvetica, sans-serif;}
   width: 80%;
   max-width: 100vw;
   max-height: 100vh;
+  width: auto;
+  height: auto;
 }
 
 /* Caption of Modal Image */
@@ -329,10 +331,14 @@ transform:rotate(270deg);
 <!-- The Modal -->
 <div id="myModal" class="modal">
     <span class="close">&times;</span>
+    <div>
     <button style="float:right;background=#aaaaaa" id="rotate">Rotate</button>&nbsp;&nbsp;
     <button style="float:right;background=#aaaaaa"  onclick="littleit()">Zoom out</button>&nbsp;&nbsp;
     <button style="float:right;background=#aaaaaa" onclick="bigit()">Zoom in</button>
+   </div>
+    <div style="clear:both">
     <img class="modal-content north" id="img01">
+    </div>
     <div id="caption"></div>
 </div>
 
@@ -430,8 +436,13 @@ transform:rotate(270deg);
     // zoom in
     function bigit(){
 		var modalImg = document.getElementById("img01");
-		modalImg.style.height=modalImg.height*1.1+'px';
-		modalImg.style.width=modalImg.width*1.1+'px';
+		var maxwidth = $(window).width();
+        var maxheight = $(window).height();
+		if (modalImg.height*1.1 < maxheight && modalImg.width*1.1 < maxwidth)
+		{
+		    modalImg.style.height=modalImg.height*1.1+'px';
+		    modalImg.style.width=modalImg.width*1.1+'px';
+		}
 	}
 
 	// zoom out
