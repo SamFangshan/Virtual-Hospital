@@ -113,18 +113,17 @@
         {% if appt.user.type == 'doctor' %}
           <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
         {% else %}
-          <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+          <td width = '300px'><img class = user-image src="https://ui-avatars.com/api/?name={{appt.user.name}}&background=3744ce&color=fff&size=250" alt="Patient's Photo"></td>
         {% endif %}
         <td>
           <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
           {% if appt.user.type == 'doctor' %}
-            <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+            <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
+            <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
           {% endif %}
-          <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
         </td>
         <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-          <form action="/chatroom" method="GET">
-            <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
+          <form action="/chatroom/{{ appt.apt.id }}" method="GET">
             <button class="rightBorderRadius5px buttonSmallHeight" type="submit">Start Chatting</button>
           </form>
 
@@ -146,14 +145,14 @@
         {% if appt.user.type == 'doctor' %}
           <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
         {% else %}
-          <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+          <td width = '300px'><img class = user-image src="https://ui-avatars.com/api/?name={{appt.user.name}}&background=3744ce&color=fff&size=250" alt="Patient's Photo"></td>
         {% endif %}
         <td>
           <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
           {% if appt.user.type == 'doctor' %}
-            <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+            <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
+            <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
           {% endif %}
-          <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
         </td>
         <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
           <form method="POST">
@@ -182,17 +181,17 @@
               {% if appt.user.type == 'doctor' %}
                 <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
               {% else %}
-                <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+                <td width = '300px'><img class = user-image src="https://ui-avatars.com/api/?name={{appt.user.name}}&background=3744ce&color=fff&size=250" alt="Patient's Photo"></td>
               {% endif %}
               <td>
                 <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
                 {% if appt.user.type == 'doctor' %}
-                  <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+                  <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
+                  <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
                 {% endif %}
-                <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
               </td>
               <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-                <button class="rightBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile & Ratings</button>
+                <button class="rightBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile</button>
                 <form method="POST">
                   <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
                   <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
@@ -221,17 +220,29 @@
             {% if appt.user.type == 'doctor' %}
               <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
             {% else %}
-              <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+              <td width = '300px'><img class = user-image src="https://ui-avatars.com/api/?name={{appt.user.name}}&background=3744ce&color=fff&size=250" alt="Patient's Photo"></td>
             {% endif %}
             <td>
               <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
               {% if appt.user.type == 'doctor' %}
-                <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+                <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
+                <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
+
+                {% if appt.prescpt is not none %}
+                  <h4 style="text-transform: none;">Prescription Instructions: {{ appt.prescpt.prescription_instructions }}</h4>
+                  <h4 style="text-transform: none; margin: 0;">Prescription:</h4>
+                  <ol>
+                    {% for drug in appt.prescpt.prescription_drugs %}
+                      <li class="alignLeftNoCaps">{{ drug.drug.name }}</li>
+                    {% endfor %}
+                  </ol>
+                {% else %}
+                  <h4 style="text-transform: none;">No Prescription Given</h4>
+                {% endif %}
               {% endif %}
-              <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
             </td>
             <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-              <button class="fullBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile & Ratings</button>
+              <button class="fullBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile</button>
             </td>
           </tr>
         </table>

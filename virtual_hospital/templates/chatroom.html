@@ -59,7 +59,18 @@ a {
 
 }
 
+#doctor-intro {
+    height:60vh;
+    overflow:auto;
+    bottom: 0px;
+}
+
 /*Diagnosis of Patients*/
+#patient-diagnosis {
+    height:60vh;
+    overflow:auto;
+}
+
 #Diagnosis {
     justify-content: space-between;
     width:80%;
@@ -72,9 +83,18 @@ a {
     margin: auto;
 }
 
-#Diagnosis.btn-holder{
-  justify-content: flex-end;
-  display: flex;
+
+.btn-holder{
+    width:100%;
+    height:10vh;
+    display: table;
+    margin:0;
+    padding:0;
+}
+.submit_button {
+    height: 10%;
+    display: table-cell;
+    vertical-align: bottom;
 }
 
 /* The Container chatUI */
@@ -149,7 +169,10 @@ body {font-family: Arial, Helvetica, sans-serif;}
   margin: auto;
   display: block;
   width: 80%;
-  max-width: 700px;
+  max-width: 100vw;
+  max-height: 100vh;
+  width: auto;
+  height: auto;
 }
 
 /* Caption of Modal Image */
@@ -206,40 +229,81 @@ body {font-family: Arial, Helvetica, sans-serif;}
     width: 100%;
   }
 }
+
+/* Rotation class */
+.north {
+transform:rotate(0deg);
+-ms-transform:rotate(0deg); /* IE 9 */
+-webkit-transform:rotate(0deg); /* Safari and Chrome */
+}
+.west {
+transform:rotate(90deg);
+-ms-transform:rotate(90deg); /* IE 9 */
+-webkit-transform:rotate(90deg); /* Safari and Chrome */
+}
+.south {
+transform:rotate(180deg);
+-ms-transform:rotate(180deg); /* IE 9 */
+-webkit-transform:rotate(180deg); /* Safari and Chrome */
+
+}
+.east {
+transform:rotate(270deg);
+-ms-transform:rotate(270deg); /* IE 9 */
+-webkit-transform:rotate(270deg); /* Safari and Chrome */
+}
+
+
 </style>
 
 <header class="special container" style="width:100%">
 	<h2 style = "color: #505F98;background-color:#E7ECFF"> <strong>Chat Room</strong> </h2>
+    {% if current_user.type == 'patient' %}
     <form method="post">
         <button style="float:right;margin:8px 5vw;" type="submit" name="submit" value="complete">Complete Appointment</button>
     </form>
+    {% elif current_user.type == 'doctor' %}
+    <form method="post">
+        <button style="float:right;margin:8px 5vw;" name="submit" value="complete-appointment">Complete Appointment</button>
+        <button style="float:right;margin:8px 5vw;" type="submit" name="submit" value="complete">Give Prescription</button>
+    </form>
+    {% endif %}
 </header>
 
 <div class="content">
 
     <div id = "container">
         <div id="card">
+            {% if current_user.type == 'patient' %}
+            <div id="doctor-intro">
+                <a href="../profile?id={{chatting_user.id}}">
+                    <image src="https://ui-avatars.com/api/?name={{chatting_user.name}}&background=3744ce&color=fff"style="border-radius: 50%;margin:50px 0px"  alt="Avatar"></image>
+                </a>
+                <h2 style="text-align:center;color:#091133"><strong>{{chatting_user.name}}</strong></h2>
+                <h1 style="text-align:center;color:#505F98">{{department.name}} <span style="color: #F2994A;">★ {{ chatting_user.get_rating() }}</span></h1>
+                <br>
+                <span style="text-align:center;color:#505F98">{{chatting_user.credentials}}</span><br>
+                <span style="text-align:center;color:#505F98">Office Hours: {{chatting_user.office_hour_start_time}} - {{chatting_user.office_hour_end_time}}</span>
+                <p style="text-align:center;color:#505F98">{{department.description}}</p>
+            </div>
+            {% elif current_user.type == 'doctor' %}
+            <div id="patient-diagnosis">
             <a href="../profile?id={{chatting_user.id}}">
                 <image src="https://ui-avatars.com/api/?name={{chatting_user.name}}&background=3744ce&color=fff"style="border-radius: 50%;margin:50px 0px"  alt="Avatar"></image>
             </a>
             <h2 style="text-align:center;color:#091133"><strong>{{chatting_user.name}}</strong></h2>
-            {% if current_user.type == 'patient' %}
-            <h1 style="text-align:center;color:#505F98">{{department.name}}</h1>
-            <h1 style="text-align:center;color:#505F98">{{chatting_user.credentials}}</h1>
-            <h1 style="text-align:center;color:#505F98">Office Hours: {{chatting_user.office_hour_start_time}} - {{chatting_user.office_hour_end_time}}</h1>
-            <p style="text-align:center;color:#505F98;text-transform:capitalize;">{{department.description}}</p>
-            {% elif current_user.type == 'doctor' %}
             <h1 style="text-align:center">Diagnosis</h1>
             <div id="Diagnosis">
                 <form method="POST">
-                <input style="height:10vh; border:0" type="text" name="InputDiagnosis" id="InputDiagnosis" placeholder="Enter diagnosis while chatting with patient" required>
+                    <input style="height:20vh; border:0" type="text" name="InputDiagnosis" id="InputDiagnosis" placeholder="Enter diagnosis while chatting with patient" required>
                 <div class="btn-holder">
-                <button style="margin:0;float:right;bottom:0;height:2vh;width:10%;" type="submit" name = "send">Save</button>
+                    <div class="submit_button">
+                    <button style="margin:0;float:right;bottom:0;height:2vh;" type="submit" name = "send">Save</button>
+                    </div>
                 </div>
                 </form>
-
             </div>
-
+            </div>
             {% endif %}
 
         </div>
@@ -263,10 +327,18 @@ body {font-family: Arial, Helvetica, sans-serif;}
     </div>
 
 </div>
+
 <!-- The Modal -->
 <div id="myModal" class="modal">
     <span class="close">&times;</span>
-    <img class="modal-content" id="img01">
+    <div>
+    <button style="float:right;background=#aaaaaa" id="rotate">Rotate</button>&nbsp;&nbsp;
+    <button style="float:right;background=#aaaaaa"  onclick="littleit()">Zoom out</button>&nbsp;&nbsp;
+    <button style="float:right;background=#aaaaaa" onclick="bigit()">Zoom in</button>
+   </div>
+    <div style="clear:both">
+    <img class="modal-content north" id="img01">
+    </div>
     <div id="caption"></div>
 </div>
 
@@ -348,6 +420,8 @@ body {font-family: Arial, Helvetica, sans-serif;}
     </script>
 
     <!-- Display Modal -->
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script>
     // Get the modal
     var modal = document.getElementById("myModal");
@@ -359,6 +433,37 @@ body {font-family: Arial, Helvetica, sans-serif;}
         modalImg.src = this.src;
     });
 
+    // zoom in
+    function bigit(){
+		var modalImg = document.getElementById("img01");
+		var maxwidth = $(window).width();
+        var maxheight = $(window).height();
+		if (modalImg.height*1.1 < maxheight && modalImg.width*1.1 < maxwidth)
+		{
+		    modalImg.style.height=modalImg.height*1.1+'px';
+		    modalImg.style.width=modalImg.width*1.1+'px';
+		}
+	}
+
+	// zoom out
+	function littleit(){
+		var modalImg = document.getElementById("img01");
+		modalImg.style.height=modalImg.height/1.1+'px';
+		modalImg.style.width=modalImg.width/1.1+'px';
+	}
+
+    // rotate image
+    $('#rotate').click(function(){
+        if($("#img01").hasClass('north')){
+            $("#img01").attr('class','modal-content west');
+        }else if($("#img01").hasClass('west')){
+            $("#img01").attr('class','modal-content south');
+        }else if($("#img01").hasClass('south')){
+            $("#img01").attr('class','modal-content east');
+        }else if($("#img01").hasClass('east')){
+            $("#img01").attr('class','modal-content north');
+        }
+    });
 
     // Get the <span> element that closes the modal
     var span = document.getElementsByClassName("close")[0];
@@ -369,6 +474,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
     }
 
     </script>
+
 
 {% endblock %}
 
