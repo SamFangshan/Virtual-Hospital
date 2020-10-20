@@ -224,7 +224,7 @@ def chatroom(appointment_id):
     appointment = Appointment.query.filter_by(id=appointment_id).first()
     if not appointment:
         return render_template('errors/404.html'), 404
-    if appointment.status == FINISHED+FINISHED or appointment.status == 'cancelled':
+    if appointment.status == FINISHED+'p'+FINISHED+'d' or appointment.status == FINISHED+'d'+FINISHED+'p' or appointment.status == 'cancelled':
         return render_template('errors/403.html'), 403
     appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
     #if datetime.now() < appointment_time_slot.appointment_start_time - datetime.timedelta(minutes=15):
@@ -258,10 +258,10 @@ def chatroom(appointment_id):
                     db.session.add(presrciption)
                     db.session.commit()
                     appointment.prescription_id = presrciption.id
-                if appointment.status == FINISHED:
-                    appointment.status += FINISHED
-                else:
-                    appointment.status = FINISHED
+                if appointment.status == 'Scheduled':
+                    appointment.status = FINISHED + 'd'
+                elif FINISHED + 'd' not in appointment.status:
+                    appointment.status += FINISHED + 'd'
                 db.session.commit()
                 if request.form['submit'] == "complete":
                     return redirect(url_for('presrciption', prescription_id=presrciption.id))
@@ -274,10 +274,10 @@ def chatroom(appointment_id):
         if appointment.patient_id != current_user.id:
             return render_template('errors/403.html'), 403
         if request.method == 'POST':
-            if appointment.status == FINISHED:
-                appointment.status += FINISHED
-            else:
-                appointment.status = FINISHED
+            if appointment.status == 'Scheduled':
+                appointment.status = FINISHED + 'p'
+            elif FINISHED+'p' not in appointment.status:
+                appointment.status += FINISHED + 'p'
             db.session.commit()
             presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
             if not presrciption:
