@@ -570,7 +570,7 @@ def appointments():
                 if exe == 1:
                     todayAppt.append(d)
                 elif exe == 2:
-                    if (d.apt.status == 'finished') or (d.apt.status == (FINISHED + FINISHED)):
+                    if (d.apt.status == 'finished') or (d.apt.status == FINISHED+'p'+FINISHED+'d' or d.apt.status == FINISHED+'d'+FINISHED+'p' or d.apt.status == 'cancelled'):
                         pastAppt.append(d)
                     else:
                         canEnterChat.append(d)
