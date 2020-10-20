@@ -145,7 +145,64 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+.total_price_column {
+  width: 30%;
+  color: rgba(9,17,51,1);
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 18px;
+  float: left;
+}
+.total_price_value {
+  width: 30%;
+  color: rgba(111,124,178,1);
+  font-family: Roboto;
+  font-weight: Medium;
+  font-size: 18px;
+  float: left;
+}
+select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.ui-selectmenu-text{
+  background: white;
+}
+.ui-selectmenu-menu-item-header {
+  background: white;
+  color: #7c8081;
+  font-family: 'Lato', sans-serif;
+  font-size: 15pt;
+  font-weight: 300;
+  letter-spacing: 0.025em;
+  line-height: 1.75em;
+}
+
+.ui-selectmenu-menu-item-content {
+  color: #7c8081;
+  font-family: 'Lato', sans-serif;
+  font-size: 15pt;
+  font-weight: 300;
+  letter-spacing: 0.025em;
+  line-height: 1.75em;
+  background: white;
+}
+.ui-menu-item {
+  padding: 2px 2px 2px 2px !important;
+}
+
 </style>
+<link rel="stylesheet" href="https://rawgit.com/ainterpreting/jquery-multilineSelectmenu/master/jquery.multilineSelectmenu.css">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/black-tie/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+<script src="https://rawgit.com/ainterpreting/jquery-multilineSelectmenu/master/jquery.multilineSelectmenu.js"></script>
+
 <article id="main">
 <section class="wrapper style4 special container medium">
 <div class="content">
@@ -166,10 +223,27 @@
     <div class="appointment_info_column"><span class="appointment_info_column_name">Appointment Time</span>
       <span class="appointment_info_value">{{ appointment_time_slot.appointment_start_time.strftime('%d/%m/%Y, %H:%M:%S') }}</span></div>
   </div>
-
   <br><br>
   <br><br>
+  <span class="appointment_info_text">Please select a pick up location</span>
+  <div class="content">
+  <form method="post">
+    <div class="container" style="text-align:center">
+      <select id="select" name="location" autocomplete="off" required>
+        <option value="Ng Teng Fong General Hospital">Ng Teng Fong General Hospital |
+          1 Jurong East Street 21, Singapore 609606</option>
+        <option value="Tan Tock Seng Hospital">Tan Tock Seng Hospital |
+          11 Jln Tan Tock Seng, Singapore 308433</option>
+      </select>
+    </div>
+  </form>
 
+
+  <br><br>
+  <script>
+  $('#select').val('{{ pick_up_location }}');
+  $("#select").multilineSelectmenu({ change: function( event, ui ) { this.form.submit(); }});
+  </script>
   <div class="prescriptions_title"></div><span class="prescriptions_title_text">Prescriptions</span><br><br>
   <div class="prescription" style="width:100%;float:left">
   <span class="drug_name_column">Drug Name</span><span class="drug_price_column">Price</span></div>
@@ -182,9 +256,16 @@
       ${{ '{0:.2f}'.format(drug.price) }} <br>
     {% endfor %}</span>
   </div>
-  {% for drug in drugs %}
-    <br><br>
-  {% endfor %}
+  <br></br>
+  <br></br>
+  <br></br>
+  <div class="total_price" style="width:100%;float:left">
+  <span class="total_price_column">Total</span><span class="total_price_value">{{ '${0:.2f}'.format(total_price) }}</span></div>
+  <!-- {% for drug in drugs %}
+    <br></br>
+  {% endfor %} -->
+  <br></br>
+  <br></br>
 
   <div style="width:100%;float:left;">
   <form action="/checkout" method="post">

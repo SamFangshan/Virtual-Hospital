@@ -97,82 +97,158 @@
 </header>
 
 <div class="container">
-  <h3 class="header">Today's Appointments</h3>
-  {% if current_user.type == 'patient' %}
-  <button onclick="document.location.href='/search'" style="float: right; border-radius: 5px">Make a New Appointment</button>
+  {% if todayAppt|length > 0 %}
+    <h3 class="header" style="margin: 0">Today's Appointments</h3>
   {% endif %}
 
-  {% for appt in todayAppt %}
-  <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
+  {% if current_user.type == 'patient' %}
+    <button onclick="document.location.href='/search'" style="float: right; border-radius: 5px">Make a New Appointment</button>
+  {% endif %}
+
+  {% for appt in canEnterChat %}
+  <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px; margin-bottom: 70px">
     <h1 class='BGcolor'>{{ appt.aptTS.appointment_start_time }}</h1>
     <table>
       <tr>
         {% if appt.user.type == 'doctor' %}
           <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
         {% else %}
-          <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+          <td width = '300px'><img class = user-image src="https://ui-avatars.com/api/?name={{appt.user.name}}&background=3744ce&color=fff&size=250" alt="Patient's Photo"></td>
         {% endif %}
         <td>
           <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
           {% if appt.user.type == 'doctor' %}
-            <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+            <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
+            <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
           {% endif %}
-          <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
         </td>
         <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-          {% if canEnterChat.id == appt.aptTS.id %}
-            <form method="POST">
-              <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
-              <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
-            </form>
+          <form action="/chatroom/{{ appt.apt.id }}" method="GET">
+            <button class="rightBorderRadius5px buttonSmallHeight" type="submit">Start Chatting</button>
+          </form>
 
-            <form action="/chatroom" method="GET">
-              <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
-              <button class="rightBorderRadius5px buttonSmallHeight" type="submit" name="submit">Start Chatting</button>
-            </form>
-
-          {% else %}
-
-            <form method="POST">
-              <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
-              <button class="noBG fullBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
-            </form>
-
-          {% endif %}
-          </td>
+          <form method="POST">
+            <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
+            <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
+          </form>
+        </td>
       </tr>
     </table>
   </div>
   {% endfor %}
 
-  <h3 class="header" style="padding-top: 80px; margin: 0">Future Appointments</h3>
-  {% for appt in futureAppt %}
-    <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px">
-      <h1 class='BGcolor'>{{ appt.aptTS.appointment_start_time }}</h1>
-      <table>
-        <tr>
+  {% for appt in todayAppt %}
+  <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px; margin-bottom: 70px">
+    <h1 class='BGcolor'>{{ appt.aptTS.appointment_start_time }}</h1>
+    <table>
+      <tr>
+        {% if appt.user.type == 'doctor' %}
+          <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+        {% else %}
+          <td width = '300px'><img class = user-image src="https://ui-avatars.com/api/?name={{appt.user.name}}&background=3744ce&color=fff&size=250" alt="Patient's Photo"></td>
+        {% endif %}
+        <td>
+          <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
           {% if appt.user.type == 'doctor' %}
-            <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
-          {% else %}
-            <td width = '300px'><img class = user-image src="static\images\patient_img.png" alt="Patient's Photo"></td>
+            <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
+            <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
           {% endif %}
-          <td>
-            <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
+        </td>
+        <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
+          <form method="POST">
+            <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
+            <button class="noBG fullBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
+  {% endfor %}
+
+  {% if futureAppt|length > 0 %}
+    <h3 class="header" style="margin: 0">Future Appointments</h3>
+  {% endif %}
+
+    {% for date in futureApptDates %}
+      <h3 class="header" style="padding-top: 20px; margin: 0; display: block">{{ date }}</h3>
+
+      {% for appt in futureAppt %}
+        {% if appt.aptTS.appointment_start_time.date() == date %}
+        <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px; margin-bottom: 70px">
+          <h1 class='BGcolor'>{{ appt.aptTS.appointment_start_time }}</h1>
+          <table>
+            <tr>
+              {% if appt.user.type == 'doctor' %}
+                <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+              {% else %}
+                <td width = '300px'><img class = user-image src="https://ui-avatars.com/api/?name={{appt.user.name}}&background=3744ce&color=fff&size=250" alt="Patient's Photo"></td>
+              {% endif %}
+              <td>
+                <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
+                {% if appt.user.type == 'doctor' %}
+                  <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
+                  <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
+                {% endif %}
+              </td>
+              <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
+                <button class="rightBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile</button>
+                <form method="POST">
+                  <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
+                  <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
+                </form>
+              </td>
+            </tr>
+          </table>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+
+  {% if pastAppt|length > 0 %}
+    <h3 class="header" style="margin: 0">Past Appointments</h3>
+  {% endif %}
+
+  {% for date in pastApptDates %}
+    <h3 class="header" style="padding-top: 20px; margin: 0; display: block">{{ date }}</h3>
+
+    {% for appt in pastAppt %}
+      {% if appt.aptTS.appointment_start_time.date() == date %}
+      <div id="appointment-card" class="appointmentCard" style = "margin-top: 70px; margin-bottom: 70px">
+        <h1 class='BGcolor'>{{ appt.aptTS.appointment_start_time }}</h1>
+        <table>
+          <tr>
             {% if appt.user.type == 'doctor' %}
-              <h4 style='text-transform: none; margin: 0px'><strong>Distinguished Doctor</strong></h4>
+              <td width = '300px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
+            {% else %}
+              <td width = '300px'><img class = user-image src="https://ui-avatars.com/api/?name={{appt.user.name}}&background=3744ce&color=fff&size=250" alt="Patient's Photo"></td>
             {% endif %}
-            <h4 style='text-transform: none; color: #F2994A;'><strong>★ 5.0</strong></h4>
-          </td>
-          <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
-            <button class="rightBorderRadius5px buttonSmallHeight" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile & Ratings</button>
-            <form method="POST">
-              <input type="hidden" name="appt_id" value="{{ appt.apt.id }}">
-              <button class="noBG leftBorderRadius5px buttonSmallHeight" type="submit" name="submit" value="Submit">Cancel Appointment</button>
-            </form>
-          </td>
-        </tr>
-      </table>
-    </div>
+            <td>
+              <h3 style='text-transform: none; padding-top: 40px'><strong>{{ appt.user.name }} (Queue: {{ appt.apt.queue_number }})</strong></h3>
+              {% if appt.user.type == 'doctor' %}
+                <h4 style='text-transform: none; margin: 0px'><strong></strong></h4>
+                <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
+
+                {% if appt.prescpt is not none %}
+                  <h4 style="text-transform: none;">Prescription Instructions: {{ appt.prescpt.prescription_instructions }}</h4>
+                  <h4 style="text-transform: none; margin: 0;">Prescription:</h4>
+                  <ol>
+                    {% for drug in appt.prescpt.prescription_drugs %}
+                      <li class="alignLeftNoCaps">{{ drug.drug.name }}</li>
+                    {% endfor %}
+                  </ol>
+                {% else %}
+                  <h4 style="text-transform: none;">No Prescription Given</h4>
+                {% endif %}
+              {% endif %}
+            </td>
+            <td style="vertical-align: bottom; padding-bottom: 18px; padding-right: 20px;">
+              <button class="fullBorderRadius5px buttonSmallHeight" style="background-color: rgba(186, 195, 229, 0.5)" onclick="document.location.href='/profile?id={{ appt.user.id }}'">View Profile</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+      {% endif %}
+    {% endfor %}
   {% endfor %}
 </div>
 

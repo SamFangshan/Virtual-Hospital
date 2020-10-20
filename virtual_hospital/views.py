@@ -1,7 +1,9 @@
 import json
 import os
+import re
 
 import stripe
+from sqlalchemy.orm.collections import InstrumentedList
 from flask import flash, jsonify, redirect, render_template, request, url_for, session
 
 from flask_login import current_user, login_required, login_user, logout_user
@@ -14,11 +16,15 @@ from flask_socketio import SocketIO,emit
 from datetime import datetime, timedelta
 from typing import NamedTuple
 
+from collections import defaultdict
+
+import operator
+
 socketio = SocketIO(app)
+FINISHED = "finished"
 
 def messageReceived(methods=['GET', 'POST']):
     print('message was received!!!')
-
 
 @socketio.on('my event')
 def handle_my_custom_event(json, methods=['GET', 'POST']):
@@ -38,7 +44,6 @@ def connected():
 @socketio.on('disconnect')
 def disconnect():
     print('disconnect')
-
 
 from virtual_hospital.models import *
 
@@ -128,7 +133,7 @@ def signup():
             db.session.commit()
             flash('New User Created.', 'info')
             login_user(newUser)
-            return redirect((url_for('index')), 200)
+            return redirect(url_for('index'))
 
     return (render_template('sign_up.html', currPage="SignUp", error=error), 500)
 
@@ -146,20 +151,19 @@ def logout():
 def settings():
     error = None
     if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-        password_confirmed =request.form['password_confirmed']
-
+        email = request.form.get('email', None)
+        password = request.form.get('password', None)
+        password_confirmed = request.form.get('password_confirmed', None)
         if current_user.email != email and User.query.filter_by(email=email).first():
             error = "Already Registered"
-        elif len(password) != 0:
+        elif password and len(password) != 0:
             if len(password_error(password))!=0:
                 error = password_error(password)
             elif password != password_confirmed:
                 error = "Please ensure that two password are the same."
             else:
                 user = User.query.filter_by(email=current_user.email).first()
-                user.email = email
+                user.email = current_user.email if email is None else email
                 user.set_password(password)
                 db.session.commit()
                 flash('Settings updated.', 'info')
@@ -214,12 +218,138 @@ def setprofile():
     return render_template('setprofile.html')
 
 
-@app.route("/chatroom",methods=['Get','Post'])
+@app.route("/chatroom/<appointment_id>",methods=['Get','Post'])
 @login_required
-def chatroom():
-    return render_template("chatroom.html")
+def chatroom(appointment_id):
+    appointment = Appointment.query.filter_by(id=appointment_id).first()
+    if not appointment:
+        return render_template('errors/404.html'), 404
+    if appointment.status != 'Scheduled':
+        return render_template('errors/403.html'), 403
+    appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
+    #if datetime.now() < appointment_time_slot.appointment_start_time - datetime.timedelta(minutes=15):
+    #    return render_template('errors/403.html'), 403
 
-  
+    if current_user.type == 'doctor':
+        if current_user.id != appointment_time_slot.doctor_id:
+            return render_template('errors/403.html'), 403
+        chatting_user = User.query.filter_by(id=appointment.patient_id).first()
+        department = Department.query.filter_by(id=current_user.department_id).first()
+        if request.method == 'POST':
+            try:
+                diagnosis = request.form['InputDiagnosis']
+                presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+                print(presrciption)
+                if not presrciption:
+                    new_presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                                    diagnosis=diagnosis, pick_up_status="no payment")
+                    db.session.add(new_presrciption)
+                    db.session.commit()
+                    appointment.prescription_id = new_presrciption.id
+                else:
+                    presrciption.diagnosis = diagnosis
+                db.session.commit()
+            except KeyError:
+                assert request.form['submit']
+                presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+                if not presrciption:
+                    presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                                diagnosis="No diagnosis", pick_up_status="no payment")
+                    db.session.add(presrciption)
+                    db.session.commit()
+                    appointment.prescription_id = presrciption.id
+                appointment.status = FINISHED
+                db.session.commit()
+                if request.form['submit'] == "complete":
+                    return redirect(url_for('presrciption', prescription_id=presrciption.id))
+                elif request.form['submit'] == "complete-appointment":
+                    return redirect(url_for('index'))
+
+        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
+                               department=department)
+    elif current_user.type == 'patient':
+        if appointment.patient_id != current_user.id:
+            return render_template('errors/403.html'), 403
+        if request.method == 'POST':
+            appointment.status = FINISHED
+            db.session.commit()
+            presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+            return redirect(url_for('payment', prescription_id=presrciption.id))
+        chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
+        department = Department.query.filter_by(id=chatting_user.department_id).first()
+        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
+                               department=department)
+
+@app.route("/presrciption/<prescription_id>",methods=['Get','Post'])
+@login_required
+def presrciption(prescription_id):
+    prescription = Prescription.query.filter_by(id=prescription_id).first()
+    patient = User.query.filter_by(id=prescription.patient_id).first()
+    drugs = Drug.query.order_by(Drug.category).all()
+    categories = defaultdict(list)
+    given_drug_id = PrescriptionDrug.query.filter_by(prescription_id=prescription_id).all()
+    given_drug = []
+    prescription_drug_count = defaultdict(int)
+    for drug_id in given_drug_id:
+        given_drug.append(Drug.query.filter_by(id=drug_id.drug_id).first())
+        prescription_drug_count[drug_id.drug_id] = drug_id.count
+    title = ""
+
+    if len(title) == 0:
+        for drug in drugs:
+            categories[drug.category].append(drug)
+
+    if request.method == 'POST':
+        post_item = next(request.form.keys())
+        if post_item == 'selected_drug':
+            request_value = request.form['selected_drug']
+            drug_info = re.split(r' - | : ', request_value)
+            drug = Drug.query.filter_by(name=drug_info[0], category=drug_info[2]).first()
+
+            exist_prescription = PrescriptionDrug.query.filter_by(prescription_id=prescription_id, drug_id=drug.id).first()
+            if exist_prescription:
+                exist_prescription.count += 1
+                prescription_drug_count[exist_prescription.drug_id] = exist_prescription.count
+            else:
+                new_added_drug = PrescriptionDrug(prescription_id=prescription_id, drug_id=drug.id, count=1)
+                db.session.add(new_added_drug)
+                given_drug.append(Drug.query.filter_by(id=new_added_drug.drug_id).first())
+                prescription_drug_count[new_added_drug.drug_id] = new_added_drug.count
+            for drug in drugs:
+                categories[drug.category].append(drug)
+            db.session.commit()
+
+        elif post_item == 'added_drug':
+            request_value = request.form['added_drug']
+            drug_info = re.split(r' - | : ', request_value)
+            drug = Drug.query.filter_by(name=drug_info[0], category=drug_info[2]).first()
+            try:
+                PrescriptionDrug.query.filter_by(prescription_id=prescription_id, drug_id=drug.id).delete()
+                given_drug.remove(Drug.query.filter_by(id=drug.id).first())
+                del prescription_drug_count[drug.drug_id]
+            except :
+                pass
+            finally:
+                db.session.commit()
+                for drug in drugs:
+                    categories[drug.category].append(drug)
+        elif post_item == 'search_drug':
+            title = request.form['search_drug']
+            if len(title) > 0:
+                drugs = Drug.query.filter(Drug.category.ilike("%" + title + "%")).all()
+                for drug in drugs:
+                    categories[drug.category].append(drug)
+                drugs = Drug.query.filter(Drug.name.ilike("%" + title + "%")).all()
+            else:
+                for drug in drugs:
+                    categories[drug.category].append(drug)
+
+    categories = dict(sorted(categories.items(), key=lambda x: x[0]))
+    total_price = sum([drug.price for drug in given_drug]) if len(given_drug) > 0 else 0
+    return render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
+                           prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug,
+                           total_price=total_price, prescription_drug_count=prescription_drug_count)
+
 @app.route("/search", methods=['GET', 'POST'])
 @login_required
 def search():
@@ -245,7 +375,10 @@ def departments():
 @app.route("/department/<id>")
 @login_required
 def department(id):
-    dept = Department.query.filter_by(id=id).all()
+    if id.isdigit():
+        dept = Department.query.filter_by(id=id).all()
+    else:
+        return render_template('errors/404.html')
     if dept:
         doctors = Doctor.query.filter_by(department_id=id).all()
         return render_template('department.html', department=dept[0], doctors=doctors)
@@ -294,8 +427,17 @@ def payment_success(payment_intent_id):
         appointment_id = session['appointment_id']
         del session['appointment_id']
 
-        prescription = Prescription.query.get(appointment_id)
+        prescription_id = session['prescription_id']
+        prescription = Prescription.query.get(int(prescription_id))
         prescription.pick_up_status = 'pending'
+
+        # pickup on the next week day
+        pickup_date = datetime.today() + timedelta(days=1)
+        if pickup_date.weekday() == 5:
+            pickup_date += timedelta(days=2)
+        elif pickup_date.weekday() == 6:
+            pickup_date += timedelta(days=1)
+        prescription.pick_up_start_date = pickup_date
         db.session.commit()
 
         return redirect(url_for('rate_doctor', appointment_id=appointment_id))
@@ -303,10 +445,15 @@ def payment_success(payment_intent_id):
         return render_template('errors/403.html'), 403
 
 
-@app.route('/payment/prescription/<prescription_id>')
+@app.route('/payment/prescription/<prescription_id>', methods=['POST', 'GET'])
 @login_required
 def payment(prescription_id):
     prescription = Prescription.query.get(int(prescription_id))
+
+    if request.method == 'POST':
+        prescription.pick_up_location = request.form['location']
+        db.session.commit()
+
     if not prescription:
         return render_template('errors/404.html'), 404
     appointment = Appointment.query.filter_by(prescription_id=prescription.id).first()
@@ -323,9 +470,13 @@ def payment(prescription_id):
     doctor = Doctor.query.get(appointment_time_slot.doctor_id)
     department = Department.query.get(doctor.department_id)
 
+    pick_up_location = prescription.pick_up_location
+
     session['appointment_id'] = appointment.id
+    session['prescription_id'] = prescription_id
     return render_template('payment.html', doctor=doctor, department=department,
-                           drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot)
+                           drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot,
+                           pick_up_location=pick_up_location)
 
 
 @app.route('/ratedoctor/appointment/<appointment_id>', methods=['GET', 'POST'])
@@ -357,6 +508,7 @@ class AptUser(NamedTuple):
     aptTS: AppointmentTimeSlot
     user: User # user refers to the user that the currently logged on user will see (e.g. patient will see doctor info)
     apt: Appointment
+    prescpt: Prescription
 
 @app.route('/appointments', methods=['GET', 'POST'])
 @login_required
@@ -376,20 +528,24 @@ def appointments():
     canEnterChat = []
     todayAppt = []
     futureAppt = []
+    pastAppt = []
 
     for appt in apptTimeSlot:
         exe = 0
-        if (datetime.now().date() == appt.appointment_start_time.date()):
+
+        if (datetime.now().date() == appt.appointment_start_time.date()): #today's appt (cannot enter chatroom)
             exe = 1
 
-        if (datetime.now() >= appt.appointment_start_time) and (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15))): # if within 15 minutes of appointment_start_time
+        if(datetime.now() > appt.appointment_start_time): #past appt (date & time)
+            exe = 4
+
+        if (datetime.now() <= (appt.appointment_start_time + timedelta(minutes=15)) and (datetime.now() >= (appt.appointment_start_time - timedelta(minutes=15)))): # +/- 15 minutes of appointment_start_time
             exe = 2
 
-        if(datetime.now().date() < appt.appointment_start_time.date()):
+        if(datetime.now().date() < appt.appointment_start_time.date()): #future dates appt
             exe = 3
 
         u = None
-
         fetchapt = Appointment.query.filter_by(appointment_time_slot_id=appt.id).all()
 
         for apt in fetchapt:
@@ -398,35 +554,45 @@ def appointments():
             elif current_user.type == 'doctor':
                 u = User.query.filter_by(id=apt.patient_id).first()
 
+            prescr = Prescription.query.filter_by(id=apt.prescription_id).first()
+
             if u is not None:
-                d = AptUser(appt, u, apt)
+                d = AptUser(appt, u, apt, prescr)
                 if exe == 1:
                     todayAppt.append(d)
                 elif exe == 2:
-                    canEnterChat.append(d)
+                    if d.apt.status == 'finished':
+                        pastAppt.append(d)
+                    else:
+                        canEnterChat.append(d)
                 elif exe == 3:
                     futureAppt.append(d)
+                elif exe == 4:
+                    pastAppt.append(d)
 
-    # Appointment.query.filter_by(id=123).delete()
-    # db.session.commit()
+    todayAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'))
+    futureAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'))
+    pastAppt.sort(key=operator.attrgetter('aptTS.appointment_start_time'), reverse=True) # most recent on top
+
+    futureApptDates = {apt.aptTS.appointment_start_time.date() for apt in futureAppt}
+    pastApptDates = {apt.aptTS.appointment_start_time.date() for apt in pastAppt}
 
     if request.method =='POST':
         if user is None:
             return render_template("errors/404.html")
         else:
-            # apptSlot = Appointment.query.filter_by(patient_id=id).all()
             print(request.form)
             deleteApptId = request.form['appt_id']
             deleteApptSlot = Appointment.query.filter_by(id=deleteApptId).delete()
             db.session.commit()
             flash('Appointment deleted.', 'info')
             return redirect(url_for('appointments'))
-            
+
     if request.method == 'GET':
         if user is None:
             return render_template("errors/404.html")
         else:
-            return render_template('appointments.html', currPage='Appointments', user=user, todayAppt=todayAppt, canEnterChat=canEnterChat, futureAppt=futureAppt)
+            return render_template('appointments.html', currPage='Appointments', user=user, todayAppt=todayAppt, canEnterChat=canEnterChat, futureAppt=futureAppt, pastAppt=pastAppt, futureApptDates=futureApptDates, pastApptDates=sorted(pastApptDates, reverse=True))
 
 @app.route('/newappointment', methods=['POST', 'GET'])
 @login_required
@@ -483,9 +649,33 @@ def profile():
         else:
             if user.type == 'patient':
                 if current_user.type == 'doctor' or current_user.id == user.id:
-                    return render_template('patientprofile.html', user=user, currPage="Patient's Profile")
+                    return render_template('patientprofile.html', user=user, current_user=current_user, currPage="Patient's Profile")
                 else:
                     return render_template('errors/403.html'), 403
 
         dept = Department.query.filter_by(id=user.department_id).first()
         return render_template('doctorprofile.html', user=user, dept=dept, currPage="Doctor's Profile")
+
+@app.route('/forceapt', methods=['GET'])
+def forceapt():
+    if request.method == 'GET':
+        patient_id = request.args.get('pid')
+        doctor_id = request.args.get('did')
+
+        if (patient_id is None or doctor_id is None):
+            flash('Error: no patient or doctor id.', 'error')
+        else:
+            today = datetime.today()
+            end = today + timedelta(minutes=180)
+            '''Create time slot'''
+            time_slot = AppointmentTimeSlot(appointment_start_time=today,
+                                            appointment_end_time=end,
+                                            number_of_vacancies=2,
+                                            doctor_id=doctor_id)
+            db.session.add(time_slot)
+            db.session.flush()
+            apt = Appointment(patient_id=patient_id, status="Scheduled", queue_number=1, appointment_time_slot_id=time_slot.id)
+            db.session.add(apt)
+            db.session.commit()
+            flash('Appointment booked.', 'info')
+            return redirect(url_for('appointments'))
