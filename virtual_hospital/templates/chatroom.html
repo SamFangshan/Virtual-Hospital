@@ -1,6 +1,29 @@
 {% extends 'base.html' %}
 
+
 {% block content %}
+{% if prescription_given %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+<script>
+console.log('haha');
+var socket = io.connect('http://' + document.domain + ':' + location.port);
+socket.on( 'connect', function() {
+  let user_name  = '{{ current_user.name }}'
+  let user_input = '(Auto Message) Medicines have been prescribed by the doctor. Please click COMPLETE APPOINTMENT and proceed with payment.'
+  let appointment_id = '{{appointment_id}}'
+  socket.emit( 'my event', {
+    user_name : user_name,
+    message : user_input,
+    appointment_id : appointment_id
+  } )
+} )
+setTimeout(function() {
+  window.location.href = '/';
+}, 1000);
+</script>
+
+{% else %}
 
 <!-- Style for Main UI -->
 <style>
@@ -472,10 +495,9 @@ transform:rotate(270deg);
     span.onclick = function() {
       modal.style.display = "none";
     }
-
     </script>
 
-
+{% endif %}
 {% endblock %}
 
 
