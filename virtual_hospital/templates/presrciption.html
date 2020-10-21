@@ -91,9 +91,10 @@
             <div class="button_holder">
                 <h5 style="text-align: center;color:#505F98;margin:0;padding:0; ">Total Price: ${{ total_price }}</h5>
                 <div class="submit_button">
-                    <a href="../">
+                  <form action="/chatroom/{{ appointment_id }}" method="post">
+                    <input type="hidden" name="prescription" value="yes"/>
                     <button type="submit" style="float:right;color : #505F98;background-color: #FFD166;">submit</button>
-                    </a>
+                  </form>
                 </div>
             </div>
 
