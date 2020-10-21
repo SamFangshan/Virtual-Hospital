@@ -4,7 +4,7 @@ import re
 
 import stripe
 from sqlalchemy.orm.collections import InstrumentedList
-from flask import flash, jsonify, redirect, render_template, request, url_for, session
+from flask import flash, jsonify, redirect, render_template, request, url_for, session, make_response
 
 from flask_login import current_user, login_required, login_user, logout_user
 from virtual_hospital import app
@@ -289,9 +289,9 @@ def chatroom(appointment_id):
         return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
                                department=department)
 
-@app.route("/presrciption/<prescription_id>",methods=['Get','Post'])
+@app.route("/prescription/<prescription_id>",methods=['Get','Post'])
 @login_required
-def presrciption(prescription_id):
+def prescription(prescription_id):
     prescription = Prescription.query.filter_by(id=prescription_id).first()
     patient = User.query.filter_by(id=prescription.patient_id).first()
     drugs = Drug.query.order_by(Drug.category).all()
@@ -405,8 +405,14 @@ def test():
 @login_required
 def checkout():
     if request.method == 'POST':
+        try:
+            session['prescription_id']
+        except Exception:
+            return render_template('errors/403.html'), 403
         amount = int(round(float(request.form['amount']), 2) * 100)
-        return render_template('checkout.html', amount=amount, publishable_key=os.environ['STRIPE_PUBLISHABLE_KEY'])
+        response = make_response(render_template('checkout.html', amount=amount, publishable_key=os.environ['STRIPE_PUBLISHABLE_KEY']))
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        return response
 
 
 @app.route('/create-payment-intent', methods=['POST'])
@@ -437,6 +443,7 @@ def payment_success(payment_intent_id):
         del session['appointment_id']
 
         prescription_id = session['prescription_id']
+        del session['prescription_id']
         prescription = Prescription.query.get(int(prescription_id))
         prescription.pick_up_status = 'pending'
 
