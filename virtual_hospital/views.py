@@ -357,6 +357,7 @@ def prescription(prescription_id):
                     categories[drug.category].append(drug)
         elif post_item == 'search_drug':
             title = request.form['search_drug']
+            categories = defaultdict(list)
             if len(title) > 0:
                 drugs = Drug.query.filter(Drug.category.ilike("%" + title + "%")).all()
                 for drug in drugs:
@@ -368,7 +369,8 @@ def prescription(prescription_id):
 
     categories = dict(sorted(categories.items(), key=lambda x: x[0]))
     total_price = sum([drug.price for drug in given_drug]) if len(given_drug) > 0 else 0
-
+    given_drug = sorted(given_drug, key=lambda x: x.name)
+    
     appointment = Appointment.query.filter_by(prescription_id=prescription_id).first()
     return render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
                            prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug,
