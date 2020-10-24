@@ -66,7 +66,9 @@
 
 	<footer>
 		<ul class="buttons" style="text-align: center; padding-top: 40px">
-			<li><form action="/login" method="GET"><button class="noBG fullBorderRadius5px" style="border-radius: 5px">Log in</button></form></li>
+			{% if not current_user.is_authenticated %}
+				<li><form action="/login" method="GET"><button class="noBG fullBorderRadius5px" style="border-radius: 5px">Log in</button></form></li>
+			{% endif %}
 			<li><form action="/search" method="GET"><button style="border-radius: 5px">Try now</button></form></li>
 		</ul>
 	</footer>
