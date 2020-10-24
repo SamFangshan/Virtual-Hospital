@@ -20,6 +20,8 @@ def test_checkout_normal(test_client):
         ), follow_redirects=True)
 
     # checkout
+    with test_client.session_transaction() as session:
+        session['prescription_id'] = 999
     response = test_client.post('/checkout', data={'amount': 1023.12}, follow_redirects=True)
     assert b'102312' in response.data
 
