@@ -36,7 +36,17 @@ steps:
   - 'set'
   - 'env'
   - 'deployment/${_DEPLOYMENTNAME}'
-  - 'STRIPE_API_KEY=${_STRIPE_API_KEY}'
+  - 'STRIPE_PUBLISHABLE_KEY=${_STRIPE_PUBLISHABLE_KEY}'
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
+
+- name: 'gcr.io/cloud-builders/kubectl'
+  args:
+  - 'set'
+  - 'env'
+  - 'deployment/${_DEPLOYMENTNAME}'
+  - 'STRIPE_SECRET_KEY=${_STRIPE_SECRET_KEY}'
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=${_ZONE}'
   - 'CLOUDSDK_CONTAINER_CLUSTER=${_GKE_CLUSTER}'
