@@ -4,8 +4,8 @@ steps:
   args: ['clone','https://github.com/SamFangshan/Virtual-Hospital.git']
 
 # Python test
-- name: gcr.io/cloud-builders/docker
-  args: ['run', '-d', '-p', '5432:5432', '-e', 'POSTGRES_PASSWORD=password', '--network', 'cloudbuild', '--name', 'roadkill-postgres', 'postgres']
+- name: 'docker/compose:1.15.0'
+  args: ['up', '-d']
 
 - name: 'docker.io/library/python:3.7'
   args: ['pip', 'install', '-t', '/workspace/lib', '-r', 'requirements.txt']
@@ -16,7 +16,7 @@ steps:
   - 'PYTHONPATH=/workspace/lib:.'
   - 'PG_USER=postgres'
   - 'PG_PASSWORD=password'
-  - 'PG_HOST=localhost'
+  - 'PG_HOST=postgres_db'
   - 'PG_PORT=5432'
   - 'TEST_PG_DATABASE=testing'
   - 'STRIPE_PUBLISHABLE_KEY=fakepubkey'
