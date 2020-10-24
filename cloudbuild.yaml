@@ -4,22 +4,21 @@ steps:
   args: ['clone','https://github.com/SamFangshan/Virtual-Hospital.git']
 
 # Python test
-# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
-#   args: ['printf', "'1\n1\n1\nn'", '|', 'gcloud', 'init', '&&', 'gcloud', 'config', 'set', 'account', '${_SERVICE_ACCOUNT}', '&&', 'wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy && chmod +x cloud_sql_proxy && ./cloud_sql_proxy -instances=${_DB_INSTANCE_NAME}=tcp:3306']
-#
-# - name: 'docker.io/library/python:3.7'
-#   args: ['pip', 'install', '-t', '/workspace/lib', '-r', 'requirements.txt']
-#
-# - name: 'docker.io/library/python:3.7'
-#   args: ['python', '-m', 'pytest']
-#   env:
-#   - 'PYTHONPATH=/workspace/lib:.'
-#   - 'PG_USER=${_PG_USER}'
-#   - 'PG_PASSWORD=${_PG_PASSWORD}'
-#   - 'PG_HOST=localhost'
-#   - 'PG_PORT=3306'
-#   - 'TEST_PG_DATABASE=${_TEST_PG_DATABASE}'
+- name: gcr.io/cloud-builders/docker
+  args: ['run', '-d', '-p', '5432:5432', '-e', 'POSTGRES_PASSWORD=password', '--name', 'roadkill-postgres', 'postgres']
 
+- name: 'docker.io/library/python:3.7'
+  args: ['pip', 'install', '-t', '/workspace/lib', '-r', 'requirements.txt']
+
+- name: 'docker.io/library/python:3.7'
+  args: ['python', '-m', 'pytest']
+  env:
+  - 'PYTHONPATH=/workspace/lib:.'
+  - 'PG_USER=postgres'
+  - 'PG_PASSWORD=password'
+  - 'PG_HOST=localhost'
+  - 'PG_PORT=5432'
+  - 'TEST_PG_DATABASE=testing'
 
 # Build Docker image
 - name: 'gcr.io/cloud-builders/docker'

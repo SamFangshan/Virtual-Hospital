@@ -114,6 +114,7 @@ class PrescriptionDrugFactory(SQLAlchemyModelFactory):
     id = factory.Sequence(lambda x: x + 1)
     prescription_id = 1
     drug_id = factory.LazyAttribute(lambda x: [1, 2, 3][(x.id - 1) % 3])
+    count = 1
 
     class Meta:
         model = PrescriptionDrug
