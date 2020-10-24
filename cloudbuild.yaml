@@ -5,7 +5,7 @@ steps:
 
 # Python test
 - name: gcr.io/cloud-builders/docker
-  args: ['run', '-d', '-p', '5432:5432', '-e', 'POSTGRES_PASSWORD=password', '--name', 'roadkill-postgres', 'postgres']
+  args: ['run', '-d', '-p', '5432:5432', '-e', 'POSTGRES_PASSWORD=password', '--network', 'cloudbuild', '--name', 'roadkill-postgres', 'postgres']
 
 - name: 'docker.io/library/python:3.7'
   args: ['pip', 'install', '-t', '/workspace/lib', '-r', 'requirements.txt']
