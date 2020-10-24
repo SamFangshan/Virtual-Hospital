@@ -1,0 +1,13 @@
+services:
+  postgres_db:
+      image: postgres
+      container_name: postgres_db
+      ports:
+        - "5432:5432"
+      environment:
+        - POSTGRES_PASSWORD=password
+
+networks:
+  default:
+    external:
+      name: cloudbuild
