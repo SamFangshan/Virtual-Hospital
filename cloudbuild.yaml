@@ -19,6 +19,8 @@ steps:
   - 'PG_HOST=localhost'
   - 'PG_PORT=5432'
   - 'TEST_PG_DATABASE=testing'
+  - 'STRIPE_PUBLISHABLE_KEY=fakepubkey'
+  - 'STRIPE_SECRET_KEY=fakeseckey'
 
 # Build Docker image
 - name: 'gcr.io/cloud-builders/docker'
