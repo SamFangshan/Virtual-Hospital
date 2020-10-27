@@ -232,7 +232,7 @@ def chatroom(appointment_id):
     appointment = Appointment.query.filter_by(id=appointment_id).first()
     if not appointment:
         return render_template('errors/404.html'), 404
-    if appointment.status == FINISHED+'p'+FINISHED+'d' or appointment.status == FINISHED+'d'+FINISHED+'p' or appointment.status == 'cancelled':
+    if appointment.status == FINISHED+'p'+FINISHED+'d' or appointment.status == FINISHED+'d'+FINISHED+'p':
         return render_template('errors/403.html'), 403
     appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
     #if datetime.now() < appointment_time_slot.appointment_start_time - datetime.timedelta(minutes=15):
@@ -270,14 +270,15 @@ def chatroom(appointment_id):
                     db.session.commit()
                 except KeyError:
                     assert request.form['submit']
-                    presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
-                    if not presrciption:
-                        presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
-                                                    diagnosis="No diagnosis", pick_up_status="no payment")
-                        db.session.add(presrciption)
-                        db.session.commit()
-                        appointment.prescription_id = presrciption.id
                     if request.form['submit'] == "complete":
+                        presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
+                        if not presrciption:
+                            presrciption = Prescription(patient_id=chatting_user.id, doctor_id=current_user.id,
+                                                        diagnosis="No diagnosis", pick_up_status="no payment")
+                            db.session.add(presrciption)
+                            db.session.commit()
+                            appointment.prescription_id = presrciption.id
+                            db.session.commit()
                         return redirect(url_for('prescription', prescription_id=presrciption.id))
                     elif request.form['submit'] == "complete-appointment":
                         if appointment.status == 'Scheduled':
@@ -285,7 +286,7 @@ def chatroom(appointment_id):
                         elif FINISHED + 'd' not in appointment.status:
                             appointment.status += FINISHED + 'd'
                         db.session.commit()
-                        return redirect(url_for('index'))
+                        return redirect(url_for('appointments'))
 
         return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
                                department=department, prescription_given=prescription_given)
@@ -293,15 +294,16 @@ def chatroom(appointment_id):
         if appointment.patient_id != current_user.id:
             return render_template('errors/403.html'), 403
         if request.method == 'POST':
+            assert request.form['submit']
             if appointment.status == 'Scheduled':
                 appointment.status = FINISHED + 'p'
             elif FINISHED+'p' not in appointment.status:
                 appointment.status += FINISHED + 'p'
             db.session.commit()
             presrciption = Prescription.query.filter_by(id=appointment.prescription_id).first()
-            if not presrciption:
+            if presrciption == None:
                 flash('You have finished the appointment and there is no prescription from the doctor side.', 'info')
-                return redirect(url_for('index'))
+                return redirect(url_for('appointments'))
             return redirect(url_for('payment', prescription_id=presrciption.id))
         chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
         department = Department.query.filter_by(id=chatting_user.department_id).first()
@@ -312,6 +314,10 @@ def chatroom(appointment_id):
 @app.route("/prescription/<prescription_id>",methods=['Get','Post'])
 @login_required
 def prescription(prescription_id):
+    # prescription given
+    appointment = Appointment.query.filter_by(prescription_id=prescription_id).first()
+    if FINISHED+'d' in appointment.status:
+        return render_template('errors/403.html'), 403
     prescription = Prescription.query.filter_by(id=prescription_id).first()
     patient = User.query.filter_by(id=prescription.patient_id).first()
     drugs = Drug.query.order_by(Drug.category).all()
@@ -375,14 +381,17 @@ def prescription(prescription_id):
                     categories[drug.category].append(drug)
 
     categories = dict(sorted(categories.items(), key=lambda x: x[0]))
-    total_price = sum([drug.price for drug in given_drug]) if len(given_drug) > 0 else 0
+    total_price = sum([drug.price*prescription_drug_count[drug.id] for drug in given_drug]) if len(given_drug) > 0 else 0
     given_drug = sorted(given_drug, key=lambda x: x.name)
 
     appointment = Appointment.query.filter_by(prescription_id=prescription_id).first()
-    return render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
-                           prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug,
-                           total_price=total_price, prescription_drug_count=prescription_drug_count,
-                           appointment_id=appointment.id)
+    response = make_response(
+        render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
+                        prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug,
+                        total_price=total_price, prescription_drug_count=prescription_drug_count,
+                        appointment_id=appointment.id))
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
 
 @app.route("/search", methods=['GET', 'POST'])
 @login_required
