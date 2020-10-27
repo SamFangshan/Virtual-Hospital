@@ -186,7 +186,7 @@ def setprofile():
         nric = request.form['nric']
         gender = request.form['gender']
 
-        if not name or len(name) > 20 or len(nric) > 10 or len(phone_number) > 20 or len(gender) > 6:
+        if not name or len(name) > 40 or len(nric) > 10 or len(phone_number) > 20 or len(gender) > 6:
                 flash('Invalid input.', 'error')
                 return redirect(url_for('setprofile'))
 
@@ -201,7 +201,7 @@ def setprofile():
             user.date_of_birth = date_of_birth
         elif current_user.type == 'doctor':
             credentials = request.form['credentials']
-            specialties = request.form['specialties']
+            specialties = request.form.getlist('specialties[]')
             office_hour_start_time = request.form['office_hour_start_time']
             office_hour_end_time = request.form['office_hour_end_time']
             department_name = request.form['department']

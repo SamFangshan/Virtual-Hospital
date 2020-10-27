@@ -99,8 +99,8 @@
         <td width = '250px'><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
         <td>
           <h3 class="alignLeftNoCaps" style='padding-top: 40px'><strong>{{ user.name }}</strong></h3>
-          <h4 class="alignLeftNoCaps noMargin"><strong></strong></h4>
           <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ {{ user.get_rating() }}</strong></h4>
+          <h4 class="alignLeftNoCaps noMargin">{{ user.credentials }}</h4>
         </td>
       </tr>
     </table>
@@ -111,11 +111,11 @@
       </p>
 
       <h3 class="alignLeftNoCaps"><strong>Specialties</strong></h3>
-      <!-- <p class="alignLeftNoCaps">{{ user.specialties }}</p> -->
       {% for specialty in user.specialties %}
         <li class="alignLeftNoCaps">{{ specialty }}</li>
       {% endfor %}
 
+      <br>
       <h3 class="alignLeftNoCaps"><strong>Working Hours</strong></h3>
       <p class="alignLeftNoCaps">Mon - Fri: {{ user.office_hour_start_time }} - {{ user.office_hour_end_time }}</p>
 

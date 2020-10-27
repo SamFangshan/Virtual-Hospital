@@ -92,13 +92,49 @@ select {
       <input type="text" name="credentials" autocomplete="off" required value="{{ '' if not current_user.credentials else current_user.credentials }}"><br><br>
 
       <h1 style="text-align:center">Specialties</h1>
-      <input type="text" name="specialties" autocomplete="off" required value="{{ '' if not current_user.specialties else current_user.specialties }}"><br><br>
+      <div class="specialty-container" style="width:100%; float:left; padding-bottom:3%;">
+        <button class="add_specialty_field">Add New Specialty
+          <span style="font-size:16px; font-weight:bold;">+ </span>
+        </button>
+        <div class="specialty-container-fields" style="margin-left:5%">
+          <!-- fields appended here via javascript -->
+        </div>
+      </div>
 
-      <h1 style="text-align:center">Office Hours</h1>
+      <div style=text-align:center">
+      <h1>Office Hours</h1>
       Start<br><input class="start" name="office_hour_start_time" autocomplete="off" onkeydown="return false;" required>
       <br>End<br><input class="end" name="office_hour_end_time" autocomplete="off" onkeydown="return false;" required><br><br>
+      </div>
 
       <script>
+      $(document).ready(function() {
+          var max_fields = 100;
+          var wrapper = $(".specialty-container-fields");
+          var add_button = $(".add_specialty_field");
+          var x = 1;
+
+          {% for specialty in current_user.specialties %}
+              $(wrapper).append('<div><input type="text" name="specialties[]" value="{{ specialty }}"/>&nbsp;&nbsp;<a href="#" class="delete">Delete</a></div>');
+          {% endfor %}
+
+          $(add_button).click(function(e) {
+              e.preventDefault();
+              if (x < max_fields) {
+                  x++;
+                  $(wrapper).append('<div><input type="text" name="specialties[]"/>&nbsp;&nbsp;<a href="#" class="delete">Delete</a></div>');
+              } else {
+                  alert('The limit of for the number of specialties have been reached (100).')
+              }
+          });
+
+          $(wrapper).on("click", ".delete", function(e) {
+              e.preventDefault();
+              $(this).parent('div').remove();
+              x--;
+          })
+      });
+
       $('.start').timepicker({
         timeFormat: 'HH:mm',
         interval: 30,
@@ -119,7 +155,6 @@ select {
       </script>
 
       <h1 style="text-align:center">Department</h1>
-      <!-- <input type="text" name="department_id" autocomplete="off" required value="{{ '' if not current_user.department_id else current_user.department_id }}"> -->
       <select name="department" autocomplete="off" required value="">
         {% for department in departments %}
           {% if department.name == doctor_department %}
