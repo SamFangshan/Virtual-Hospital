@@ -204,7 +204,8 @@ def setprofile():
             specialties = request.form['specialties']
             office_hour_start_time = request.form['office_hour_start_time']
             office_hour_end_time = request.form['office_hour_end_time']
-            department_id = request.form['department_id']
+            department_name = request.form['department']
+            department_id = Department.query.filter_by(name=department_name).first().id
             user.credentials = credentials
             user.specialties = specialties
             user.office_hour_start_time = office_hour_start_time
@@ -215,7 +216,13 @@ def setprofile():
         flash('Profile updated.', 'info')
         return redirect(url_for('index'))
 
-    return render_template('setprofile.html')
+    doctor_department = None
+    if current_user.type == 'doctor':
+        doctor_department = Department.query.get(current_user.department_id).name
+
+    print('department:', doctor_department)
+
+    return render_template('setprofile.html', departments=Department.query.all(), doctor_department=doctor_department)
 
 
 @app.route("/chatroom/<appointment_id>",methods=['Get','Post'])
@@ -370,7 +377,7 @@ def prescription(prescription_id):
     categories = dict(sorted(categories.items(), key=lambda x: x[0]))
     total_price = sum([drug.price for drug in given_drug]) if len(given_drug) > 0 else 0
     given_drug = sorted(given_drug, key=lambda x: x.name)
-    
+
     appointment = Appointment.query.filter_by(prescription_id=prescription_id).first()
     return render_template("presrciption.html", title=title, prescription_id=prescription_id, patient=patient,
                            prescription=prescription, drugs=drugs, categories=categories, given_drug=given_drug,
