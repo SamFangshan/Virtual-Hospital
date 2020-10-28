@@ -114,9 +114,11 @@ select {
           var add_button = $(".add_specialty_field");
           var x = 1;
 
-          {% for specialty in current_user.specialties %}
-              $(wrapper).append('<div><input type="text" name="specialties[]" value="{{ specialty }}"/>&nbsp;&nbsp;<a href="#" class="delete">Delete</a></div>');
-          {% endfor %}
+          {% if current_user.specialties %}
+            {% for specialty in current_user.specialties %}
+                $(wrapper).append('<div><input type="text" name="specialties[]" value="{{ specialty }}"/>&nbsp;&nbsp;<a href="#" class="delete">Delete</a></div>');
+            {% endfor %}
+          {% endif %}
 
           $(add_button).click(function(e) {
               e.preventDefault();

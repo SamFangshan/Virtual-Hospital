@@ -111,9 +111,13 @@
       </p>
 
       <h3 class="alignLeftNoCaps"><strong>Specialties</strong></h3>
-      {% for specialty in user.specialties %}
-        <li class="alignLeftNoCaps">{{ specialty }}</li>
-      {% endfor %}
+      {% if user.specialties %}
+        {% for specialty in user.specialties %}
+          <li class="alignLeftNoCaps">{{ specialty }}</li>
+        {% endfor %}
+      {% else %}
+          <li class="alignLeftNoCaps">None</li>
+      {% endif %}
 
       <br>
       <h3 class="alignLeftNoCaps"><strong>Working Hours</strong></h3>

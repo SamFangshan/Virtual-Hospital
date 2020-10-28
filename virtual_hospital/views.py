@@ -218,7 +218,8 @@ def setprofile():
 
     doctor_department = None
     if current_user.type == 'doctor':
-        doctor_department = Department.query.get(current_user.department_id).name
+        if current_user.department_id is not None:
+            doctor_department = Department.query.get(current_user.department_id).name
 
     print('department:', doctor_department)
 
