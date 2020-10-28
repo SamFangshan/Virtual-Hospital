@@ -164,8 +164,9 @@
         <td class="columnWidthFitContent" style="padding-right:50px"><img class = user-image src="static\images\doctor_img.png" alt="Doctor's Photo"></td>
         <td>
           <h4 class="alignLeftNoCaps noMargin">{{ doctor.name }}</h4>
-          <h4 class="alignLeftNoCaps noMargin" style="margin-top:10px">Distinguished Doctor</h4>
-          <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ 5.0</strong></h4>
+          <h4 class="alignLeftNoCaps" style='color: #F2994A;'><strong>★ {{ doctor.get_rating() }}</strong></h4>
+          <h4 class="alignLeftNoCaps noMargin">{{ doctor.credentials }}</h4>
+
         </td>
       </tr>
     </table>

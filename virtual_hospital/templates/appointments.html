@@ -97,7 +97,7 @@
 </header>
 
 <div class="container">
-  {% if todayAppt|length > 0 %}
+  {% if (todayAppt|length > 0) or (canEnterChat|length > 0) %}
     <h3 class="header" style="margin: 0">Today's Appointments</h3>
   {% endif %}
 

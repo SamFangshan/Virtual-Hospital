@@ -236,8 +236,6 @@ def chatroom(appointment_id):
     if appointment.status == FINISHED+'p'+FINISHED+'d' or appointment.status == FINISHED+'d'+FINISHED+'p':
         return render_template('errors/403.html'), 403
     appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
-    #if datetime.now() < appointment_time_slot.appointment_start_time - datetime.timedelta(minutes=15):
-    #    return render_template('errors/403.html'), 403
 
     if current_user.type == 'doctor':
         if current_user.id != appointment_time_slot.doctor_id:
@@ -669,14 +667,22 @@ def newappointment():
         if (current_Datetime < data.appointment_start_time) and (data.number_of_vacancies > 0) and (current_Datetime.date() == data.appointment_start_time.date()):
             time_slot_data_today.append(data)
 
+    doctor_avail_appt = []
+    doctor_start_time = datetime.strptime(doctor.office_hour_start_time, '%H:%M:%S')
+    doctor_end_time = datetime.strptime(doctor.office_hour_end_time, '%H:%M:%S')
+
+    for data in time_slot_data_today:
+        if ((doctor_start_time.time() <= data.appointment_start_time.time()) and (doctor_end_time.time() >= (data.appointment_start_time + timedelta(minutes=30)).time())):
+            doctor_avail_appt.append(data)
+
     if request.method == 'GET':
-        return render_template('newappointment.html', date=current_Datetime.date(), error=None, doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+        return render_template('newappointment.html', date=current_Datetime.date(), error=None, doctor=doctor, currPage='Book an Appointment', time_slot_data_today = doctor_avail_appt)
 
     elif request.method == 'POST':
         appointment_time_slot_id = request.form['appointment_time_slot_id']
         doctor_id = request.form['doctor_id']
         if appointment_time_slot_id == "0":
-            return render_template('newappointment.html', date=current_Datetime.date(), error="Invalid selections! Please try again.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+            return render_template('newappointment.html', date=current_Datetime.date(), error="Invalid selections! Please try again.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = doctor_avail_appt)
         else:
             appointmentSlot = AppointmentTimeSlot.query.filter_by(id=appointment_time_slot_id).first()
             appointmentCount = Appointment.query.filter_by(appointment_time_slot_id=appointment_time_slot_id).count()
@@ -687,7 +693,7 @@ def newappointment():
                 flash('Appointment booked.', 'info')
                 return redirect(url_for('appointments'))
             else:
-                return render_template('newappointment.html', date=current_Datetime.date(), error="Sorry, this timeslot has been fully booked.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+                return render_template('newappointment.html', date=current_Datetime.date(), error="Sorry, this timeslot has been fully booked.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = doctor_avail_appt)
 
 @app.route('/profile', methods=['GET'])
 @login_required
