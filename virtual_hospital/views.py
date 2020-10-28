@@ -205,12 +205,13 @@ def setprofile():
             office_hour_start_time = request.form['office_hour_start_time']
             office_hour_end_time = request.form['office_hour_end_time']
             department_name = request.form['department']
-            department_id = Department.query.filter_by(name=department_name).first().id
             user.credentials = credentials
             user.specialties = specialties
             user.office_hour_start_time = office_hour_start_time
             user.office_hour_end_time = office_hour_end_time
-            user.department_id = department_id
+            department = Department.query.filter_by(name=department_name).first()
+            if department is not None:
+                user.department_id = department.id
 
         db.session.commit()
         flash('Profile updated.', 'info')
