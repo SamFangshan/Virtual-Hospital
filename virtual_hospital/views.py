@@ -668,8 +668,8 @@ def newappointment():
             time_slot_data_today.append(data)
 
     doctor_avail_appt = []
-    doctor_start_time = datetime.strptime(doctor.office_hour_start_time, '%H:%M:%S')
-    doctor_end_time = datetime.strptime(doctor.office_hour_end_time, '%H:%M:%S')
+    doctor_start_time = datetime.strptime(doctor.office_hour_start_time, '%H:%M')
+    doctor_end_time = datetime.strptime(doctor.office_hour_end_time, '%H:%M')
 
     for data in time_slot_data_today:
         if ((doctor_start_time.time() <= data.appointment_start_time.time()) and (doctor_end_time.time() >= (data.appointment_start_time + timedelta(minutes=30)).time())):
