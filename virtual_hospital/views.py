@@ -236,6 +236,8 @@ def chatroom(appointment_id):
         return render_template('errors/404.html'), 404
     if appointment.status == FINISHED+'p'+FINISHED+'d' or appointment.status == FINISHED+'d'+FINISHED+'p':
         return render_template('errors/403.html'), 403
+    if appointment.status == FINISHED+'p' and current_user.type == 'patient' or appointment.status == FINISHED+'d' and current_user.type == 'doctor':
+        return render_template('errors/403.html'), 403
     appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
 
     if current_user.type == 'doctor':
