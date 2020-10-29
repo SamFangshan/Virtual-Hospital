@@ -308,8 +308,9 @@ def chatroom(appointment_id):
         chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
         department = Department.query.filter_by(id=chatting_user.department_id).first()
         print(prescription_given)
-        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
-                               department=department, prescription_given=prescription_given)
+        response = make_response(render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user, department=department, prescription_given=prescription_given))
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        return response
 
 @app.route("/prescription/<prescription_id>",methods=['Get','Post'])
 @login_required
@@ -524,9 +525,11 @@ def payment(prescription_id):
 
     session['appointment_id'] = appointment.id
     session['prescription_id'] = prescription_id
-    return render_template('payment.html', doctor=doctor, department=department,
+    response = make_response(render_template('payment.html', doctor=doctor, department=department,
                            drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot,
-                           pick_up_location=pick_up_location)
+                           pick_up_location=pick_up_location))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return response
 
 
 @app.route('/ratedoctor/appointment/<appointment_id>', methods=['GET', 'POST'])
@@ -611,7 +614,7 @@ def appointments():
                 if exe == 1:
                     todayAppt.append(d)
                 elif exe == 2:
-                    if (d.apt.status == 'finished') or (d.apt.status == FINISHED+'p'+FINISHED+'d' or d.apt.status == FINISHED+'d'+FINISHED+'p' or d.apt.status == 'cancelled'):
+                    if (d.apt.status == 'finished') or (d.apt.status == FINISHED+'p'+FINISHED+'d' or d.apt.status == FINISHED+'d'+FINISHED+'p' or d.apt.status == 'cancelled') or (d.apt.status == FINISHED+'d' and d.user.type == 'doctor') or (d.apt.status == FINISHED+'p' and d.user.type == 'patient'):
                         pastAppt.append(d)
                     else:
                         canEnterChat.append(d)
