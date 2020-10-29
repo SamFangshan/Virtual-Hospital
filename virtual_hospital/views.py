@@ -309,10 +309,8 @@ def chatroom(appointment_id):
             return redirect(url_for('payment', prescription_id=presrciption.id))
         chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
         department = Department.query.filter_by(id=chatting_user.department_id).first()
-        print(prescription_given)
-        response = make_response(render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user, department=department, prescription_given=prescription_given))
-        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-        return response
+
+        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user, department=department, prescription_given=prescription_given)
 
 @app.route("/prescription/<prescription_id>",methods=['Get','Post'])
 @login_required
