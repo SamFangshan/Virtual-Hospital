@@ -47,7 +47,7 @@ def test_update_profile_patient_invalid_input(test_client):
     login(test_client, 'patient')
 
     payload_name = {
-        'name': 'new_name_greater_than_20_character',
+        'name': 'new_name_surely_greater_than_40_characters',
         'phone_number': '12345678',
         'nric': 'S1234567B',
         'gender': 'Male',
@@ -99,10 +99,10 @@ def test_update_profile_doctor_success(test_client):
         'nric': 'S1234567B',
         'gender': 'Male',
         'credentials': 'credentials',
-        'specialties': 'Ear, Nose & Throat',
+        'specialties[]': ['Ear', 'Nose', 'Throat'],
         'office_hour_start_time': '08:30',
         'office_hour_end_time': '18:00',
-        'department_id': 1
+        'department': 'Anaesthesia' # department with id 1
     }
 
     response = test_client.post("/setprofile", data=payload, follow_redirects=True)
@@ -117,7 +117,7 @@ def test_update_profile_doctor_missing_field(test_client):
         'nric': 'S1234567B',
         'gender': 'Male',
         'credentials': 'credentials',
-        'specialties': 'Ear, Nose & Throat',
+        'specialties[]': ['Ear', 'Nose', 'Throat'],
         'office_hour_start_time': '08:30',
         'office_hour_end_time': '18:00'
     }
