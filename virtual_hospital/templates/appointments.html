@@ -97,7 +97,7 @@
 </header>
 
 <div class="container">
-  {% if todayAppt|length > 0 %}
+  {% if (todayAppt|length > 0) or (canEnterChat|length > 0) %}
     <h3 class="header" style="margin: 0">Today's Appointments</h3>
   {% endif %}
 
@@ -229,13 +229,15 @@
                 <h4 style='text-transform: none; color: #F2994A;'><strong>★ {{ appt.user.get_rating() }}</strong></h4>
 
                 {% if appt.prescpt is not none %}
-                  <h4 style="text-transform: none;">Prescription Instructions: {{ appt.prescpt.prescription_instructions }}</h4>
+                  <!-- <h4 style="text-transform: none;">Prescription Instructions: {{ appt.prescpt.prescription_instructions }}</h4> -->
                   <h4 style="text-transform: none; margin: 0;">Prescription:</h4>
                   <ol>
                     {% for drug in appt.prescpt.prescription_drugs %}
                       <li class="alignLeftNoCaps">{{ drug.drug.name }}</li>
                     {% endfor %}
                   </ol>
+                  <h4 style="text-transform: none;">Pick Up From: {{ appt.prescpt.pick_up_start_date.strftime('%d/%m/%Y') }}</h4>
+                  <h4 style="text-transform: none;">Pick Up Location: {{ appt.prescpt.pick_up_location }}</h4>
                 {% else %}
                   <h4 style="text-transform: none;">No Prescription Given</h4>
                 {% endif %}

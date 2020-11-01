@@ -28,6 +28,10 @@
 
 }
 
+.added_drug {
+    overflow-x:scroll;
+}
+
 .prescription_list {
     width:100%;
     height:60vh;
@@ -81,7 +85,7 @@
             <div class="prescription_list" id="prescription_list_id">
             {% for drug in given_drug %}
                   <form method="post">
-                       <input type="submit" id='given_{{drug.name}}_{{drug.price}}' name='added_drug' title="${{ drug.price }}"
+                       <input type="submit" id='given_{{drug.name}}_{{drug.price}}' name='added_drug' class="added_drug" title="${{ drug.price }}"
                               style="width:100%" value="{{drug.name}} : ${{drug.price}} - {{ drug.category }}">
                       <span name="drug.name">Count: {{ prescription_drug_count[drug.id] }}</span>
                   </form>
