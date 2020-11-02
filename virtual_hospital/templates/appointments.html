@@ -233,7 +233,7 @@
                   <h4 style="text-transform: none; margin: 0;">Prescription:</h4>
                   <ol>
                     {% for drug in appt.prescpt.prescription_drugs %}
-                      <li class="alignLeftNoCaps">{{ drug.drug.name }}</li>
+                      <li class="alignLeftNoCaps">{{ drug.drug.name }} x {{ drug.count }}</li>
                     {% endfor %}
                   </ol>
                   {% if appt.prescpt.pick_up_start_date %}
