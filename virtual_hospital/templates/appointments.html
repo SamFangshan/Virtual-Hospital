@@ -236,7 +236,9 @@
                       <li class="alignLeftNoCaps">{{ drug.drug.name }}</li>
                     {% endfor %}
                   </ol>
-                  <h4 style="text-transform: none;">Pick Up From: {{ appt.prescpt.pick_up_start_date.strftime('%d/%m/%Y') }}</h4>
+                  {% if appt.prescpt.pick_up_start_date %}
+                    <h4 style="text-transform: none;">Pick Up From: {{ appt.prescpt.pick_up_start_date.strftime('%d/%m/%Y') }}</h4>
+                  {% endif %}
                   <h4 style="text-transform: none;">Pick Up Location: {{ appt.prescpt.pick_up_location }}</h4>
                 {% else %}
                   <h4 style="text-transform: none;">No Prescription Given</h4>
