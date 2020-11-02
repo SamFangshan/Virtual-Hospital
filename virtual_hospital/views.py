@@ -547,7 +547,7 @@ def rate_doctor(appointment_id):
         appointment = Appointment.query.get(int(appointment_id))
         appointment.rating = int(request.form['rate'])
         db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('appointments'))
     appointment = Appointment.query.get(int(appointment_id))
     appointment_time_slot = AppointmentTimeSlot.query.get(appointment.appointment_time_slot_id)
     doctor = Doctor.query.get(appointment_time_slot.doctor_id)
