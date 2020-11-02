@@ -2,9 +2,9 @@ import tests.factories as factories
 from virtual_hospital.models import *
 from datetime import date
 
-def test_appointments():
+def test_appointments(test_client):
 
-    client = app.test_client()
+    client = test_client
     client.post('/login', data=dict(
             email="alatest1@test.com",
             password="Qwerty1!
