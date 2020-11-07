@@ -205,12 +205,13 @@ def setprofile():
             office_hour_start_time = request.form['office_hour_start_time']
             office_hour_end_time = request.form['office_hour_end_time']
             department_name = request.form['department']
-            department_id = Department.query.filter_by(name=department_name).first().id
             user.credentials = credentials
             user.specialties = specialties
             user.office_hour_start_time = office_hour_start_time
             user.office_hour_end_time = office_hour_end_time
-            user.department_id = department_id
+            department = Department.query.filter_by(name=department_name).first()
+            if department is not None:
+                user.department_id = department.id
 
         db.session.commit()
         flash('Profile updated.', 'info')
@@ -235,9 +236,9 @@ def chatroom(appointment_id):
         return render_template('errors/404.html'), 404
     if appointment.status == FINISHED+'p'+FINISHED+'d' or appointment.status == FINISHED+'d'+FINISHED+'p':
         return render_template('errors/403.html'), 403
+    if appointment.status == FINISHED+'p' and current_user.type == 'patient' or appointment.status == FINISHED+'d' and current_user.type == 'doctor':
+        return render_template('errors/403.html'), 403
     appointment_time_slot = AppointmentTimeSlot.query.filter_by(id=appointment.appointment_time_slot_id).first()
-    #if datetime.now() < appointment_time_slot.appointment_start_time - datetime.timedelta(minutes=15):
-    #    return render_template('errors/403.html'), 403
 
     if current_user.type == 'doctor':
         if current_user.id != appointment_time_slot.doctor_id:
@@ -308,9 +309,8 @@ def chatroom(appointment_id):
             return redirect(url_for('payment', prescription_id=presrciption.id))
         chatting_user = User.query.filter_by(id=appointment_time_slot.doctor_id).first()
         department = Department.query.filter_by(id=chatting_user.department_id).first()
-        print(prescription_given)
-        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user,
-                               department=department, prescription_given=prescription_given)
+
+        return render_template("chatroom.html", appointment_id=appointment_id, chatting_user=chatting_user, department=department, prescription_given=prescription_given)
 
 @app.route("/prescription/<prescription_id>",methods=['Get','Post'])
 @login_required
@@ -525,9 +525,11 @@ def payment(prescription_id):
 
     session['appointment_id'] = appointment.id
     session['prescription_id'] = prescription_id
-    return render_template('payment.html', doctor=doctor, department=department,
+    response = make_response(render_template('payment.html', doctor=doctor, department=department,
                            drugs=drugs, total_price=total_price, appointment_time_slot=appointment_time_slot,
-                           pick_up_location=pick_up_location)
+                           pick_up_location=pick_up_location))
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return response
 
 
 @app.route('/ratedoctor/appointment/<appointment_id>', methods=['GET', 'POST'])
@@ -545,7 +547,7 @@ def rate_doctor(appointment_id):
         appointment = Appointment.query.get(int(appointment_id))
         appointment.rating = int(request.form['rate'])
         db.session.commit()
-        return redirect(url_for('index'))
+        return redirect(url_for('appointments'))
     appointment = Appointment.query.get(int(appointment_id))
     appointment_time_slot = AppointmentTimeSlot.query.get(appointment.appointment_time_slot_id)
     doctor = Doctor.query.get(appointment_time_slot.doctor_id)
@@ -612,7 +614,7 @@ def appointments():
                 if exe == 1:
                     todayAppt.append(d)
                 elif exe == 2:
-                    if (d.apt.status == 'finished') or (d.apt.status == FINISHED+'p'+FINISHED+'d' or d.apt.status == FINISHED+'d'+FINISHED+'p' or d.apt.status == 'cancelled'):
+                    if (d.apt.status == 'finished') or (d.apt.status == FINISHED+'p'+FINISHED+'d' or d.apt.status == FINISHED+'d'+FINISHED+'p' or d.apt.status == 'cancelled') or (d.apt.status == FINISHED+'d' and d.user.type == 'doctor') or (d.apt.status == FINISHED+'p' and d.user.type == 'patient'):
                         pastAppt.append(d)
                     else:
                         canEnterChat.append(d)
@@ -669,14 +671,22 @@ def newappointment():
         if (current_Datetime < data.appointment_start_time) and (data.number_of_vacancies > 0) and (current_Datetime.date() == data.appointment_start_time.date()):
             time_slot_data_today.append(data)
 
+    doctor_avail_appt = []
+    doctor_start_time = datetime.strptime(doctor.office_hour_start_time, '%H:%M')
+    doctor_end_time = datetime.strptime(doctor.office_hour_end_time, '%H:%M')
+
+    for data in time_slot_data_today:
+        if ((doctor_start_time.time() <= data.appointment_start_time.time()) and (doctor_end_time.time() >= (data.appointment_start_time + timedelta(minutes=30)).time())):
+            doctor_avail_appt.append(data)
+
     if request.method == 'GET':
-        return render_template('newappointment.html', date=current_Datetime.date(), error=None, doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+        return render_template('newappointment.html', date=current_Datetime.date(), error=None, doctor=doctor, currPage='Book an Appointment', time_slot_data_today = doctor_avail_appt)
 
     elif request.method == 'POST':
         appointment_time_slot_id = request.form['appointment_time_slot_id']
         doctor_id = request.form['doctor_id']
         if appointment_time_slot_id == "0":
-            return render_template('newappointment.html', date=current_Datetime.date(), error="Invalid selections! Please try again.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+            return render_template('newappointment.html', date=current_Datetime.date(), error="Invalid selections! Please try again.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = doctor_avail_appt)
         else:
             appointmentSlot = AppointmentTimeSlot.query.filter_by(id=appointment_time_slot_id).first()
             appointmentCount = Appointment.query.filter_by(appointment_time_slot_id=appointment_time_slot_id).count()
@@ -687,7 +697,7 @@ def newappointment():
                 flash('Appointment booked.', 'info')
                 return redirect(url_for('appointments'))
             else:
-                return render_template('newappointment.html', date=current_Datetime.date(), error="Sorry, this timeslot has been fully booked.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = time_slot_data_today)
+                return render_template('newappointment.html', date=current_Datetime.date(), error="Sorry, this timeslot has been fully booked.", doctor=doctor, currPage='Book an Appointment', time_slot_data_today = doctor_avail_appt)
 
 @app.route('/profile', methods=['GET'])
 @login_required

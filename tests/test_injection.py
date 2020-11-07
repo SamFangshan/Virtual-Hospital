@@ -91,5 +91,5 @@ def test_sign_up_injection_profile(test_client):
     assert response.status_code == 200
     user = User.query.filter_by(email="test_user50@gmail.com").first()
     assert user is not None
-    assert user.name == "injector"
+    assert user.name == "'; DELETE FROM users WHERE 1=1;--"
 

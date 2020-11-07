@@ -158,13 +158,17 @@ select {
 
       <h1 style="text-align:center">Department</h1>
       <select name="department" autocomplete="off" required value="">
-        {% for department in departments %}
-          {% if department.name == doctor_department %}
-            <option value="{{ department.name }}" selected="selected">{{ department.name }}</option>
-          {% else %}
-            <option value="{{ department.name }}">{{ department.name }}</option>
-          {% endif %}
-        {% endfor %}
+        {% if departments %}
+          {% for department in departments %}
+            {% if department.name == doctor_department %}
+              <option value="{{ department.name }}" selected="selected">{{ department.name }}</option>
+            {% else %}
+              <option value="{{ department.name }}">{{ department.name }}</option>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <option value="No Department Available" selected="selected">No Department Available</option>
+        {% endif %}
       </select>
 
     {% elif current_user.type == 'patient' %}
