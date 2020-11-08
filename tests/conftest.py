@@ -108,6 +108,7 @@ def init_db():
 
     factories.PrescriptionFactoryForPayment()
     factories.AppointmentFactoryForPayment.create_batch(2)
+    db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('appointment', 'id', 2 + 1))
     factories.PrescriptionFactoryPaid()
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('prescription', 'id', 2 + 1))
 
@@ -116,6 +117,9 @@ def init_db():
 
     factories.PrescriptionDrugFactory.create_batch(3)
     db.engine.execute('ALTER SEQUENCE {}_{}_seq RESTART WITH {};'.format('prescription_drug', 'id', 3 + 1))
+
+    factories.Ala1UserFactory()
+    factories.Ala2UserFactory.create_batch(1)
 
     # factories would result in error... so add like this
     department = Department(name='Anaesthesia', description='no description')

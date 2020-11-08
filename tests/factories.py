@@ -142,3 +142,29 @@ class TestUserFactory(SQLAlchemyModelFactory):
     class Meta:
         model = Patient
         sqlalchemy_session = db.session
+
+class Ala1UserFactory(SQLAlchemyModelFactory):
+    id = 10002
+    name = "ala1"
+    password_hash = generate_password_hash('Qwerty1!')
+    email = "alatest1@test.com"
+
+    class Meta:
+        model = Patient
+        sqlalchemy_session = db.session
+
+
+class Ala2UserFactory(SQLAlchemyModelFactory):
+    id = 10003
+    name = "ala2"
+    password_hash = generate_password_hash('Qwerty1!')
+    email = "alatest2@test.com"
+    specialties = "Dermatology"
+    office_hour_start_time = factory.LazyAttribute(
+        lambda x: ['08:30', None, '09:00'][(x.id - 1) % 3])
+    office_hour_end_time = factory.LazyAttribute(
+        lambda x: ['18:00', None, '19:00'][(x.id - 1) % 3])
+
+    class Meta:
+        model = Doctor
+        sqlalchemy_session = db.session
