@@ -46,4 +46,4 @@ crontab = Crontab(app)
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
-from virtual_hospital import views, errors, commands, cronjobs, forms
+from virtual_hospital import views, commands, cronjobs

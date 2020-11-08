@@ -8,7 +8,6 @@ from flask import flash, jsonify, redirect, render_template, request, url_for, s
 
 from flask_login import current_user, login_required, login_user, logout_user
 from virtual_hospital import app
-from virtual_hospital.forms import *
 
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_socketio import SocketIO,emit
@@ -430,11 +429,11 @@ def department(id):
         return render_template('errors/404.html')
 
 
-@app.route("/test", methods=['GET', 'POST'])
-def test():
-    test_form = TestForm()
-    test_form.validate_on_submit()
-    return render_template("test.html", form=test_form)
+# @app.route("/test", methods=['GET', 'POST'])
+# def test():
+#     test_form = TestForm()
+#     test_form.validate_on_submit()
+#     return render_template("test.html", form=test_form)
 
 @app.route('/checkout', methods=['POST'])
 @login_required
